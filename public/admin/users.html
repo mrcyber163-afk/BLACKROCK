@@ -1,0 +1,377 @@
+<!-- public/admin/users.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users - BlackRock Admin</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .users-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            max-width: 400px;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 10px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 5px;
+            color: white;
+        }
+        
+        .search-bar button {
+            padding: 10px 20px;
+            background: #00ff00;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .filter-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-btn {
+            padding: 8px 15px;
+            background: transparent;
+            border: 1px solid #333;
+            color: #888;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        
+        .filter-btn.active,
+        .filter-btn:hover {
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+        
+        .users-table {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            display: grid;
+            grid-template-columns: 0.5fr 2fr 2fr 1.5fr 1fr 1fr 1.5fr;
+            padding: 15px;
+            background: #333;
+            color: #00ff00;
+            font-weight: 600;
+        }
+        
+        .user-row {
+            display: grid;
+            grid-template-columns: 0.5fr 2fr 2fr 1.5fr 1fr 1fr 1.5fr;
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            align-items: center;
+        }
+        
+        .user-row:hover {
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        .user-status {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            display: inline-block;
+        }
+        
+        .status-active {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+        }
+        
+        .status-pending {
+            background: rgba(255, 255, 0, 0.2);
+            color: #ffd700;
+        }
+        
+        .status-suspended {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .btn-edit {
+            background: #00ff00;
+            color: black;
+        }
+        
+        .btn-view {
+            background: #333;
+            color: white;
+        }
+        
+        .btn-suspend {
+            background: #ffd700;
+            color: black;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .page-btn {
+            padding: 8px 12px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .page-btn.active {
+            background: #00ff00;
+            color: black;
+            border-color: #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar (same as dashboard) -->
+        <div class="admin-sidebar">
+            <!-- ... sidebar content ... -->
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <div class="admin-header">
+                <div class="header-title">
+                    <h1>Manage Users</h1>
+                    <p>View and manage all users</p>
+                </div>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="users-header">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search by username, email or phone...">
+                    <button><i class="fas fa-search"></i> Search</button>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <button class="filter-btn active">All</button>
+                <button class="filter-btn">Active</button>
+                <button class="filter-btn">Pending</button>
+                <button class="filter-btn">Suspended</button>
+                <button class="filter-btn">VIP 1</button>
+                <button class="filter-btn">VIP 2</button>
+                <button class="filter-btn">VIP 3</button>
+                <button class="filter-btn">VIP 4</button>
+            </div>
+
+            <!-- Users Table -->
+            <div class="users-table">
+                <div class="table-header">
+                    <span>#</span>
+                    <span>Username</span>
+                    <span>Email</span>
+                    <span>Phone</span>
+                    <span>Balance</span>
+                    <span>Level</span>
+                    <span>Actions</span>
+                </div>
+                
+                <div id="usersList">
+                    <!-- Users will be loaded here -->
+                    <div class="user-row">
+                        <span>1</span>
+                        <span>john_doe</span>
+                        <span>john@email.com</span>
+                        <span>+260977123456</span>
+                        <span>1,250 ZMW</span>
+                        <span><span class="user-status status-active">VIP 2</span></span>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-view" onclick="viewUser('user1')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn btn-edit" onclick="editUser('user1')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn btn-suspend" onclick="suspendUser('user1')">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </div>
+                    
+                    <div class="user-row">
+                        <span>2</span>
+                        <span>sarah_smith</span>
+                        <span>sarah@email.com</span>
+                        <span>+260977654321</span>
+                        <span>500 ZMW</span>
+                        <span><span class="user-status status-pending">VIP 1</span></span>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-view" onclick="viewUser('user2')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn btn-edit" onclick="editUser('user2')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn btn-suspend" onclick="suspendUser('user2')">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </div>
+                    
+                    <div class="user-row">
+                        <span>3</span>
+                        <span>peter_jones</span>
+                        <span>peter@email.com</span>
+                        <span>+260977789012</span>
+                        <span>0 ZMW</span>
+                        <span><span class="user-status status-pending">Pending</span></span>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-view" onclick="viewUser('user3')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn btn-edit" onclick="editUser('user3')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn btn-suspend" onclick="suspendUser('user3')">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">4</button>
+                <button class="page-btn">5</button>
+                <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Edit Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <h3>Edit User</h3>
+            
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="editUsername" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="editEmail" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" id="editPhone" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label>Balance</label>
+                <input type="number" id="editBalance" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label>Status</label>
+                <select id="editStatus" class="form-control">
+                    <option value="active">Active</option>
+                    <option value="pending_activation">Pending</option>
+                    <option value="suspended">Suspended</option>
+                    <option value="banned">Banned</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>VIP Level</label>
+                <select id="editLevel" class="form-control">
+                    <option value="VIP 1">VIP 1</option>
+                    <option value="VIP 2">VIP 2</option>
+                    <option value="VIP 3">VIP 3</option>
+                    <option value="VIP 4">VIP 4</option>
+                </select>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-submit" onclick="saveUser()">Save Changes</button>
+                <button class="btn-outline" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUserId = null;
+
+        function viewUser(userId) {
+            window.location.href = `user-details.html?id=${userId}`;
+        }
+
+        function editUser(userId) {
+            currentUserId = userId;
+            document.getElementById('userModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('userModal').classList.remove('active');
+        }
+
+        function saveUser() {
+            alert('User updated successfully!');
+            closeModal();
+        }
+
+        function suspendUser(userId) {
+            if (confirm('Are you sure you want to suspend this user?')) {
+                alert('User suspended');
+            }
+        }
+    </script>
+    <script type="module" src="../assets/js/admin/admin-users.js"></script>
+</body>
+</html>

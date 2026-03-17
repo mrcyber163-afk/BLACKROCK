@@ -1,0 +1,861 @@
+<!-- public/dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - BlackRock</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .greeting h2 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .greeting p {
+            color: #888;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #00ff00;
+            color: #000;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            min-width: 18px;
+            text-align: center;
+        }
+        
+        .user-level {
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        
+        .admin-notification {
+            background: linear-gradient(90deg, #00ff00, #00cc00);
+            color: #000;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .admin-notification i {
+            font-size: 20px;
+        }
+        
+        .admin-notification marquee {
+            flex: 1;
+        }
+        
+        .balance-overview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .balance-card {
+            background: linear-gradient(135deg, #1a1a1a, #000);
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .balance-card.total-income {
+            border-color: #00ff00;
+        }
+        
+        .balance-card.available-balance {
+            border-color: #ffd700;
+        }
+        
+        .balance-card .label {
+            color: #888;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .balance-card .amount {
+            font-size: 32px;
+            font-weight: 800;
+            color: #00ff00;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .balance-card small {
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin: 30px 0;
+        }
+        
+        .action-btn {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 15px 10px;
+            text-align: center;
+            text-decoration: none;
+            color: #fff;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:hover {
+            border-color: #00ff00;
+            transform: translateY(-2px);
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        .action-btn i {
+            display: block;
+            font-size: 24px;
+            color: #00ff00;
+            margin-bottom: 5px;
+        }
+        
+        .action-btn span {
+            font-size: 12px;
+        }
+        
+        .vip-section {
+            margin: 40px 0;
+        }
+        
+        .vip-section h3 {
+            color: #00ff00;
+            margin-bottom: 20px;
+        }
+        
+        .vip-levels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .vip-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .vip-card.current {
+            border-color: #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+        }
+        
+        .vip-badge {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background: #00ff00;
+            color: #000;
+            padding: 2px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .vip-card h4 {
+            color: #00ff00;
+            margin-bottom: 10px;
+        }
+        
+        .vip-card p {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        
+        .vip-card ul {
+            list-style: none;
+        }
+        
+        .vip-card li {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+        
+        .vip-card li::before {
+            content: '•';
+            color: #00ff00;
+            position: absolute;
+            left: 0;
+        }
+        
+        .investment-example {
+            margin: 40px 0;
+        }
+        
+        .investment-example h3 {
+            color: #00ff00;
+            margin-bottom: 20px;
+        }
+        
+        .example-card {
+            background: linear-gradient(135deg, #1a1a1a, #000);
+            border: 1px solid #00ff00;
+            border-radius: 15px;
+            padding: 25px;
+        }
+        
+        .plan-name {
+            color: #00ff00;
+            font-size: 18px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 15px;
+        }
+        
+        .plan-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .plan-stats div {
+            text-align: center;
+        }
+        
+        .plan-stats small {
+            display: block;
+            color: #888;
+            font-size: 11px;
+        }
+        
+        .plan-stats strong {
+            display: block;
+            color: #00ff00;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+        
+        .btn-small {
+            background: transparent;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 8px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .todays-task {
+            margin: 40px 0;
+        }
+        
+        .todays-task h3 {
+            color: #00ff00;
+            margin-bottom: 20px;
+        }
+        
+        .task-card.featured {
+            background: linear-gradient(135deg, #1a1a1a, #000);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 25px;
+        }
+        
+        .task-platform {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .task-platform i {
+            font-size: 30px;
+        }
+        
+        .task-platform i.tiktok { color: #00f2ea; }
+        .task-platform i.facebook { color: #1877f2; }
+        .task-platform i.youtube { color: #ff0000; }
+        .task-platform i.instagram { color: #e4405f; }
+        
+        .task-meta {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .reward {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .btn-task {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-task:hover {
+            background: #00cc00;
+        }
+        
+        .notifications-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 350px;
+            height: 100vh;
+            background: #1a1a1a;
+            border-left: 2px solid #00ff00;
+            transition: right 0.3s;
+            z-index: 1000;
+        }
+        
+        .notifications-panel.active {
+            right: 0;
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .panel-header i {
+            cursor: pointer;
+            font-size: 20px;
+        }
+        
+        .notifications-list {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 80px);
+        }
+        
+        .notification-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            cursor: pointer;
+        }
+        
+        .notification-item:hover {
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        .notification-item.unread {
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .notification-item i {
+            font-size: 20px;
+        }
+        
+        .notification-item small {
+            color: #888;
+            display: block;
+            margin-top: 5px;
+            font-size: 11px;
+        }
+        
+        @media (max-width: 768px) {
+            .balance-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .plan-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <span class="black">BLACK</span><span class="green">ROCK</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="active">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="tasks.html">
+                    <i class="fas fa-tasks"></i>
+                    <span>Tasks</span>
+                </a>
+                <a href="deposit.html">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Deposit</span>
+                </a>
+                <a href="withdraw.html">
+                    <i class="fas fa-wallet"></i>
+                    <span>Withdraw</span>
+                </a>
+                <a href="transaction-history.html">
+                    <i class="fas fa-history"></i>
+                    <span>History</span>
+                </a>
+                <a href="referral.html">
+                    <i class="fas fa-users"></i>
+                    <span>Referrals</span>
+                </a>
+                <a href="investment.html">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Wealth Fund</span>
+                </a>
+                <a href="profile.html">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="welcome-bonus.html">
+                    <i class="fas fa-gift"></i>
+                    <span>Welcome Bonus</span>
+                </a>
+                <a href="#" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="dashboard-header">
+                <div class="greeting">
+                    <h2>Good <span id="greeting">Afternoon</span>, <span id="username">User</span>!</h2>
+                    <p>Your earnings summary</p>
+                </div>
+                <div class="header-actions">
+                    <div class="notification-bell" onclick="showNotifications()">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge" id="notificationBadge">0</span>
+                    </div>
+                    <div class="user-level" id="userLevel">VIP 1</div>
+                </div>
+            </div>
+
+            <!-- Admin Notification -->
+            <div class="admin-notification">
+                <i class="fas fa-bullhorn"></i>
+                <marquee behavior="scroll" direction="left" id="notificationMarquee">
+                    🔥 Welcome to BlackRock! Complete tasks and earn money daily!
+                </marquee>
+            </div>
+
+            <!-- Balance Overview -->
+            <div class="balance-overview">
+                <div class="balance-card total-income">
+                    <span class="label">Total Income</span>
+                    <span class="amount" id="totalEarned">0 ZMW</span>
+                    <small>Lifetime earnings</small>
+                </div>
+                <div class="balance-card available-balance">
+                    <span class="label">Available Balance</span>
+                    <span class="amount" id="balance">0 ZMW</span>
+                    <small>Ready to withdraw</small>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <a href="deposit.html" class="action-btn">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Deposit</span>
+                </a>
+                <a href="withdraw.html" class="action-btn">
+                    <i class="fas fa-wallet"></i>
+                    <span>Withdraw</span>
+                </a>
+                <a href="transaction-history.html" class="action-btn">
+                    <i class="fas fa-history"></i>
+                    <span>History</span>
+                </a>
+                <a href="referral.html" class="action-btn">
+                    <i class="fas fa-users"></i>
+                    <span>Referrals</span>
+                </a>
+                <a href="investment.html" class="action-btn">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Invest</span>
+                </a>
+                <a href="tasks.html" class="action-btn">
+                    <i class="fas fa-tasks"></i>
+                    <span>Tasks</span>
+                </a>
+            </div>
+
+            <!-- VIP Levels -->
+            <div class="vip-section">
+                <h3><i class="fas fa-crown"></i> VIP Levels</h3>
+                <div class="vip-levels">
+                    <div class="vip-card current">
+                        <span class="vip-badge">Current</span>
+                        <h4>VIP 1</h4>
+                        <p>Investment: 0 - 999 ZMW</p>
+                        <ul>
+                            <li>Daily Income: 5-10 ZMW</li>
+                            <li>Videos per day: 5</li>
+                        </ul>
+                    </div>
+                    <div class="vip-card">
+                        <h4>VIP 2</h4>
+                        <p>Investment: 1,000 - 4,999 ZMW</p>
+                        <ul>
+                            <li>Daily Income: 15-25 ZMW</li>
+                            <li>Videos per day: 10</li>
+                        </ul>
+                    </div>
+                    <div class="vip-card">
+                        <h4>VIP 3</h4>
+                        <p>Investment: 5,000 - 9,999 ZMW</p>
+                        <ul>
+                            <li>Daily Income: 40-60 ZMW</li>
+                            <li>Videos per day: 20</li>
+                        </ul>
+                    </div>
+                    <div class="vip-card">
+                        <h4>VIP 4</h4>
+                        <p>Investment: 10,000+ ZMW</p>
+                        <ul>
+                            <li>Daily Income: 100-150 ZMW</li>
+                            <li>Videos per day: 40</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investment Example -->
+            <div class="investment-example">
+                <h3><i class="fas fa-chart-line"></i> Wealth Fund - Example</h3>
+                <div class="example-card">
+                    <span class="plan-name">180 Days Wealth Plan</span>
+                    <div class="plan-stats">
+                        <div>
+                            <small>Capital</small>
+                            <strong>1,500 ZMW</strong>
+                        </div>
+                        <div>
+                            <small>Returns</small>
+                            <strong>75%</strong>
+                        </div>
+                        <div>
+                            <small>Total</small>
+                            <strong>2,625 ZMW</strong>
+                        </div>
+                        <div>
+                            <small>Daily</small>
+                            <strong>8.75 ZMW</strong>
+                        </div>
+                    </div>
+                    <a href="investment.html" class="btn-small">View All Plans</a>
+                </div>
+            </div>
+
+            <!-- Today's Task -->
+            <div class="todays-task">
+                <h3><i class="fas fa-tasks"></i> Today's Task</h3>
+                <div id="todayTask" class="task-card featured">
+                    <!-- Will be loaded by JavaScript -->
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i> Loading...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Bottom Navigation -->
+        <div class="mobile-nav">
+            <a href="dashboard.html" class="active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="tasks.html">
+                <i class="fas fa-tasks"></i>
+                <span>Tasks</span>
+            </a>
+            <a href="deposit.html">
+                <i class="fas fa-plus-circle"></i>
+                <span>Deposit</span>
+            </a>
+            <a href="withdraw.html">
+                <i class="fas fa-wallet"></i>
+                <span>Withdraw</span>
+            </a>
+            <a href="profile.html">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Notifications Panel -->
+    <div class="notifications-panel" id="notificationsPanel">
+        <div class="panel-header">
+            <h3>Notifications</h3>
+            <i class="fas fa-times" onclick="closeNotifications()"></i>
+        </div>
+        <div class="notifications-list" id="notificationsList">
+            <!-- Notifications will be loaded here -->
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, rtdb, onAuthStateChanged, doc, getDoc, collection, query, where, getDocs, orderBy, limit, onSnapshot, ref, onValue, updateDoc } from './assets/js/firebase-config.js';
+
+        let currentUser = null;
+        let userData = null;
+
+        // Check authentication
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadUserData();
+                setupRealTimeUpdates();
+                setGreeting();
+                loadAdminNotifications();
+                loadTodayTask();
+                loadNotifications();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Load user data
+        async function loadUserData() {
+            try {
+                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                if (userDoc.exists()) {
+                    userData = userDoc.data();
+                    updateUI();
+                }
+            } catch (error) {
+                console.error('Error loading user:', error);
+            }
+        }
+
+        // Update UI
+        function updateUI() {
+            document.getElementById('username').textContent = userData?.username || 'User';
+            document.getElementById('balance').textContent = `${userData?.balance || 0} ZMW`;
+            document.getElementById('totalEarned').textContent = `${userData?.totalEarned || 0} ZMW`;
+            document.getElementById('userLevel').textContent = userData?.level || 'VIP 1';
+        }
+
+        // Set greeting
+        function setGreeting() {
+            const hour = new Date().getHours();
+            const greetingEl = document.getElementById('greeting');
+            
+            if (hour < 12) {
+                greetingEl.textContent = 'Morning';
+            } else if (hour < 17) {
+                greetingEl.textContent = 'Afternoon';
+            } else if (hour < 20) {
+                greetingEl.textContent = 'Evening';
+            } else {
+                greetingEl.textContent = 'Night';
+            }
+        }
+
+        // Load admin notifications
+        function loadAdminNotifications() {
+            const notificationsRef = ref(rtdb, 'admin-notifications');
+            onValue(notificationsRef, (snapshot) => {
+                const data = snapshot.val();
+                const marquee = document.getElementById('notificationMarquee');
+                if (marquee && data) {
+                    const messages = Object.values(data).map(n => n.message).join(' | ');
+                    marquee.textContent = messages || 'No notifications';
+                }
+            });
+        }
+
+        // Load today's task
+        async function loadTodayTask() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                const tasksRef = collection(db, 'daily-tasks');
+                const q = query(tasksRef, where('date', '==', today), limit(1));
+                const snapshot = await getDocs(q);
+                
+                const container = document.getElementById('todayTask');
+                
+                if (!snapshot.empty) {
+                    const task = snapshot.docs[0].data();
+                    container.innerHTML = `
+                        <div class="task-platform">
+                            <i class="fab fa-${task.platform} ${task.platform}"></i>
+                            <span>${task.platform.charAt(0).toUpperCase() + task.platform.slice(1)} Videos</span>
+                        </div>
+                        <p>${task.description}</p>
+                        <div class="task-meta">
+                            <span class="reward">${task.reward} ZMW per video</span>
+                            <span>Max: ${task.maxVideos || 10} videos</span>
+                        </div>
+                        <a href="tasks.html?platform=${task.platform}" class="btn-task">Start Earning</a>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="task-platform">
+                            <i class="fas fa-video"></i>
+                            <span>No Task Today</span>
+                        </div>
+                        <p>Check back tomorrow for new tasks!</p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading task:', error);
+            }
+        }
+
+        // Load notifications
+        function loadNotifications() {
+            const notificationsRef = collection(db, 'users', currentUser.uid, 'notifications');
+            const q = query(notificationsRef, orderBy('createdAt', 'desc'), limit(10));
+            
+            onSnapshot(q, (snapshot) => {
+                const notifications = [];
+                snapshot.forEach(doc => {
+                    notifications.push({ id: doc.id, ...doc.data() });
+                });
+                
+                updateNotificationBadge(notifications.filter(n => !n.read).length);
+                displayNotifications(notifications);
+            });
+        }
+
+        // Update notification badge
+        function updateNotificationBadge(count) {
+            document.getElementById('notificationBadge').textContent = count;
+            document.getElementById('notificationBadge').style.display = count > 0 ? 'block' : 'none';
+        }
+
+        // Display notifications
+        function displayNotifications(notifications) {
+            const container = document.getElementById('notificationsList');
+            
+            if (notifications.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #888;">No notifications</p>';
+                return;
+            }
+            
+            container.innerHTML = notifications.map(n => `
+                <div class="notification-item ${n.read ? '' : 'unread'}" onclick="markNotificationRead('${n.id}')">
+                    <i class="fas fa-${n.icon || 'info-circle'}" style="color: ${n.color || '#00ff00'}"></i>
+                    <div>
+                        <p>${n.message}</p>
+                        <small>${timeAgo(n.createdAt)}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Mark notification as read
+        window.markNotificationRead = async function(notificationId) {
+            try {
+                const notifRef = doc(db, 'users', currentUser.uid, 'notifications', notificationId);
+                await updateDoc(notifRef, { read: true });
+            } catch (error) {
+                console.error('Error marking notification read:', error);
+            }
+        };
+
+        // Time ago
+        function timeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+            
+            if (seconds < 60) return 'just now';
+            if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+            if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+            return `${Math.floor(seconds / 86400)} days ago`;
+        }
+
+        // Show notifications panel
+        window.showNotifications = function() {
+            document.getElementById('notificationsPanel').classList.add('active');
+        };
+
+        // Close notifications
+        window.closeNotifications = function() {
+            document.getElementById('notificationsPanel').classList.remove('active');
+        };
+
+        // Setup real-time updates
+        function setupRealTimeUpdates() {
+            const userRef = doc(db, 'users', currentUser.uid);
+            onSnapshot(userRef, (doc) => {
+                if (doc.exists()) {
+                    userData = doc.data();
+                    updateUI();
+                }
+            });
+        }
+
+        // Logout
+        window.logout = async function() {
+            try {
+                await auth.signOut();
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,417 @@
+<!-- public/admin/deposits.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Deposits - BlackRock Admin</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .deposits-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .stat-card .label {
+            color: #888;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card .value {
+            color: #00ff00;
+            font-size: 24px;
+            font-weight: 800;
+        }
+        
+        .stat-card .small {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        
+        .filter-tab {
+            padding: 8px 20px;
+            cursor: pointer;
+            color: #888;
+            border-radius: 5px;
+        }
+        
+        .filter-tab.active {
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+        }
+        
+        .deposits-table {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            display: grid;
+            grid-template-columns: 0.5fr 1.5fr 1.5fr 1fr 1fr 1.5fr 1.5fr 1.5fr;
+            padding: 15px;
+            background: #333;
+            color: #00ff00;
+            font-weight: 600;
+        }
+        
+        .deposit-row {
+            display: grid;
+            grid-template-columns: 0.5fr 1.5fr 1.5fr 1fr 1fr 1.5fr 1.5fr 1.5fr;
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            align-items: center;
+        }
+        
+        .deposit-row:hover {
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-pending {
+            background: rgba(255, 255, 0, 0.2);
+            color: #ffd700;
+        }
+        
+        .status-approved {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+        }
+        
+        .status-rejected {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin: 0 2px;
+        }
+        
+        .btn-approve {
+            background: #00ff00;
+            color: black;
+        }
+        
+        .btn-reject {
+            background: #ff4444;
+            color: white;
+        }
+        
+        .btn-view {
+            background: #333;
+            color: white;
+        }
+        
+        .message-preview {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #888;
+            cursor: pointer;
+        }
+        
+        .message-preview:hover {
+            color: #00ff00;
+        }
+        
+        @media (max-width: 1200px) {
+            .stats-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <!-- ... sidebar content ... -->
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <div class="admin-header">
+                <div class="header-title">
+                    <h1>Manage Deposits</h1>
+                    <p>Approve or reject deposit requests</p>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <span class="label">Total Deposits</span>
+                    <span class="value">15,230 ZMW</span>
+                    <span class="small">All time</span>
+                </div>
+                <div class="stat-card">
+                    <span class="label">Pending</span>
+                    <span class="value">2,450 ZMW</span>
+                    <span class="small">12 requests</span>
+                </div>
+                <div class="stat-card">
+                    <span class="label">Today</span>
+                    <span class="value">850 ZMW</span>
+                    <span class="small">5 requests</span>
+                </div>
+                <div class="stat-card">
+                    <span class="label">Approved</span>
+                    <span class="value">12,780 ZMW</span>
+                    <span class="small">89% success rate</span>
+                </div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <div class="filter-tab active" onclick="filterDeposits('all')">All</div>
+                <div class="filter-tab" onclick="filterDeposits('pending')">Pending</div>
+                <div class="filter-tab" onclick="filterDeposits('approved')">Approved</div>
+                <div class="filter-tab" onclick="filterDeposits('rejected')">Rejected</div>
+            </div>
+
+            <!-- Deposits Table -->
+            <div class="deposits-table">
+                <div class="table-header">
+                    <span>ID</span>
+                    <span>User</span>
+                    <span>Amount</span>
+                    <span>Method</span>
+                    <span>Sender</span>
+                    <span>Message</span>
+                    <span>Date</span>
+                    <span>Actions</span>
+                </div>
+                
+                <div id="depositsList">
+                    <!-- Pending Deposit -->
+                    <div class="deposit-row" data-status="pending">
+                        <span>#D001</span>
+                        <span>john_doe</span>
+                        <span>150 ZMW</span>
+                        <span>Airtel</span>
+                        <span>+260977123456</span>
+                        <td>
+                            <div class="message-preview" onclick="viewMessage('Payment of 150 ZMW to BlackRock. Ref: BL123456')">
+                                Payment of 150 ZMW...
+                            </div>
+                        </td>
+                        <span>2024-03-15 10:30</span>
+                        <td>
+                            <button class="action-btn btn-approve" onclick="approveDeposit('D001')">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="action-btn btn-reject" onclick="rejectDeposit('D001')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <button class="action-btn btn-view" onclick="viewDeposit('D001')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </div>
+                    
+                    <!-- Another Pending -->
+                    <div class="deposit-row" data-status="pending">
+                        <span>#D002</span>
+                        <span>sarah_smith</span>
+                        <span>200 ZMW</span>
+                        <span>MTN</span>
+                        <span>+260977654321</span>
+                        <td>
+                            <div class="message-preview" onclick="viewMessage('Sent 200 ZMW. Ref: MT987654')">
+                                Sent 200 ZMW. Ref: MT987654
+                            </div>
+                        </td>
+                        <span>2024-03-15 09:15</span>
+                        <td>
+                            <button class="action-btn btn-approve" onclick="approveDeposit('D002')">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="action-btn btn-reject" onclick="rejectDeposit('D002')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <button class="action-btn btn-view" onclick="viewDeposit('D002')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </div>
+                    
+                    <!-- Approved Deposit -->
+                    <div class="deposit-row" data-status="approved">
+                        <span>#D003</span>
+                        <span>peter_jones</span>
+                        <span>500 ZMW</span>
+                        <span>Airtel</span>
+                        <span>+260977789012</span>
+                        <td>
+                            <div class="message-preview">Payment of 500 ZMW...</div>
+                        </td>
+                        <span>2024-03-14 16:20</span>
+                        <td>
+                            <span class="status-badge status-approved">Approved</span>
+                        </td>
+                    </div>
+                    
+                    <!-- Rejected Deposit -->
+                    <div class="deposit-row" data-status="rejected">
+                        <span>#D004</span>
+                        <span>mary_jane</span>
+                        <span>100 ZMW</span>
+                        <span>MTN</span>
+                        <span>+260977456789</span>
+                        <td>
+                            <div class="message-preview">Incomplete reference...</div>
+                        </td>
+                        <span>2024-03-14 14:10</span>
+                        <td>
+                            <span class="status-badge status-rejected">Rejected</span>
+                        </td>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">4</button>
+                <button class="page-btn">5</button>
+                <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="modal" id="messageModal">
+        <div class="modal-content">
+            <h3>Transaction Message</h3>
+            <div id="fullMessage" style="background: #333; padding: 15px; border-radius: 5px; margin: 20px 0; word-break: break-all;">
+                <!-- Message will appear here -->
+            </div>
+            <button class="btn-submit" onclick="closeModal('messageModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- Reject Modal -->
+    <div class="modal" id="rejectModal">
+        <div class="modal-content">
+            <h3>Reject Deposit</h3>
+            
+            <div class="form-group">
+                <label>Reason for rejection</label>
+                <textarea id="rejectReason" class="form-control" rows="4" placeholder="Explain why this deposit is being rejected..."></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-reject" onclick="confirmReject()">Reject Deposit</button>
+                <button class="btn-outline" onclick="closeModal('rejectModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentDepositId = null;
+
+        function filterDeposits(status) {
+            document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            const rows = document.querySelectorAll('.deposit-row');
+            rows.forEach(row => {
+                if (status === 'all') {
+                    row.style.display = 'grid';
+                } else {
+                    if (row.dataset.status === status) {
+                        row.style.display = 'grid';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        function viewMessage(message) {
+            document.getElementById('fullMessage').textContent = message;
+            document.getElementById('messageModal').classList.add('active');
+        }
+
+        function approveDeposit(depositId) {
+            if (confirm(`Approve deposit ${depositId}?`)) {
+                alert(`Deposit ${depositId} approved successfully! User balance updated.`);
+                // Reload or update UI
+            }
+        }
+
+        function rejectDeposit(depositId) {
+            currentDepositId = depositId;
+            document.getElementById('rejectModal').classList.add('active');
+        }
+
+        function confirmReject() {
+            const reason = document.getElementById('rejectReason').value;
+            if (!reason) {
+                alert('Please provide a reason for rejection');
+                return;
+            }
+            
+            alert(`Deposit ${currentDepositId} rejected. Reason: ${reason}`);
+            closeModal('rejectModal');
+        }
+
+        function viewDeposit(depositId) {
+            alert(`Viewing details for deposit ${depositId}`);
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            if (modalId === 'rejectModal') {
+                document.getElementById('rejectReason').value = '';
+            }
+        }
+    </script>
+    <script type="module" src="../assets/js/admin/admin-deposits.js"></script>
+</body>
+</html>

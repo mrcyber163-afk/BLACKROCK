@@ -1,0 +1,722 @@
+<!-- public/deposit.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit - BlackRock</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .deposit-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .balance-card {
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            color: #000;
+        }
+        
+        .balance-card .label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .balance-card .amount {
+            font-size: 36px;
+            font-weight: 800;
+            display: block;
+        }
+        
+        .payment-section {
+            background: linear-gradient(135deg, #1a1a1a, #000);
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .payment-section h3 {
+            color: #00ff00;
+            margin-bottom: 20px;
+        }
+        
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .payment-option {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .payment-option:hover {
+            border-color: #00ff00;
+        }
+        
+        .payment-option.selected {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .payment-option input[type="radio"] {
+            display: none;
+        }
+        
+        .payment-option i {
+            font-size: 30px;
+            color: #00ff00;
+            margin-bottom: 10px;
+        }
+        
+        .payment-option span {
+            display: block;
+            font-weight: 600;
+        }
+        
+        .payment-details {
+            background: linear-gradient(135deg, #1a1a1a, #000);
+            border: 1px solid #00ff00;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .details-header h4 {
+            color: #00ff00;
+        }
+        
+        .copy-all-btn {
+            background: transparent;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .copy-all-btn:hover {
+            background: #00ff00;
+            color: #000;
+        }
+        
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #333;
+            cursor: pointer;
+        }
+        
+        .detail-item:hover {
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-item .label {
+            color: #888;
+        }
+        
+        .detail-item .value {
+            color: #00ff00;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .ussd-code {
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .ussd-code p {
+            color: #888;
+            margin-bottom: 10px;
+        }
+        
+        .code-box {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+        
+        .code-box code {
+            font-size: 24px;
+            color: #00ff00;
+        }
+        
+        .code-box i {
+            color: #888;
+        }
+        
+        .code-box:hover i {
+            color: #00ff00;
+        }
+        
+        .warning-box {
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ffd700;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #ffd700;
+        }
+        
+        .deposit-form {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+        
+        .amount-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .amount-option {
+            background: #333;
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .amount-option:hover,
+        .amount-option.selected {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .btn-deposit {
+            width: 100%;
+            padding: 15px;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        .btn-deposit:hover {
+            background: #00cc00;
+        }
+        
+        .btn-deposit:disabled {
+            background: #888;
+            cursor: not-allowed;
+        }
+        
+        .transaction-message {
+            font-family: monospace;
+            background: #333;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <span class="black">BLACK</span><span class="green">ROCK</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="dashboard.html">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="tasks.html">
+                    <i class="fas fa-tasks"></i>
+                    <span>Tasks</span>
+                </a>
+                <a href="deposit.html" class="active">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Deposit</span>
+                </a>
+                <a href="withdraw.html">
+                    <i class="fas fa-wallet"></i>
+                    <span>Withdraw</span>
+                </a>
+                <a href="transaction-history.html">
+                    <i class="fas fa-history"></i>
+                    <span>History</span>
+                </a>
+                <a href="referral.html">
+                    <i class="fas fa-users"></i>
+                    <span>Referrals</span>
+                </a>
+                <a href="investment.html">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Wealth Fund</span>
+                </a>
+                <a href="profile.html">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="welcome-bonus.html">
+                    <i class="fas fa-gift"></i>
+                    <span>Welcome Bonus</span>
+                </a>
+                <a href="#" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="dashboard-header">
+                <div class="greeting">
+                    <h2>Make a Deposit</h2>
+                    <p>Add funds to your account</p>
+                </div>
+                <div class="header-actions">
+                    <div class="notification-bell" onclick="showNotifications()">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge" id="notificationBadge">0</span>
+                    </div>
+                    <div class="user-balance" style="background: #00ff00; color: #000; padding: 8px 15px; border-radius: 20px;">
+                        <span>Balance:</span>
+                        <strong id="balance">0 ZMW</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Notification -->
+            <div class="admin-notification">
+                <i class="fas fa-bullhorn"></i>
+                <marquee>
+                    💰 Minimum deposit: 50 ZMW | Processing time: 20 minutes
+                </marquee>
+            </div>
+
+            <!-- Deposit Container -->
+            <div class="deposit-container">
+                <!-- Balance Card -->
+                <div class="balance-card">
+                    <span class="label">Available Balance</span>
+                    <span class="amount" id="balanceCard">0 ZMW</span>
+                </div>
+
+                <!-- Payment Method Section -->
+                <div class="payment-section">
+                    <h3><i class="fas fa-mobile-alt"></i> Select Payment Method</h3>
+                    
+                    <div class="payment-options">
+                        <label class="payment-option" onclick="selectPayment('airtel')">
+                            <input type="radio" name="paymentMethod" value="airtel">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>Airtel Money</span>
+                        </label>
+                        
+                        <label class="payment-option" onclick="selectPayment('mtn')">
+                            <input type="radio" name="paymentMethod" value="mtn">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>MTN Money</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Payment Details (Hidden initially) -->
+                <div id="paymentDetails" class="payment-details" style="display: none;">
+                    <div class="details-header">
+                        <h4>Payment Details</h4>
+                        <button onclick="copyAllDetails()" class="copy-all-btn">
+                            <i class="fas fa-copy"></i> Copy All
+                        </button>
+                    </div>
+                    
+                    <div class="detail-item" onclick="copyText(document.getElementById('displayNetwork').textContent)">
+                        <span class="label">Network:</span>
+                        <span class="value" id="displayNetwork">Airtel Money</span>
+                    </div>
+                    
+                    <div class="detail-item" onclick="copyText(document.getElementById('displayNumber').textContent)">
+                        <span class="label">Phone Number:</span>
+                        <span class="value" id="displayNumber">0977123456</span>
+                    </div>
+                    
+                    <div class="detail-item" onclick="copyText(document.getElementById('displayName').textContent)">
+                        <span class="label">Account Name:</span>
+                        <span class="value" id="displayName">BlackRock Official</span>
+                    </div>
+                    
+                    <div class="ussd-code">
+                        <p>📱 Dial this code to send money:</p>
+                        <div class="code-box" onclick="copyText('*126#')">
+                            <code>*126#</code>
+                            <i class="fas fa-copy"></i>
+                        </div>
+                        <small style="color: #888;">Click to copy USSD code</small>
+                    </div>
+                </div>
+
+                <!-- Warning -->
+                <div class="warning-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Important:</strong> After sending money, copy the confirmation message and paste below
+                </div>
+
+                <!-- Deposit Form -->
+                <div class="deposit-form">
+                    <h3>Submit Deposit Request</h3>
+                    
+                    <form id="depositForm">
+                        <div class="form-group">
+                            <label>Amount (ZMW)</label>
+                            <input type="number" id="amount" min="50" step="10" placeholder="Enter amount" required>
+                        </div>
+
+                        <div class="amount-options">
+                            <div class="amount-option" onclick="setAmount(50)">50 ZMW</div>
+                            <div class="amount-option" onclick="setAmount(100)">100 ZMW</div>
+                            <div class="amount-option" onclick="setAmount(200)">200 ZMW</div>
+                            <div class="amount-option" onclick="setAmount(500)">500 ZMW</div>
+                            <div class="amount-option" onclick="setAmount(1000)">1000 ZMW</div>
+                            <div class="amount-option" onclick="customAmount()">Custom</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Your Phone Number</label>
+                            <div class="phone-input-wrapper">
+                                <span class="country-code">+260</span>
+                                <input type="tel" id="senderPhone" placeholder="97xxxxxxx" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Transaction Message</label>
+                            <textarea id="transactionMessage" rows="4" placeholder="Paste the confirmation message you received from mobile money" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-deposit" id="depositBtn">
+                            Submit Deposit Request
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Bottom Navigation -->
+        <div class="mobile-nav">
+            <a href="dashboard.html">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="tasks.html">
+                <i class="fas fa-tasks"></i>
+                <span>Tasks</span>
+            </a>
+            <a href="deposit.html" class="active">
+                <i class="fas fa-plus-circle"></i>
+                <span>Deposit</span>
+            </a>
+            <a href="withdraw.html">
+                <i class="fas fa-wallet"></i>
+                <span>Withdraw</span>
+            </a>
+            <a href="profile.html">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, onAuthStateChanged, doc, getDoc, collection, addDoc, query, where, getDocs, orderBy, onSnapshot } from './assets/js/firebase-config.js';
+
+        let currentUser = null;
+        let userData = null;
+        let selectedPayment = null;
+        let selectedAmount = 0;
+
+        // Payment methods data
+        const paymentMethods = {
+            airtel: {
+                name: 'Airtel Money',
+                phone: '0977123456',
+                accountName: 'BlackRock Official',
+                ussd: '*126#'
+            },
+            mtn: {
+                name: 'MTN Money',
+                phone: '0977654321',
+                accountName: 'BlackRock Official',
+                ussd: '*126#'
+            }
+        };
+
+        // Check authentication
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadUserData();
+                checkForApprovedDeposits();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Load user data
+        async function loadUserData() {
+            try {
+                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                if (userDoc.exists()) {
+                    userData = userDoc.data();
+                    document.getElementById('balance').textContent = `${userData.balance || 0} ZMW`;
+                    document.getElementById('balanceCard').textContent = `${userData.balance || 0} ZMW`;
+                }
+            } catch (error) {
+                console.error('Error loading user:', error);
+            }
+        }
+
+        // Select payment method
+        window.selectPayment = function(method) {
+            selectedPayment = method;
+            
+            // Update radio
+            document.querySelectorAll('.payment-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            // Show payment details
+            const details = paymentMethods[method];
+            document.getElementById('displayNetwork').textContent = details.name;
+            document.getElementById('displayNumber').textContent = details.phone;
+            document.getElementById('displayName').textContent = details.accountName;
+            
+            document.getElementById('paymentDetails').style.display = 'block';
+        };
+
+        // Set amount
+        window.setAmount = function(amount) {
+            selectedAmount = amount;
+            document.getElementById('amount').value = amount;
+            
+            document.querySelectorAll('.amount-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        };
+
+        // Custom amount
+        window.customAmount = function() {
+            document.getElementById('amount').focus();
+            document.querySelectorAll('.amount-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+        };
+
+        // Copy text
+        window.copyText = function(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('Copied to clipboard!', 'success');
+            });
+        };
+
+        // Copy all details
+        window.copyAllDetails = function() {
+            const network = document.getElementById('displayNetwork').textContent;
+            const phone = document.getElementById('displayNumber').textContent;
+            const name = document.getElementById('displayName').textContent;
+            
+            const text = `Network: ${network}\nPhone: ${phone}\nName: ${name}`;
+            copyText(text);
+        };
+
+        // Handle deposit form
+        document.getElementById('depositForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const amount = document.getElementById('amount').value;
+            const senderPhone = document.getElementById('senderPhone').value;
+            const transactionMessage = document.getElementById('transactionMessage').value;
+            const depositBtn = document.getElementById('depositBtn');
+            
+            // Validate
+            if (!selectedPayment) {
+                showNotification('Please select a payment method', 'error');
+                return;
+            }
+            
+            if (!amount || amount < 50) {
+                showNotification('Minimum deposit is 50 ZMW', 'error');
+                return;
+            }
+            
+            if (!senderPhone.match(/^[97][0-9]{8}$/)) {
+                showNotification('Please enter a valid Zambian phone number', 'error');
+                return;
+            }
+            
+            if (!transactionMessage) {
+                showNotification('Please paste the transaction message', 'error');
+                return;
+            }
+            
+            // Disable button
+            depositBtn.disabled = true;
+            depositBtn.textContent = 'Processing...';
+            
+            try {
+                // Create deposit request
+                const depositRef = await addDoc(collection(db, 'deposits'), {
+                    userId: currentUser.uid,
+                    username: userData.username,
+                    amount: parseFloat(amount),
+                    paymentMethod: selectedPayment,
+                    senderPhone: '+260' + senderPhone,
+                    transactionMessage: transactionMessage,
+                    status: 'pending',
+                    createdAt: new Date().toISOString(),
+                    expiresAt: new Date(Date.now() + 20 * 60 * 1000).toISOString()
+                });
+                
+                // Add to user's deposits
+                await addDoc(collection(db, 'users', currentUser.uid, 'deposits'), {
+                    depositId: depositRef.id,
+                    amount: parseFloat(amount),
+                    paymentMethod: selectedPayment,
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                });
+                
+                showNotification(
+                    'Deposit request submitted! You will be notified within 20 minutes.',
+                    'success'
+                );
+                
+                // Reset form
+                document.getElementById('depositForm').reset();
+                document.getElementById('paymentDetails').style.display = 'none';
+                selectedPayment = null;
+                selectedAmount = 0;
+                
+                // Listen for approval
+                listenForDepositApproval(depositRef.id);
+                
+            } catch (error) {
+                console.error('Deposit error:', error);
+                showNotification('Failed to submit deposit request', 'error');
+            } finally {
+                depositBtn.disabled = false;
+                depositBtn.textContent = 'Submit Deposit Request';
+            }
+        });
+
+        // Listen for deposit approval
+        function listenForDepositApproval(depositId) {
+            const depositRef = doc(db, 'deposits', depositId);
+            
+            onSnapshot(depositRef, (doc) => {
+                if (doc.exists()) {
+                    const deposit = doc.data();
+                    
+                    if (deposit.status === 'approved') {
+                        localStorage.setItem('depositApproved', 'true');
+                        localStorage.setItem('depositAmount', deposit.amount);
+                        
+                        showNotification(
+                            `Deposit approved! ${deposit.amount} ZMW added to your balance.`,
+                            'success'
+                        );
+                        
+                        loadUserData();
+                    }
+                }
+            });
+        }
+
+        // Check for approved deposits
+        function checkForApprovedDeposits() {
+            const approved = localStorage.getItem('depositApproved');
+            const amount = localStorage.getItem('depositAmount');
+            
+            if (approved === 'true' && amount) {
+                showNotification(
+                    `Deposit approved! ${amount} ZMW added to your balance.`,
+                    'success'
+                );
+                
+                localStorage.removeItem('depositApproved');
+                localStorage.removeItem('depositAmount');
+                loadUserData();
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            const existing = document.querySelector('.notification-popup');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = `notification-popup ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Logout
+        window.logout = async function() {
+            try {
+                await auth.signOut();
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        };
+    </script>
+</body>
+</html>

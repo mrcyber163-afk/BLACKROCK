@@ -1,0 +1,313 @@
+<!-- public/admin/activations.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Activations - BlackRock Admin</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .activation-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-box {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .stat-box .number {
+            font-size: 36px;
+            font-weight: 800;
+            color: #00ff00;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .stat-box .label {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .activation-table {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            display: grid;
+            grid-template-columns: 0.5fr 1.5fr 1.5fr 2fr 1fr 1.5fr 1.5fr;
+            padding: 15px;
+            background: #333;
+            color: #00ff00;
+            font-weight: 600;
+        }
+        
+        .activation-row {
+            display: grid;
+            grid-template-columns: 0.5fr 1.5fr 1.5fr 2fr 1fr 1.5fr 1.5fr;
+            padding: 15px;
+            border-bottom: 1px solid #333;
+            align-items: center;
+        }
+        
+        .activation-row:hover {
+            background: rgba(0, 255, 0, 0.05);
+        }
+        
+        .message-cell {
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #888;
+            cursor: pointer;
+        }
+        
+        .message-cell:hover {
+            color: #00ff00;
+        }
+        
+        .btn-activate {
+            background: #00ff00;
+            color: black;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .btn-reject-activation {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        
+        .welcome-bonus-info {
+            font-size: 12px;
+            color: #00ff00;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <!-- ... sidebar content ... -->
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <div class="admin-header">
+                <div class="header-title">
+                    <h1>Account Activations</h1>
+                    <p>Verify activation payments and activate accounts</p>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="activation-stats">
+                <div class="stat-box">
+                    <span class="number">23</span>
+                    <span class="label">Pending Activations</span>
+                </div>
+                <div class="stat-box">
+                    <span class="number">156</span>
+                    <span class="label">Activated Today</span>
+                </div>
+                <div class="stat-box">
+                    <span class="number">1,234</span>
+                    <span class="label">Total Activated</span>
+                </div>
+            </div>
+
+            <!-- Activations Table -->
+            <div class="activation-table">
+                <div class="table-header">
+                    <span>#</span>
+                    <span>Username</span>
+                    <span>Phone</span>
+                    <span>Message</span>
+                    <span>Amount</span>
+                    <span>Date</span>
+                    <span>Actions</span>
+                </div>
+                
+                <div id="activationsList">
+                    <!-- Activation 1 -->
+                    <div class="activation-row">
+                        <span>1</span>
+                        <span>peter_jones</span>
+                        <span>+260977789012</span>
+                        <td>
+                            <div class="message-cell" onclick="viewFullMessage('Payment of 50 ZMW for activation. Ref: ACT123456')">
+                                Payment of 50 ZMW for activation. Ref: ACT123456
+                            </div>
+                        </td>
+                        <span>50 ZMW</span>
+                        <span>10:30 AM</span>
+                        <td>
+                            <button class="btn-activate" onclick="activateAccount('peter_jones')">
+                                <i class="fas fa-check"></i> Activate
+                            </button>
+                            <button class="btn-reject-activation" onclick="rejectActivation('peter_jones')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </td>
+                    </div>
+                    
+                    <!-- Activation 2 -->
+                    <div class="activation-row">
+                        <span>2</span>
+                        <span>mary_jane</span>
+                        <span>+260977456789</span>
+                        <td>
+                            <div class="message-cell" onclick="viewFullMessage('50 ZMW sent. Reference: 1234567890')">
+                                50 ZMW sent. Reference: 1234567890
+                            </div>
+                        </td>
+                        <span>50 ZMW</span>
+                        <span>09:15 AM</span>
+                        <td>
+                            <button class="btn-activate" onclick="activateAccount('mary_jane')">
+                                <i class="fas fa-check"></i> Activate
+                            </button>
+                            <button class="btn-reject-activation" onclick="rejectActivation('mary_jane')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </td>
+                    </div>
+                    
+                    <!-- Activation 3 -->
+                    <div class="activation-row">
+                        <span>3</span>
+                        <span>mike_wilson</span>
+                        <span>+260977123789</span>
+                        <td>
+                            <div class="message-cell" onclick="viewFullMessage('Activation fee 50 ZMW from Mike Wilson')">
+                                Activation fee 50 ZMW from Mike Wilson
+                            </div>
+                        </td>
+                        <span>50 ZMW</span>
+                        <span>Yesterday</span>
+                        <td>
+                            <button class="btn-activate" onclick="activateAccount('mike_wilson')">
+                                <i class="fas fa-check"></i> Activate
+                            </button>
+                            <button class="btn-reject-activation" onclick="rejectActivation('mike_wilson')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </td>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="page-btn"><i class="fas fa-chevron-left"></i></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+
+            <!-- Info Box -->
+            <div style="background: rgba(0, 255, 0, 0.1); border: 1px solid #00ff00; border-radius: 10px; padding: 20px; margin-top: 20px;">
+                <h4 style="color: #00ff00; margin-bottom: 10px;">
+                    <i class="fas fa-info-circle"></i> Welcome Bonus Rules
+                </h4>
+                <p style="color: #888; font-size: 14px;">
+                    When activating an account, the user receives 100 ZMW welcome bonus. 
+                    This bonus can only be withdrawn after they refer 10 active members who deposit 100+ ZMW.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="modal" id="activationMessageModal">
+        <div class="modal-content">
+            <h3>Activation Message</h3>
+            <div id="fullActivationMessage" style="background: #333; padding: 15px; border-radius: 5px; margin: 20px 0; word-break: break-all;">
+                <!-- Message will appear here -->
+            </div>
+            <button class="btn-submit" onclick="closeModal('activationMessageModal')">Close</button>
+        </div>
+    </div>
+
+    <!-- Reject Activation Modal -->
+    <div class="modal" id="rejectActivationModal">
+        <div class="modal-content">
+            <h3>Reject Activation</h3>
+            
+            <div class="form-group">
+                <label>Reason for rejection</label>
+                <textarea id="activationRejectReason" class="form-control" rows="4" placeholder="Explain why this activation is being rejected..."></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-reject" onclick="confirmRejectActivation()">Reject Activation</button>
+                <button class="btn-outline" onclick="closeModal('rejectActivationModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUsername = null;
+
+        function viewFullMessage(message) {
+            document.getElementById('fullActivationMessage').textContent = message;
+            document.getElementById('activationMessageModal').classList.add('active');
+        }
+
+        function activateAccount(username) {
+            currentUsername = username;
+            
+            if (confirm(`Activate account for ${username}? They will receive 100 ZMW welcome bonus.`)) {
+                alert(`Account ${username} activated successfully! Welcome bonus added.`);
+            }
+        }
+
+        function rejectActivation(username) {
+            currentUsername = username;
+            document.getElementById('rejectActivationModal').classList.add('active');
+        }
+
+        function confirmRejectActivation() {
+            const reason = document.getElementById('activationRejectReason').value;
+            
+            if (!reason) {
+                alert('Please provide a reason for rejection');
+                return;
+            }
+            
+            alert(`Activation for ${currentUsername} rejected. Reason: ${reason}`);
+            closeModal('rejectActivationModal');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            if (modalId === 'rejectActivationModal') {
+                document.getElementById('activationRejectReason').value = '';
+            }
+        }
+    </script>
+    <script type="module" src="../assets/js/admin/admin-activations.js"></script>
+</body>
+</html>

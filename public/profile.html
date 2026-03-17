@@ -1,0 +1,753 @@
+<!-- public/profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - BlackRock</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, #1a1a1a, #000);
+            border: 1px solid #00ff00;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: #00ff00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .profile-email {
+            color: #888;
+            margin-bottom: 15px;
+        }
+        
+        .profile-badge {
+            display: inline-block;
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .profile-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            color: #00ff00;
+            font-size: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .info-item {
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #333;
+            border-radius: 10px;
+        }
+        
+        .info-label {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-item {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #00ff00;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #888;
+            font-size: 13px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background: #333;
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: #fff;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #00ff00;
+        }
+        
+        .form-control:read-only {
+            background: #222;
+            color: #888;
+        }
+        
+        .btn-save {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .btn-save:hover {
+            background: #00cc00;
+        }
+        
+        .btn-change {
+            background: transparent;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .btn-change:hover {
+            background: #00ff00;
+            color: #000;
+        }
+        
+        .security-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .security-option:last-child {
+            border-bottom: none;
+        }
+        
+        .security-info h4 {
+            margin-bottom: 3px;
+        }
+        
+        .security-info p {
+            color: #888;
+            font-size: 13px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #1a1a1a;
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .modal-content h3 {
+            color: #00ff00;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <span class="black">BLACK</span><span class="green">ROCK</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="dashboard.html">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="tasks.html">
+                    <i class="fas fa-tasks"></i>
+                    <span>Tasks</span>
+                </a>
+                <a href="deposit.html">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Deposit</span>
+                </a>
+                <a href="withdraw.html">
+                    <i class="fas fa-wallet"></i>
+                    <span>Withdraw</span>
+                </a>
+                <a href="transaction-history.html">
+                    <i class="fas fa-history"></i>
+                    <span>History</span>
+                </a>
+                <a href="referral.html">
+                    <i class="fas fa-users"></i>
+                    <span>Referrals</span>
+                </a>
+                <a href="investment.html">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Wealth Fund</span>
+                </a>
+                <a href="profile.html" class="active">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="welcome-bonus.html">
+                    <i class="fas fa-gift"></i>
+                    <span>Welcome Bonus</span>
+                </a>
+                <a href="#" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="dashboard-header">
+                <div class="greeting">
+                    <h2>My Profile</h2>
+                    <p>Manage your account information</p>
+                </div>
+                <div class="header-actions">
+                    <div class="notification-bell" onclick="showNotifications()">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge" id="notificationBadge">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Container -->
+            <div class="profile-container">
+                <!-- Profile Header -->
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profileAvatar">
+                        U
+                    </div>
+                    <div class="profile-name" id="profileName">Loading...</div>
+                    <div class="profile-email" id="profileEmail">Loading...</div>
+                    <div class="profile-badge" id="profileLevel">VIP 1</div>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="statBalance">0</div>
+                        <div class="stat-label">Balance (ZMW)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statEarned">0</div>
+                        <div class="stat-label">Total Earned</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statTasks">0</div>
+                        <div class="stat-label">Tasks Done</div>
+                    </div>
+                </div>
+
+                <!-- Personal Information -->
+                <div class="profile-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-user"></i>
+                        Personal Information
+                    </h3>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Username</div>
+                            <div class="info-value" id="infoUsername">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Full Name</div>
+                            <div class="info-value" id="infoName">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Email Address</div>
+                            <div class="info-value" id="infoEmail">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Phone Number</div>
+                            <div class="info-value" id="infoPhone">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Country</div>
+                            <div class="info-value" id="infoCountry">Zambia</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Member Since</div>
+                            <div class="info-value" id="infoJoined">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Referral Information -->
+                <div class="profile-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-users"></i>
+                        Referral Information
+                    </h3>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Your Referral Code</div>
+                            <div class="info-value" id="infoReferralCode">-</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Referred By</div>
+                            <div class="info-value" id="infoReferredBy">None</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Settings -->
+                <div class="profile-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-lock"></i>
+                        Account Settings
+                    </h3>
+                    
+                    <div class="security-option">
+                        <div class="security-info">
+                            <h4>Password</h4>
+                            <p>Change your account password</p>
+                        </div>
+                        <button class="btn-change" onclick="showChangePassword()">
+                            Change
+                        </button>
+                    </div>
+                    
+                    <div class="security-option">
+                        <div class="security-info">
+                            <h4>Email Notifications</h4>
+                            <p>Receive updates about your account</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="emailNotifications" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="security-option">
+                        <div class="security-info">
+                            <h4>Two-Factor Authentication</h4>
+                            <p>Add extra security to your account</p>
+                        </div>
+                        <button class="btn-change" onclick="setup2FA()">
+                            Setup
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bank Details -->
+                <div class="profile-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-university"></i>
+                        Bank Details
+                    </h3>
+                    
+                    <div id="bankDetailsDisplay">
+                        <div class="info-item" style="margin-bottom: 10px;">
+                            <div class="info-label">Network</div>
+                            <div class="info-value" id="bankNetwork">Not set</div>
+                        </div>
+                        <div class="info-item" style="margin-bottom: 10px;">
+                            <div class="info-label">Phone Number</div>
+                            <div class="info-value" id="bankPhone">Not set</div>
+                        </div>
+                        <div class="info-item" style="margin-bottom: 10px;">
+                            <div class="info-label">Account Name</div>
+                            <div class="info-value" id="bankName">Not set</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-save" onclick="editBankDetails()" style="margin-top: 15px;">
+                        <i class="fas fa-edit"></i> Update Bank Details
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Bottom Navigation -->
+        <div class="mobile-nav">
+            <a href="dashboard.html">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="tasks.html">
+                <i class="fas fa-tasks"></i>
+                <span>Tasks</span>
+            </a>
+            <a href="deposit.html">
+                <i class="fas fa-plus-circle"></i>
+                <span>Deposit</span>
+            </a>
+            <a href="withdraw.html">
+                <i class="fas fa-wallet"></i>
+                <span>Withdraw</span>
+            </a>
+            <a href="profile.html" class="active">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <h3>Change Password</h3>
+            
+            <div class="form-group">
+                <label>Current Password</label>
+                <input type="password" id="currentPassword" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label>New Password</label>
+                <input type="password" id="newPassword" class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label>Confirm New Password</label>
+                <input type="password" id="confirmPassword" class="form-control">
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-save" onclick="changePassword()">Update</button>
+                <button class="btn-change" onclick="hideChangePassword()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bank Details Modal -->
+    <div class="modal" id="bankModal">
+        <div class="modal-content">
+            <h3>Update Bank Details</h3>
+            
+            <div class="form-group">
+                <label>Select Network</label>
+                <select id="modalBankNetwork" class="form-control">
+                    <option value="">Choose network</option>
+                    <option value="airtel">Airtel Money</option>
+                    <option value="mtn">MTN Money</option>
+                    <option value="zamtel">Zamtel Kwacha</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Phone Number</label>
+                <div style="display: flex;">
+                    <span style="background: #333; padding: 12px; border-right: none;">+260</span>
+                    <input type="tel" id="modalBankPhone" class="form-control" placeholder="97xxxxxxx" style="border-left: none;">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Account Name</label>
+                <input type="text" id="modalBankName" class="form-control" placeholder="Full name on account">
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-save" onclick="saveBankDetails()">Save</button>
+                <button class="btn-change" onclick="hideBankModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, onAuthStateChanged, doc, getDoc, updateDoc, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from './assets/js/firebase-config.js';
+
+        let currentUser = null;
+        let userData = null;
+
+        // Check authentication
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadUserData();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Load user data
+        async function loadUserData() {
+            try {
+                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                if (userDoc.exists()) {
+                    userData = userDoc.data();
+                    updateProfileUI();
+                }
+            } catch (error) {
+                console.error('Error loading user:', error);
+            }
+        }
+
+        // Update profile UI
+        function updateProfileUI() {
+            // Avatar
+            const initial = (userData.username || 'U').charAt(0).toUpperCase();
+            document.getElementById('profileAvatar').textContent = initial;
+            
+            // Basic info
+            document.getElementById('profileName').textContent = userData.username || 'User';
+            document.getElementById('profileEmail').textContent = userData.email || '';
+            document.getElementById('profileLevel').textContent = userData.level || 'VIP 1';
+            
+            // Stats
+            document.getElementById('statBalance').textContent = userData.balance || 0;
+            document.getElementById('statEarned').textContent = userData.totalEarned || 0;
+            document.getElementById('statTasks').textContent = userData.totalTasks || 0;
+            
+            // Personal info
+            document.getElementById('infoUsername').textContent = userData.username || '-';
+            document.getElementById('infoName').textContent = userData.fullName || userData.username || '-';
+            document.getElementById('infoEmail').textContent = userData.email || '-';
+            document.getElementById('infoPhone').textContent = userData.phone || '-';
+            document.getElementById('infoCountry').textContent = userData.country || 'Zambia';
+            document.getElementById('infoJoined').textContent = formatDate(userData.createdAt);
+            
+            // Referral info
+            document.getElementById('infoReferralCode').textContent = userData.referralCode || '-';
+            document.getElementById('infoReferredBy').textContent = userData.referredBy || 'None';
+            
+            // Bank details
+            if (userData.bankDetails) {
+                document.getElementById('bankNetwork').textContent = userData.bankDetails.network || 'Not set';
+                document.getElementById('bankPhone').textContent = userData.bankDetails.phone || 'Not set';
+                document.getElementById('bankName').textContent = userData.bankDetails.name || 'Not set';
+            }
+        }
+
+        // Show change password modal
+        window.showChangePassword = function() {
+            document.getElementById('passwordModal').classList.add('active');
+        };
+
+        // Hide change password modal
+        window.hideChangePassword = function() {
+            document.getElementById('passwordModal').classList.remove('active');
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+        };
+
+        // Change password
+        window.changePassword = async function() {
+            const currentPw = document.getElementById('currentPassword').value;
+            const newPw = document.getElementById('newPassword').value;
+            const confirmPw = document.getElementById('confirmPassword').value;
+            
+            if (!currentPw || !newPw || !confirmPw) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            if (newPw !== confirmPw) {
+                alert('New passwords do not match');
+                return;
+            }
+            
+            if (newPw.length < 6) {
+                alert('Password must be at least 6 characters');
+                return;
+            }
+            
+            try {
+                // Reauthenticate
+                const credential = EmailAuthProvider.credential(currentUser.email, currentPw);
+                await reauthenticateWithCredential(currentUser, credential);
+                
+                // Update password
+                await updatePassword(currentUser, newPw);
+                
+                alert('Password updated successfully!');
+                hideChangePassword();
+                
+            } catch (error) {
+                console.error('Password change error:', error);
+                
+                if (error.code === 'auth/wrong-password') {
+                    alert('Current password is incorrect');
+                } else {
+                    alert('Failed to change password');
+                }
+            }
+        };
+
+        // Edit bank details
+        window.editBankDetails = function() {
+            if (userData.bankDetails) {
+                document.getElementById('modalBankNetwork').value = userData.bankDetails.network || '';
+                document.getElementById('modalBankPhone').value = userData.bankDetails.phone || '';
+                document.getElementById('modalBankName').value = userData.bankDetails.name || '';
+            }
+            document.getElementById('bankModal').classList.add('active');
+        };
+
+        // Hide bank modal
+        window.hideBankModal = function() {
+            document.getElementById('bankModal').classList.remove('active');
+        };
+
+        // Save bank details
+        window.saveBankDetails = async function() {
+            const network = document.getElementById('modalBankNetwork').value;
+            const phone = document.getElementById('modalBankPhone').value;
+            const name = document.getElementById('modalBankName').value;
+            
+            if (!network || !phone || !name) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            if (!phone.match(/^[97][0-9]{8}$/)) {
+                alert('Please enter a valid Zambian phone number');
+                return;
+            }
+            
+            try {
+                await updateDoc(doc(db, 'users', currentUser.uid), {
+                    bankDetails: {
+                        network: network,
+                        phone: phone,
+                        name: name
+                    }
+                });
+                
+                alert('Bank details updated successfully!');
+                hideBankModal();
+                await loadUserData();
+                
+            } catch (error) {
+                console.error('Error saving bank details:', error);
+                alert('Failed to save bank details');
+            }
+        };
+
+        // Setup 2FA
+        window.setup2FA = function() {
+            alert('Two-factor authentication will be available soon!');
+        };
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-ZM', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        // Logout
+        window.logout = async function() {
+            try {
+                await auth.signOut();
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        };
+    </script>
+</body>
+</html>

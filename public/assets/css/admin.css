@@ -1,0 +1,521 @@
+/* public/assets/css/admin.css */
+
+/* Admin Container */
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+    background: black;
+}
+
+/* Sidebar */
+.admin-sidebar {
+    width: 260px;
+    background: #0a0a0a;
+    border-right: 2px solid #00ff00;
+    padding: 20px;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.admin-logo {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px 0;
+    border-bottom: 1px solid #333;
+}
+
+.admin-logo .black {
+    font-size: 24px;
+    font-weight: 800;
+    color: white;
+}
+
+.admin-logo .green {
+    font-size: 24px;
+    font-weight: 800;
+    color: #00ff00;
+}
+
+.admin-logo small {
+    display: block;
+    color: #00ff00;
+    font-size: 12px;
+    margin-top: 5px;
+    letter-spacing: 1px;
+}
+
+/* Admin Navigation */
+.admin-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.admin-nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    color: #888;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s;
+    font-size: 14px;
+}
+
+.admin-nav a:hover {
+    background: rgba(0, 255, 0, 0.1);
+    color: #00ff00;
+}
+
+.admin-nav a.active {
+    background: #00ff00;
+    color: black;
+}
+
+.admin-nav a.active i {
+    color: black;
+}
+
+.admin-nav i {
+    width: 20px;
+    font-size: 16px;
+}
+
+/* Admin Main Content */
+.admin-main {
+    flex: 1;
+    margin-left: 260px;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+/* Admin Header */
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #1a1a1a;
+    border-radius: 10px;
+    border: 1px solid #333;
+}
+
+.header-title h1 {
+    color: #00ff00;
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.header-title p {
+    color: #888;
+    font-size: 14px;
+}
+
+/* Admin Profile */
+.admin-profile {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.admin-notification {
+    position: relative;
+    cursor: pointer;
+}
+
+.admin-notification i {
+    font-size: 20px;
+    color: #888;
+    transition: color 0.3s;
+}
+
+.admin-notification i:hover {
+    color: #00ff00;
+}
+
+.admin-notification .badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #00ff00;
+    color: black;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 11px;
+    min-width: 18px;
+    text-align: center;
+}
+
+.admin-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.admin-user:hover {
+    background: rgba(0, 255, 0, 0.1);
+}
+
+.admin-avatar {
+    width: 40px;
+    height: 40px;
+    background: #00ff00;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.admin-name span {
+    display: block;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.admin-name small {
+    color: #00ff00;
+    font-size: 11px;
+}
+
+/* Search Bar */
+.search-bar {
+    display: flex;
+    gap: 10px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+.search-bar input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 8px 12px;
+    color: white;
+}
+
+.search-bar input:focus {
+    outline: none;
+}
+
+.search-bar button {
+    background: #00ff00;
+    color: black;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* Tables */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.admin-table th {
+    background: #333;
+    color: #00ff00;
+    font-weight: 600;
+    padding: 15px;
+    text-align: left;
+}
+
+.admin-table td {
+    padding: 15px;
+    border-bottom: 1px solid #333;
+    color: white;
+}
+
+.admin-table tr:hover {
+    background: rgba(0, 255, 0, 0.05);
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-active {
+    background: rgba(0, 255, 0, 0.2);
+    color: #00ff00;
+}
+
+.status-pending {
+    background: rgba(255, 255, 0, 0.2);
+    color: #ffd700;
+}
+
+.status-inactive {
+    background: rgba(255, 68, 68, 0.2);
+    color: #ff4444;
+}
+
+.status-completed {
+    background: rgba(0, 255, 0, 0.1);
+    color: #888;
+}
+
+/* Action Buttons */
+.action-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    margin: 0 2px;
+    transition: all 0.3s;
+}
+
+.btn-edit {
+    background: #00ff00;
+    color: black;
+}
+
+.btn-edit:hover {
+    background: #00cc00;
+}
+
+.btn-view {
+    background: #333;
+    color: white;
+}
+
+.btn-view:hover {
+    background: #444;
+}
+
+.btn-delete {
+    background: #ff4444;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #ff6666;
+}
+
+.btn-approve {
+    background: #00ff00;
+    color: black;
+}
+
+.btn-reject {
+    background: #ff4444;
+    color: white;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.page-btn {
+    padding: 8px 12px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.page-btn:hover {
+    border-color: #00ff00;
+    color: #00ff00;
+}
+
+.page-btn.active {
+    background: #00ff00;
+    color: black;
+    border-color: #00ff00;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: #1a1a1a;
+    border: 2px solid #00ff00;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-content h3 {
+    color: #00ff00;
+    margin-bottom: 20px;
+}
+
+/* Form Controls */
+.form-control {
+    width: 100%;
+    padding: 10px;
+    background: #333;
+    border: 1px solid #444;
+    border-radius: 5px;
+    color: white;
+    transition: all 0.3s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #00ff00;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #888;
+    font-size: 13px;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    text-align: center;
+    padding: 40px;
+    color: #00ff00;
+}
+
+.loading-spinner i {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+/* No Data */
+.no-data {
+    text-align: center;
+    padding: 50px;
+    color: #888;
+}
+
+.no-data i {
+    font-size: 50px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .admin-sidebar {
+        width: 80px;
+        padding: 20px 10px;
+    }
+    
+    .admin-logo span {
+        display: none;
+    }
+    
+    .admin-logo .green {
+        display: block;
+        font-size: 20px;
+    }
+    
+    .admin-logo small {
+        display: none;
+    }
+    
+    .admin-nav a span {
+        display: none;
+    }
+    
+    .admin-nav a i {
+        width: auto;
+        font-size: 20px;
+    }
+    
+    .admin-main {
+        margin-left: 80px;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-sidebar {
+        display: none;
+    }
+    
+    .admin-main {
+        margin-left: 0;
+        padding: 15px;
+    }
+    
+    .admin-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .admin-profile {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .admin-sidebar,
+    .admin-header,
+    .action-btn,
+    .pagination,
+    .modal {
+        display: none !important;
+    }
+    
+    .admin-main {
+        margin: 0;
+        padding: 0;
+    }
+    
+    table {
+        border: 1px solid #000;
+    }
+}

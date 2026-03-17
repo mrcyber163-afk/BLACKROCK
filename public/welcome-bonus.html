@@ -1,0 +1,750 @@
+<!-- public/welcome-bonus.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Bonus - BlackRock</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .bonus-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .bonus-card {
+            background: linear-gradient(135deg, #1a1a1a, #000);
+            border: 2px solid #00ff00;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+        }
+        
+        .bonus-icon {
+            font-size: 80px;
+            color: #00ff00;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .bonus-title {
+            font-size: 36px;
+            color: #00ff00;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+        
+        .bonus-subtitle {
+            color: #888;
+            margin-bottom: 30px;
+        }
+        
+        .bonus-amount {
+            font-size: 60px;
+            font-weight: 800;
+            color: #00ff00;
+            margin: 20px 0;
+            text-shadow: 0 0 20px #00ff00;
+        }
+        
+        .bonus-status {
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .progress-container {
+            margin: 30px 0;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff00, #00cc00);
+            transition: width 0.5s;
+            position: relative;
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        
+        .progress-text {
+            color: #00ff00;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .btn-claim {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 20px 50px;
+            border-radius: 50px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: all 0.3s;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .btn-claim:hover {
+            background: #00cc00;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 255, 0, 0.4);
+        }
+        
+        .btn-claim:disabled {
+            background: #888;
+            animation: none;
+            cursor: not-allowed;
+        }
+        
+        .btn-claim:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .bonus-instructions {
+            text-align: left;
+            margin: 40px 0;
+        }
+        
+        .bonus-instructions h3 {
+            color: #00ff00;
+            margin-bottom: 20px;
+        }
+        
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #333;
+            border-radius: 10px;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #00ff00;
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .step-content h4 {
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        
+        .step-content p {
+            color: #888;
+            font-size: 13px;
+        }
+        
+        .referrals-list {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .referral-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .referral-item:last-child {
+            border-bottom: none;
+        }
+        
+        .referral-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .referral-info strong {
+            color: #fff;
+        }
+        
+        .referral-info span {
+            color: #00ff00;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+        
+        .badge {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+        
+        .badge.success {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+        }
+        
+        .terms-box {
+            background: rgba(255, 255, 0, 0.05);
+            border: 1px solid #ffd700;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .terms-box h4 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        
+        .terms-box ul {
+            list-style: none;
+        }
+        
+        .terms-box li {
+            color: #888;
+            margin: 5px 0;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .terms-box li i {
+            color: #00ff00;
+            font-size: 12px;
+        }
+        
+        @media (max-width: 768px) {
+            .bonus-card {
+                padding: 20px;
+            }
+            
+            .bonus-title {
+                font-size: 28px;
+            }
+            
+            .bonus-amount {
+                font-size: 40px;
+            }
+            
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-claim {
+                padding: 15px 30px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <span class="black">BLACK</span><span class="green">ROCK</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="dashboard.html">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="tasks.html">
+                    <i class="fas fa-tasks"></i>
+                    <span>Tasks</span>
+                </a>
+                <a href="deposit.html">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Deposit</span>
+                </a>
+                <a href="withdraw.html">
+                    <i class="fas fa-wallet"></i>
+                    <span>Withdraw</span>
+                </a>
+                <a href="transaction-history.html">
+                    <i class="fas fa-history"></i>
+                    <span>History</span>
+                </a>
+                <a href="referral.html">
+                    <i class="fas fa-users"></i>
+                    <span>Referrals</span>
+                </a>
+                <a href="investment.html">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Wealth Fund</span>
+                </a>
+                <a href="profile.html">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="welcome-bonus.html" class="active">
+                    <i class="fas fa-gift"></i>
+                    <span>Welcome Bonus</span>
+                </a>
+                <a href="#" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="dashboard-header">
+                <div class="greeting">
+                    <h2>Welcome Bonus</h2>
+                    <p>Claim your 100 ZMW free bonus</p>
+                </div>
+                <div class="header-actions">
+                    <div class="notification-bell" onclick="showNotifications()">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge" id="notificationBadge">0</span>
+                    </div>
+                    <div class="user-balance" style="background: #00ff00; color: #000; padding: 8px 15px; border-radius: 20px;">
+                        <span>Balance:</span>
+                        <strong id="balance">0 ZMW</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Notification -->
+            <div class="admin-notification">
+                <i class="fas fa-bullhorn"></i>
+                <marquee>
+                    🎁 Welcome Bonus: Invite 10 friends who deposit 100+ ZMW to claim 100 ZMW free!
+                </marquee>
+            </div>
+
+            <!-- Bonus Container -->
+            <div class="bonus-container">
+                <!-- Main Bonus Card -->
+                <div class="bonus-card">
+                    <div class="bonus-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    
+                    <h1 class="bonus-title">Welcome Bonus</h1>
+                    <p class="bonus-subtitle">Invite friends and earn 100 ZMW free</p>
+                    
+                    <div class="bonus-amount">
+                        100 ZMW
+                    </div>
+
+                    <!-- Bonus Status Section -->
+                    <div id="bonusStatus" class="bonus-status">
+                        <!-- Will be loaded by JavaScript -->
+                        <div class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin"></i> Loading...
+                        </div>
+                    </div>
+
+                    <!-- Your Referral Link (for easy sharing) -->
+                    <div style="margin: 30px 0;">
+                        <p style="color: #888; margin-bottom: 10px;">Your Referral Link:</p>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="referralLink" style="flex: 1; padding: 12px; background: #333; border: 1px solid #00ff00; border-radius: 5px; color: #fff;" readonly>
+                            <button onclick="copyReferralLink()" style="background: #00ff00; color: #000; border: none; padding: 0 20px; border-radius: 5px; font-weight: bold; cursor: pointer;">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Share Buttons -->
+                    <div style="display: flex; gap: 10px; justify-content: center; margin: 20px 0;">
+                        <button onclick="shareWhatsApp()" style="background: #25D366; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                            <i class="fab fa-whatsapp"></i> Share
+                        </button>
+                        <button onclick="shareFacebook()" style="background: #1877F2; color: #fff; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                            <i class="fab fa-facebook"></i> Share
+                        </button>
+                    </div>
+                </div>
+
+                <!-- How it Works -->
+                <div class="bonus-instructions">
+                    <h3><i class="fas fa-info-circle"></i> How to Claim Your 100 ZMW Bonus</h3>
+                    
+                    <div class="steps-grid">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Invite Friends</h4>
+                                <p>Share your referral link with friends</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Friends Deposit</h4>
+                                <p>They must deposit at least 100 ZMW</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Get 10 Qualified</h4>
+                                <p>Need 10 friends who meet the requirement</p>
+                            </div>
+                        </div>
+                        
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Claim 100 ZMW</h4>
+                                <p>Bonus added to your balance instantly</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Qualified Referrals List -->
+                <h3 style="color: #00ff00; margin-bottom: 15px;">Qualified Referrals</h3>
+                <div class="referrals-list" id="qualifiedReferralsList">
+                    <!-- Will be loaded by JavaScript -->
+                    <div style="text-align: center; color: #888; padding: 20px;">
+                        <i class="fas fa-users" style="font-size: 30px; margin-bottom: 10px;"></i>
+                        <p>No qualified referrals yet</p>
+                    </div>
+                </div>
+
+                <!-- Terms -->
+                <div class="terms-box">
+                    <h4><i class="fas fa-file-contract"></i> Bonus Terms</h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Bonus amount: 100 ZMW</li>
+                        <li><i class="fas fa-check"></i> Need 10 referrals who deposit 100+ ZMW</li>
+                        <li><i class="fas fa-check"></i> Bonus can only be claimed once</li>
+                        <li><i class="fas fa-check"></i> Referrals must be active for 7 days</li>
+                        <li><i class="fas fa-check"></i> Bonus is added to main balance</li>
+                        <li><i class="fas fa-check"></i> Can withdraw bonus immediately</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Bottom Navigation -->
+        <div class="mobile-nav">
+            <a href="dashboard.html">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="tasks.html">
+                <i class="fas fa-tasks"></i>
+                <span>Tasks</span>
+            </a>
+            <a href="deposit.html">
+                <i class="fas fa-plus-circle"></i>
+                <span>Deposit</span>
+            </a>
+            <a href="withdraw.html">
+                <i class="fas fa-wallet"></i>
+                <span>Withdraw</span>
+            </a>
+            <a href="welcome-bonus.html" class="active">
+                <i class="fas fa-gift"></i>
+                <span>Bonus</span>
+            </a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, onAuthStateChanged, doc, getDoc, collection, query, where, getDocs, orderBy, onSnapshot, updateDoc, increment } from './assets/js/firebase-config.js';
+
+        let currentUser = null;
+        let userData = null;
+
+        // Check authentication
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadUserData();
+                checkBonusStatus();
+                loadQualifiedReferrals();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Load user data
+        async function loadUserData() {
+            try {
+                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                if (userDoc.exists()) {
+                    userData = userDoc.data();
+                    document.getElementById('balance').textContent = `${userData.balance || 0} ZMW`;
+                    
+                    // Update referral link
+                    const baseUrl = window.location.origin;
+                    document.getElementById('referralLink').value = `${baseUrl}/register.html?ref=${userData.referralCode}`;
+                }
+            } catch (error) {
+                console.error('Error loading user:', error);
+            }
+        }
+
+        // Check bonus status
+        async function checkBonusStatus() {
+            try {
+                // Check if already claimed
+                if (userData.welcomeBonusClaimed) {
+                    document.getElementById('bonusStatus').innerHTML = `
+                        <div style="text-align: center;">
+                            <i class="fas fa-check-circle" style="font-size: 50px; color: #00ff00; margin-bottom: 15px;"></i>
+                            <h3 style="color: #00ff00;">Bonus Claimed!</h3>
+                            <p style="color: #888;">You have already claimed your 100 ZMW welcome bonus.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Count qualified referrals
+                const referralsRef = collection(db, 'referrals');
+                const q = query(
+                    referralsRef,
+                    where('referrerId', '==', currentUser.uid),
+                    where('status', '==', 'paid'),
+                    where('depositAmount', '>=', 100)
+                );
+                
+                const snapshot = await getDocs(q);
+                const qualifiedCount = snapshot.size;
+                
+                if (qualifiedCount >= 10) {
+                    // Show claim button
+                    document.getElementById('bonusStatus').innerHTML = `
+                        <div style="text-align: center;">
+                            <i class="fas fa-trophy" style="font-size: 50px; color: #00ff00; margin-bottom: 15px;"></i>
+                            <h3 style="color: #00ff00;">Congratulations! 🎉</h3>
+                            <p style="color: #888; margin-bottom: 20px;">You have 10 qualified referrals!</p>
+                            <button onclick="claimBonus()" class="btn-claim">
+                                <i class="fas fa-gift"></i> Claim 100 ZMW Bonus
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    // Show progress
+                    const progress = (qualifiedCount / 10) * 100;
+                    
+                    document.getElementById('bonusStatus').innerHTML = `
+                        <div style="text-align: center;">
+                            <i class="fas fa-hourglass-half" style="font-size: 50px; color: #ffd700; margin-bottom: 15px;"></i>
+                            <h3 style="color: #00ff00;">Bonus Progress</h3>
+                            <p style="color: #888;">Invite 10 friends who deposit 100+ ZMW</p>
+                            
+                            <div class="progress-container">
+                                <div class="progress-info">
+                                    <span>${qualifiedCount}/10 referrals</span>
+                                    <span>${progress.toFixed(0)}%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${progress}%"></div>
+                                </div>
+                                <div class="progress-text">
+                                    ${qualifiedCount} qualified out of 10 needed
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('Error checking bonus:', error);
+            }
+        }
+
+        // Load qualified referrals
+        async function loadQualifiedReferrals() {
+            try {
+                const referralsRef = collection(db, 'referrals');
+                const q = query(
+                    referralsRef,
+                    where('referrerId', '==', currentUser.uid),
+                    where('status', '==', 'paid'),
+                    where('depositAmount', '>=', 100),
+                    orderBy('createdAt', 'desc')
+                );
+                
+                const snapshot = await getDocs(q);
+                const referrals = [];
+                
+                snapshot.forEach(doc => {
+                    referrals.push({ id: doc.id, ...doc.data() });
+                });
+                
+                displayQualifiedReferrals(referrals);
+                
+            } catch (error) {
+                console.error('Error loading referrals:', error);
+            }
+        }
+
+        // Display qualified referrals
+        function displayQualifiedReferrals(referrals) {
+            const container = document.getElementById('qualifiedReferralsList');
+            
+            if (referrals.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #888; padding: 20px;">
+                        <i class="fas fa-users" style="font-size: 30px; margin-bottom: 10px;"></i>
+                        <p>No qualified referrals yet</p>
+                        <p style="font-size: 13px;">Share your link to start earning</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = referrals.map(ref => `
+                <div class="referral-item">
+                    <div class="referral-info">
+                        <strong>${ref.referredUsername || 'Unknown'}</strong>
+                        <span>Deposit: ${ref.depositAmount} ZMW</span>
+                    </div>
+                    <span class="badge success">Qualified</span>
+                </div>
+            `).join('');
+        }
+
+        // Claim bonus
+        window.claimBonus = async function() {
+            try {
+                // Double-check qualification
+                const referralsRef = collection(db, 'referrals');
+                const q = query(
+                    referralsRef,
+                    where('referrerId', '==', currentUser.uid),
+                    where('status', '==', 'paid'),
+                    where('depositAmount', '>=', 100)
+                );
+                
+                const snapshot = await getDocs(q);
+                
+                if (snapshot.size < 10) {
+                    alert('You need 10 qualified referrals to claim the bonus');
+                    return;
+                }
+                
+                if (userData.welcomeBonusClaimed) {
+                    alert('Bonus already claimed');
+                    return;
+                }
+                
+                // Update user
+                await updateDoc(doc(db, 'users', currentUser.uid), {
+                    balance: increment(100),
+                    totalEarned: increment(100),
+                    welcomeBonusClaimed: true,
+                    welcomeBonusClaimedAt: new Date().toISOString()
+                });
+                
+                // Add transaction
+                await addDoc(collection(db, 'users', currentUser.uid, 'transactions'), {
+                    type: 'bonus',
+                    amount: 100,
+                    description: 'Welcome Bonus',
+                    status: 'completed',
+                    createdAt: new Date().toISOString()
+                });
+                
+                alert('Congratulations! 100 ZMW bonus added to your balance!');
+                
+                // Reload page
+                window.location.reload();
+                
+            } catch (error) {
+                console.error('Error claiming bonus:', error);
+                alert('Failed to claim bonus');
+            }
+        };
+
+        // Copy referral link
+        window.copyReferralLink = function() {
+            const link = document.getElementById('referralLink');
+            link.select();
+            document.execCommand('copy');
+            alert('Referral link copied!');
+        };
+
+        // Share functions
+        window.shareWhatsApp = function() {
+            const link = document.getElementById('referralLink').value;
+            const text = `Join BlackRock and earn money by watching videos! Use my referral link to get started: ${link}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        };
+
+        window.shareFacebook = function() {
+            const link = document.getElementById('referralLink').value;
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`, '_blank');
+        };
+
+        // Logout
+        window.logout = async function() {
+            try {
+                await auth.signOut();
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        };
+    </script>
+</body>
+</html>

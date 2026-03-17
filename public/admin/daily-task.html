@@ -1,0 +1,299 @@
+<!-- public/admin/daily-task.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Task - BlackRock Admin</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .daily-task-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .current-task-card {
+            background: linear-gradient(135deg, #1a1a1a, black);
+            border: 2px solid #00ff00;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .current-task-card h3 {
+            color: #00ff00;
+            margin-bottom: 20px;
+        }
+        
+        .task-display {
+            text-align: center;
+            padding: 30px;
+            background: rgba(0, 255, 0, 0.05);
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .task-display i {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+        
+        .task-display .platform {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff00;
+            margin-bottom: 10px;
+        }
+        
+        .task-display .date {
+            color: #888;
+            margin-bottom: 15px;
+        }
+        
+        .task-display .description {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .task-display .reward {
+            display: inline-block;
+            background: #00ff00;
+            color: black;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+        
+        .set-task-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 30px;
+        }
+        
+        .set-task-card h3 {
+            color: #00ff00;
+            margin-bottom: 20px;
+        }
+        
+        .platform-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .platform-option {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .platform-option:hover {
+            border-color: #00ff00;
+        }
+        
+        .platform-option.selected {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.1);
+        }
+        
+        .platform-option i {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+        
+        .platform-option i.tiktok { color: #00f2ea; }
+        .platform-option i.facebook { color: #1877f2; }
+        .platform-option i.youtube { color: #ff0000; }
+        .platform-option i.instagram { color: #e4405f; }
+        
+        .platform-option span {
+            display: block;
+            font-weight: 600;
+        }
+        
+        .history-list {
+            margin-top: 30px;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .history-item .platform {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .history-item .platform i {
+            font-size: 20px;
+        }
+        
+        .history-item .date {
+            color: #888;
+            font-size: 13px;
+        }
+        
+        .history-item .reward {
+            color: #00ff00;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <!-- ... sidebar content ... -->
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <div class="admin-header">
+                <div class="header-title">
+                    <h1>Daily Task</h1>
+                    <p>Set today's featured task</p>
+                </div>
+            </div>
+
+            <div class="daily-task-container">
+                <!-- Current Task -->
+                <div class="current-task-card">
+                    <h3><i class="fas fa-calendar-day"></i> Today's Task</h3>
+                    
+                    <div class="task-display">
+                        <i class="fab fa-tiktok tiktok" style="font-size: 60px;"></i>
+                        <div class="platform">TikTok Videos</div>
+                        <div class="date">March 15, 2024</div>
+                        <div class="description">Watch and engage with 5 TikTok videos</div>
+                        <div class="reward">2 ZMW per video</div>
+                    </div>
+                </div>
+
+                <!-- Set New Task -->
+                <div class="set-task-card">
+                    <h3><i class="fas fa-plus-circle"></i> Set New Daily Task</h3>
+                    
+                    <form id="dailyTaskForm">
+                        <div class="form-group">
+                            <label>Select Platform</label>
+                            <div class="platform-selector">
+                                <div class="platform-option selected" onclick="selectPlatform('tiktok')">
+                                    <i class="fab fa-tiktok tiktok"></i>
+                                    <span>TikTok</span>
+                                </div>
+                                <div class="platform-option" onclick="selectPlatform('facebook')">
+                                    <i class="fab fa-facebook facebook"></i>
+                                    <span>Facebook</span>
+                                </div>
+                                <div class="platform-option" onclick="selectPlatform('youtube')">
+                                    <i class="fab fa-youtube youtube"></i>
+                                    <span>YouTube</span>
+                                </div>
+                                <div class="platform-option" onclick="selectPlatform('instagram')">
+                                    <i class="fab fa-instagram instagram"></i>
+                                    <span>Instagram</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Date</label>
+                            <input type="date" id="taskDate" class="form-control" value="2024-03-15">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Task Description</label>
+                            <textarea id="taskDescription" class="form-control" rows="3" placeholder="Describe the task...">Watch and engage with 5 TikTok videos</textarea>
+                        </div>
+                        
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label>Reward per video (ZMW)</label>
+                                <input type="number" id="taskReward" class="form-control" value="2" min="1" step="0.5">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Max videos per user</label>
+                                <input type="number" id="taskMaxVideos" class="form-control" value="10" min="1">
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn-submit">Set as Today's Task</button>
+                    </form>
+                </div>
+
+                <!-- History -->
+                <div class="history-list">
+                    <h3 style="color: #00ff00; margin-bottom: 15px;">Recent Daily Tasks</h3>
+                    
+                    <div class="history-item">
+                        <div class="platform">
+                            <i class="fab fa-youtube youtube"></i>
+                            <span>YouTube</span>
+                        </div>
+                        <span class="date">March 14, 2024</span>
+                        <span class="reward">4 ZMW</span>
+                    </div>
+                    
+                    <div class="history-item">
+                        <div class="platform">
+                            <i class="fab fa-facebook facebook"></i>
+                            <span>Facebook</span>
+                        </div>
+                        <span class="date">March 13, 2024</span>
+                        <span class="reward">3 ZMW</span>
+                    </div>
+                    
+                    <div class="history-item">
+                        <div class="platform">
+                            <i class="fab fa-instagram instagram"></i>
+                            <span>Instagram</span>
+                        </div>
+                        <span class="date">March 12, 2024</span>
+                        <span class="reward">2 ZMW</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectPlatform(platform) {
+            document.querySelectorAll('.platform-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+        }
+
+        document.getElementById('dailyTaskForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const platform = document.querySelector('.platform-option.selected span').textContent;
+            const date = document.getElementById('taskDate').value;
+            const description = document.getElementById('taskDescription').value;
+            const reward = document.getElementById('taskReward').value;
+            
+            if (confirm(`Set ${platform} as today's task with ${reward} ZMW reward?`)) {
+                alert('Daily task updated successfully!');
+            }
+        });
+    </script>
+    <script type="module" src="../assets/js/admin/admin-daily-task.js"></script>
+</body>
+</html>
