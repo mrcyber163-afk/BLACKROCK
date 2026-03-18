@@ -1,10 +1,13 @@
 // public/assets/js/login.js
 import { 
     auth,
+    db,
     signInWithEmailAndPassword,
-    onAuthStateChanged
+    doc,
+    getDoc,
+    updateDoc
 } from './firebase-config.js';
-import { showNotification, showLoading, hideLoading } from './utils.js';
+import { showNotification } from './utils.js';
 
 // Handle login
 export async function handleLogin(event) {
@@ -13,13 +16,15 @@ export async function handleLogin(event) {
     const email = document.getElementById('email')?.value.trim();
     const password = document.getElementById('password')?.value;
     const remember = document.getElementById('remember')?.checked || false;
+    const loginBtn = document.getElementById('loginBtn');
     
     if (!email || !password) {
         showNotification('Please fill all fields', 'error');
         return;
     }
     
-    showLoading();
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
     
     try {
         // Set persistence
@@ -31,16 +36,55 @@ export async function handleLogin(event) {
         
         // Sign in
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
         
-        hideLoading();
-        showNotification('Login successful!', 'success');
+        // Get user data from Firestore
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
         
+        if (!userDoc.exists()) {
+            await auth.signOut();
+            showNotification('User data not found', 'error');
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = 'Login';
+            return;
+        }
+        
+        const userData = userDoc.data();
+        
+        // Check account status
+        if (userData.status === 'suspended') {
+            await auth.signOut();
+            showNotification('Your account has been suspended', 'error');
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = 'Login';
+            return;
+        }
+        
+        if (userData.status === 'pending_activation') {
+            showNotification('Please activate your account first', 'info');
+            setTimeout(() => {
+                window.location.href = 'activation.html';
+            }, 1500);
+            return;
+        }
+        
+        // Update last login
+        await updateDoc(doc(db, 'users', user.uid), {
+            lastLogin: new Date().toISOString()
+        });
+        
+        showNotification('Login successful! Redirecting...', 'success');
+        
+        // Redirect based on role
         setTimeout(() => {
-            window.location.href = 'dashboard.html';
+            if (userData.role === 'admin') {
+                window.location.href = 'admin/index.html';
+            } else {
+                window.location.href = 'dashboard.html';
+            }
         }, 1500);
         
     } catch (error) {
-        hideLoading();
         console.error('Login error:', error);
         
         let errorMessage = 'Login failed';
@@ -55,45 +99,22 @@ export async function handleLogin(event) {
         }
         
         showNotification(errorMessage, 'error');
+        
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = 'Login';
     }
 }
 
 // Toggle password visibility
-export function togglePassword() {
+window.togglePassword = function() {
     const passwordInput = document.getElementById('password');
-    if (!passwordInput) return;
-    
     const type = passwordInput.type === 'password' ? 'text' : 'password';
     passwordInput.type = type;
-    
     const icon = document.querySelector('.toggle-password');
-    if (icon) {
-        icon.classList.toggle('fa-eye');
-        icon.classList.toggle('fa-eye-slash');
-    }
-}
-
-// Fill demo credentials
-export function fillDemo(email, password) {
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    
-    if (emailInput) emailInput.value = email;
-    if (passwordInput) passwordInput.value = password;
-}
-
-// Check if already logged in
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // Redirect to dashboard if on login page
-        const currentPage = window.location.pathname.split('/').pop();
-        if (currentPage === 'login.html' || currentPage === '') {
-            window.location.href = 'dashboard.html';
-        }
-    }
-});
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+};
 
 // Attach to window
 window.handleLogin = handleLogin;
 window.togglePassword = togglePassword;
-window.fillDemo = fillDemo;
