@@ -160,77 +160,60 @@
     </div>
 
     <script type="module">
-        import { auth, signInWithEmailAndPassword } from '../assets/js/firebase-config.js';
+    import { auth, signInWithEmailAndPassword } from '../assets/js/firebase-config.js';
 
-        window.togglePassword = function() {
-            const input = document.getElementById('password');
-            const type = input.type === 'password' ? 'text' : 'password';
-            input.type = type;
-            const icon = document.querySelector('.toggle-password');
-            icon.classList.toggle('fa-eye');
-            icon.classList.toggle('fa-eye-slash');
-        };
+    window.togglePassword = function() {
+        const input = document.getElementById('password');
+        const type = input.type === 'password' ? 'text' : 'password';
+        input.type = type;
+        const icon = document.querySelector('.toggle-password');
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    };
 
-        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const loginBtn = document.getElementById('loginBtn');
-            
-            if (!email || !password) {
-                showNotification('Please fill all fields', 'error');
-                return;
-            }
-            
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
-            
-            try {
-                // Kwanza login kwa Firebase Auth
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-                
-                // Hardcoded admin check (kwa sasa)
-                if (email === 'mrcyber163@gmail.com') {
-                    localStorage.setItem('adminLoggedIn', 'true');
-                    localStorage.setItem('adminEmail', email);
-                    showNotification('Admin login successful! Redirecting...', 'success');
-                    
-                    setTimeout(() => {
-                        window.location.href = 'dashboard.html';
-                    }, 1500);
-                } else {
-                    showNotification('Not an admin account. Use: mrcyber163@gmail.com', 'error');
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '<i class="fas fa-lock-open"></i> Access Admin Panel';
-                }
-                
-            } catch (error) {
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = '<i class="fas fa-lock-open"></i> Access Admin Panel';
-                
-                let message = 'Login failed';
-                if (error.code === 'auth/user-not-found') message = 'Admin account not found';
-                else if (error.code === 'auth/wrong-password') message = 'Wrong password';
-                else if (error.code === 'auth/invalid-email') message = 'Invalid email';
-                else message = error.message;
-                
-                showNotification(message, 'error');
-            }
-        });
+    document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
         
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = 'notification-popup';
-            notification.style.borderColor = type === 'success' ? '#00ff00' : '#ff4444';
-            notification.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" style="color: ${type === 'success' ? '#00ff00' : '#ff4444'}"></i>
-                <span>${message}</span>
-            `;
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 3000);
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const loginBtn = document.getElementById('loginBtn');
+        
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+        
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            
+            showNotification('Login successful! Redirecting...', 'success');
+            
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+            
+        } catch (error) {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fas fa-lock-open"></i> Access Admin Panel';
+            
+            let message = 'Login failed';
+            if (error.code === 'auth/user-not-found') message = 'User not found';
+            else if (error.code === 'auth/wrong-password') message = 'Wrong password';
+            
+            showNotification(message, 'error');
         }
-    </script>
+    });
+    
+    function showNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = 'notification-popup';
+        notification.style.borderColor = type === 'success' ? '#00ff00' : '#ff4444';
+        notification.innerHTML = `
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" style="color: ${type === 'success' ? '#00ff00' : '#ff4444'}"></i>
+            <span>${message}</span>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+    }
+</script>
 </body>
 </html>
