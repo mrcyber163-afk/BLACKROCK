@@ -86,6 +86,59 @@
             color: #00ff00;
             margin-right: 5px;
         }
+
+        .phone-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .country-code {
+            background: #00ff00;
+            color: #000;
+            padding: 12px 15px;
+            font-weight: 600;
+        }
+
+        .phone-input-wrapper input {
+            flex: 1;
+            border: none !important;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 12px 15px;
+        }
+
+        .phone-input-wrapper input:focus {
+            outline: none;
+        }
+
+        .form-hint {
+            display: block;
+            margin-top: 5px;
+            color: #888;
+            font-size: 12px;
+        }
+
+        .form-hint i {
+            color: #00ff00;
+            margin-right: 5px;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #888;
+        }
     </style>
 </head>
 <body>
@@ -387,7 +440,7 @@
                 }
                 
                 // Check if phone exists
-                const phoneQuery = query(usersRef, where('phone', '==', phone));
+                const phoneQuery = query(usersRef, where('phone', '==', '+260' + phone));
                 const phoneSnapshot = await getDocs(phoneQuery);
                 
                 if (!phoneSnapshot.empty) {
@@ -401,7 +454,7 @@
                 // Generate referral code
                 const userReferralCode = username.substring(0, 3).toUpperCase() + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
                 
-                // Create user document
+                // Create user document in Firestore
                 await setDoc(doc(db, 'users', user.uid), {
                     uid: user.uid,
                     username: username,
@@ -413,19 +466,17 @@
                     balance: 0,
                     totalEarned: 0,
                     totalTasks: 0,
-                    status: 'pending_activation',
+                    status: 'active',
+                    role: 'user',
                     level: 'VIP 1',
                     createdAt: new Date().toISOString(),
                     lastLogin: new Date().toISOString()
                 });
                 
-                // Store pending user ID
-                localStorage.setItem('pendingUserId', user.uid);
-                
-                showNotification('Registration successful! Redirecting to activation...', 'success');
+                showNotification('Registration successful! Redirecting to login...', 'success');
                 
                 setTimeout(() => {
-                    window.location.href = 'activation.html';
+                    window.location.href = 'login.html';
                 }, 2000);
                 
             } catch (error) {

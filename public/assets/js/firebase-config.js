@@ -1,4 +1,3 @@
-// public/assets/js/firebase-config.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
 import { 
     getAuth, 
@@ -20,14 +19,15 @@ import {
     where 
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-// 🔥 CONFIG YA PROJEKTI YAKO BLACKROCK-D05C9
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "AIzaSyA7BE4_9WQ49CwU34O___t5T6H4MhBOPAw",
-    authDomain: "blackrock-d05c9.firebaseapp.com",
-    projectId: "blackrock-d05c9",
-    storageBucket: "blackrock-d05c9.firebasestorage.app",
-    messagingSenderId: "545981433269",
-    appId: "1:545981433269:web:9be18707e2cfe3aab457d9"
+  apiKey: "AIzaSyD_ChvWyfapmETOmtl_-tbRyrRMrvdaoyE",
+  authDomain: "blackrock-d05c9.firebaseapp.com",
+  projectId: "blackrock-d05c9",
+  storageBucket: "blackrock-d05c9.firebasestorage.app",
+  messagingSenderId: "414237812515",
+  appId: "1:414237812515:web:18412f867a18f7e7ef0e96",
+  measurementId: "G-6GV15EXLGS"
 };
 
 const app = initializeApp(firebaseConfig);
