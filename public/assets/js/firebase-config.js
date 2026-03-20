@@ -2,110 +2,52 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
 import { 
     getAuth, 
-    createUserWithEmailAndPassword, 
     signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
     signOut,
-    onAuthStateChanged,
-    sendPasswordResetEmail,
-    updatePassword,
-    EmailAuthProvider,
-    reauthenticateWithCredential,
-    sendEmailVerification
+    onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 import { 
     getFirestore, 
     collection, 
-    addDoc, 
     doc, 
     getDoc, 
     getDocs, 
-    updateDoc, 
-    deleteDoc,
-    query, 
-    where, 
-    orderBy, 
-    limit,
-    increment,
-    arrayUnion,
-    arrayRemove,
     setDoc,
-    onSnapshot,
-    serverTimestamp,
-    Timestamp,
-    writeBatch
+    addDoc,
+    updateDoc,
+    query, 
+    where 
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-import { 
-    getDatabase, 
-    ref, 
-    set, 
-    onValue, 
-    push,
-    update as rtdbUpdate,
-    get as rtdbGet,
-    remove as rtdbRemove
-} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
-// Firebase configuration
+// 🔥 CONFIG YA PROJEKTI YAKO BLACKROCK-D05C9
 const firebaseConfig = {
-    apiKey: "AIzaSyD_ChvWyfapmETOmtl_-tbRyrRMrvdaoyE",
+    apiKey: "AIzaSyA7BE4_9WQ49CwU34O___t5T6H4MhBOPAw",
     authDomain: "blackrock-d05c9.firebaseapp.com",
     projectId: "blackrock-d05c9",
     storageBucket: "blackrock-d05c9.firebasestorage.app",
-    messagingSenderId: "414237812515",
-    appId: "1:414237812515:web:18412f867a18f7e7ef0e96",
-    measurementId: "G-6GV15EXLGS"
+    messagingSenderId: "545981433269",
+    appId: "1:545981433269:web:9be18707e2cfe3aab457d9"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const rtdb = getDatabase(app);
 
 export { 
-    app, 
     auth, 
-    db, 
-    rtdb,
-    
-    // Auth functions
-    createUserWithEmailAndPassword,
+    db,
     signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
     signOut,
     onAuthStateChanged,
-    sendPasswordResetEmail,
-    updatePassword,
-    EmailAuthProvider,
-    reauthenticateWithCredential,
-    sendEmailVerification,
-    
-    // Firestore functions
     collection, 
-    addDoc, 
     doc, 
     getDoc, 
     getDocs, 
-    updateDoc, 
-    deleteDoc,
-    query, 
-    where, 
-    orderBy, 
-    limit,
-    increment,
-    arrayUnion,
-    arrayRemove,
     setDoc,
-    onSnapshot,
-    serverTimestamp,
-    Timestamp,
-    writeBatch,
-    
-    // Realtime Database functions
-    ref, 
-    set, 
-    onValue, 
-    push,
-    rtdbUpdate,
-    rtdbGet,
-    rtdbRemove
+    addDoc,
+    updateDoc,
+    query, 
+    where
 };
