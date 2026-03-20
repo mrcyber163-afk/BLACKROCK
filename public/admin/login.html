@@ -1,4 +1,3 @@
-<!-- public/admin/login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,9 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - BlackRock</title>
     <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/auth.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #000 0%, #0a0a0a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .auth-card {
+            background: #0a0a0a;
+            border: 1px solid #00ff00;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+        }
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .auth-logo .black { font-size: 32px; font-weight: 800; color: #fff; }
+        .auth-logo .green { font-size: 32px; font-weight: 800; color: #00ff00; }
         .admin-badge {
             background: linear-gradient(135deg, #00ff00, #00cc00);
             color: black;
@@ -18,302 +41,195 @@
             margin-bottom: 20px;
             font-weight: bold;
         }
-        
-        .security-note {
-            background: rgba(255, 255, 0, 0.1);
-            border: 1px solid #ffd700;
-            border-radius: 5px;
-            padding: 10px;
-            margin: 20px 0;
-            font-size: 13px;
-            color: #ffd700;
+        h2 { text-align: center; color: #fff; margin-bottom: 10px; }
+        p { text-align: center; color: #888; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #fff; }
+        .form-group label i { color: #00ff00; margin-right: 8px; }
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 15px;
         }
-        
-        .admin-credentials {
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(0, 255, 0, 0.05);
-            border: 1px solid #00ff00;
+        .form-group input:focus { outline: none; border-color: #00ff00; }
+        .password-wrapper { position: relative; }
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #888;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: #00ff00;
+            border: none;
+            border-radius: 8px;
+            color: black;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-submit:hover { background: #00cc00; transform: translateY(-2px); }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .auth-footer { text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid #333; }
+        .auth-footer a { color: #00ff00; text-decoration: none; }
+        .notification-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            border: 2px solid #00ff00;
             border-radius: 10px;
-        }
-        
-        .two-factor {
+            padding: 15px 20px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin: 15px 0;
+            gap: 15px;
+            z-index: 1000;
+            animation: slideIn 0.3s;
         }
-        
-        .two-factor input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #00ff00;
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
+        .demo-credentials {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+        }
+        .demo-credentials p { margin-bottom: 5px; color: #00ff00; font-size: 12px; }
     </style>
 </head>
 <body>
-    <div class="auth-container">
-        <div class="auth-card">
-            <!-- Logo -->
-            <div class="auth-logo">
-                <span class="black">BLACK</span><span class="green">ROCK</span>
-            </div>
-            
+    <div class="auth-card">
+        <div class="auth-logo">
+            <span class="black">BLACK</span><span class="green">ROCK</span>
+        </div>
+        
+        <div style="text-align: center;">
             <div class="admin-badge">
                 <i class="fas fa-crown"></i> Admin Portal
             </div>
-            
-            <h2>Administrator Login</h2>
-            <p>Secure access for administrators only</p>
+        </div>
+        
+        <h2>Administrator Login</h2>
+        <p>Secure access for administrators only</p>
 
-            <!-- Security Note -->
-            <div class="security-note">
-                <i class="fas fa-shield-alt"></i>
-                This area is restricted to authorized personnel only. All activities are logged.
+        <form id="adminLoginForm">
+            <div class="form-group">
+                <label for="email">
+                    <i class="fas fa-envelope"></i>
+                    Admin Email
+                </label>
+                <input type="email" id="email" placeholder="admin@blackrock.com" required>
             </div>
 
-            <!-- Login Form -->
-            <form id="adminLoginForm">
-                <!-- Admin Email -->
-                <div class="form-group">
-                    <label for="email">
-                        <i class="fas fa-envelope"></i>
-                        Admin Email
-                    </label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        placeholder="mrcyber163@gmail.com"
-                        required
-                    >
+            <div class="form-group">
+                <label for="password">
+                    <i class="fas fa-lock"></i>
+                    Password
+                </label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" placeholder="Enter password" required>
+                    <i class="fas fa-eye toggle-password" onclick="togglePassword()"></i>
                 </div>
-
-                <!-- Password -->
-                <div class="form-group">
-                    <label for="password">
-                        <i class="fas fa-lock"></i>
-                        Password
-                    </label>
-                    <div class="password-wrapper">
-                        <input 
-                            type="password" 
-                            id="password" 
-                            name="password" 
-                            placeholder="Enter admin password"
-                            required
-                        >
-                        <i class="fas fa-eye toggle-password" onclick="togglePassword()"></i>
-                    </div>
-                </div>
-
-                <!-- 2FA Option (Optional) -->
-                <div class="two-factor">
-                    <input type="checkbox" id="twoFactor">
-                    <label for="twoFactor">Use two-factor authentication</label>
-                </div>
-
-                <!-- Submit Button -->
-                <button type="submit" class="btn-submit" id="loginBtn">
-                    <i class="fas fa-lock-open"></i> Access Admin Panel
-                </button>
-            </form>
-
-            <!-- Back to User Login -->
-            <div class="auth-footer">
-                <p><a href="../login.html"><i class="fas fa-arrow-left"></i> Back to User Login</a></p>
             </div>
 
-            <!-- Admin Credentials (Demo) -->
-            <div class="admin-credentials">
-                <h4><i class="fas fa-key"></i> Demo Admin Access</h4>
-                
-                <div class="credential-item" style="display: flex; justify-content: space-between; padding: 10px 0;">
-                    <span>Email:</span>
-                    <span style="color: #00ff00;">mrcyber163@gmail.com</span>
-                </div>
-                
-                <div class="credential-item" style="display: flex; justify-content: space-between; padding: 10px 0;">
-                    <span>Password:</span>
-                    <span style="color: #00ff00;">Deo@2024</span>
-                </div>
-                
-                <button onclick="copyAdminCredentials()" class="btn-submit" style="margin-top: 15px; padding: 8px;">
-                    <i class="fas fa-copy"></i> Copy Admin Credentials
-                </button>
-                
-                <p style="color: #888; font-size: 12px; margin-top: 15px;">
-                    <i class="fas fa-exclamation-triangle" style="color: #ffd700;"></i>
-                    Change these credentials immediately after first login
-                </p>
-            </div>
+            <button type="submit" class="btn-submit" id="loginBtn">
+                <i class="fas fa-lock-open"></i> Access Admin Panel
+            </button>
+        </form>
+
+        <div class="demo-credentials">
+            <p>Demo Admin Credentials</p>
+            <p style="color: #00ff00;">mrcyber163@gmail.com / Deo@2024</p>
+        </div>
+
+        <div class="auth-footer">
+            <p><a href="../login.html"><i class="fas fa-arrow-left"></i> Back to User Login</a></p>
         </div>
     </div>
 
     <script type="module">
-        import { 
-            auth, 
-            db, 
-            signInWithEmailAndPassword,
-            doc,
-            getDoc,
-            collection,
-            query,
-            where,
-            getDocs,
-            setDoc
-        } from '../assets/js/firebase-config.js';
+        import { auth, signInWithEmailAndPassword } from '../assets/js/firebase-config.js';
 
-        // Toggle password visibility
         window.togglePassword = function() {
-            const passwordInput = document.getElementById('password');
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            
+            const input = document.getElementById('password');
+            const type = input.type === 'password' ? 'text' : 'password';
+            input.type = type;
             const icon = document.querySelector('.toggle-password');
             icon.classList.toggle('fa-eye');
             icon.classList.toggle('fa-eye-slash');
         };
 
-        // Handle admin login
         document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
-            const use2FA = document.getElementById('twoFactor').checked;
             const loginBtn = document.getElementById('loginBtn');
             
             if (!email || !password) {
-                showNotification('Please enter email and password', 'error');
+                showNotification('Please fill all fields', 'error');
                 return;
             }
             
-            // Show loading
             loginBtn.disabled = true;
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
             
             try {
-                // First check if this is an admin email
-                const adminRef = collection(db, 'admins');
-                const adminQuery = query(adminRef, where('email', '==', email));
-                const adminSnapshot = await getDocs(adminQuery);
-                
-                if (adminSnapshot.empty) {
-                    throw new Error('Unauthorized: Not an admin account');
-                }
-                
-                const adminData = adminSnapshot.docs[0].data();
-                
-                // Sign in with Firebase Auth
+                // Kwanza login kwa Firebase Auth
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
                 
-                // Get user data
-                const userDoc = await getDoc(doc(db, 'users', user.uid));
-                
-                if (!userDoc.exists()) {
-                    throw new Error('User data not found');
+                // Hardcoded admin check (kwa sasa)
+                if (email === 'mrcyber163@gmail.com') {
+                    localStorage.setItem('adminLoggedIn', 'true');
+                    localStorage.setItem('adminEmail', email);
+                    showNotification('Admin login successful! Redirecting...', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1500);
+                } else {
+                    showNotification('Not an admin account. Use: mrcyber163@gmail.com', 'error');
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-lock-open"></i> Access Admin Panel';
                 }
-                
-                const userData = userDoc.data();
-                
-                // Verify admin role
-                if (userData.role !== 'admin') {
-                    await auth.signOut();
-                    throw new Error('Unauthorized: Not an admin account');
-                }
-                
-                // Check if account is active
-                if (userData.status === 'suspended' || userData.status === 'banned') {
-                    await auth.signOut();
-                    throw new Error('Admin account is not active');
-                }
-                
-                // Handle 2FA if enabled
-                if (use2FA) {
-                    // Here you would implement 2FA verification
-                    // For demo, we'll just show a message
-                    showNotification('2FA verification would happen here', 'info');
-                }
-                
-                // Log admin login
-                await setDoc(doc(db, 'admin-logs', `${user.uid}_${Date.now()}`), {
-                    adminId: user.uid,
-                    email: email,
-                    action: 'login',
-                    ip: 'client-ip', // Would get from server
-                    timestamp: new Date().toISOString()
-                });
-                
-                // Update last login
-                await setDoc(doc(db, 'users', user.uid), {
-                    lastLogin: new Date().toISOString(),
-                    lastIp: 'client-ip'
-                }, { merge: true });
-                
-                showNotification('Admin login successful! Redirecting...', 'success');
-                
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1500);
                 
             } catch (error) {
-                console.error('Admin login error:', error);
-                
                 loginBtn.disabled = false;
                 loginBtn.innerHTML = '<i class="fas fa-lock-open"></i> Access Admin Panel';
                 
-                let errorMessage = 'Login failed';
+                let message = 'Login failed';
+                if (error.code === 'auth/user-not-found') message = 'Admin account not found';
+                else if (error.code === 'auth/wrong-password') message = 'Wrong password';
+                else if (error.code === 'auth/invalid-email') message = 'Invalid email';
+                else message = error.message;
                 
-                if (error.code === 'auth/user-not-found') {
-                    errorMessage = 'Admin not found';
-                } else if (error.code === 'auth/wrong-password') {
-                    errorMessage = 'Incorrect password';
-                } else if (error.message) {
-                    errorMessage = error.message;
-                }
-                
-                showNotification(errorMessage, 'error');
-                
-                // Log failed attempt
-                try {
-                    await setDoc(doc(db, 'admin-logs', `failed_${Date.now()}`), {
-                        email: email,
-                        action: 'failed_login',
-                        timestamp: new Date().toISOString()
-                    });
-                } catch (logError) {
-                    console.error('Error logging failed attempt:', logError);
-                }
+                showNotification(message, 'error');
             }
         });
-
-        // Copy admin credentials
-        window.copyAdminCredentials = function() {
-            navigator.clipboard.writeText('Email: mrcyber163@gmail.com\nPassword: Deo@2024').then(() => {
-                showNotification('Admin credentials copied!', 'success');
-            }).catch(() => {
-                showNotification('Failed to copy', 'error');
-            });
-        };
-
-        // Show notification
+        
         function showNotification(message, type) {
-            const existing = document.querySelector('.notification-popup');
-            if (existing) existing.remove();
-            
             const notification = document.createElement('div');
-            notification.className = `notification-popup ${type}`;
+            notification.className = 'notification-popup';
+            notification.style.borderColor = type === 'success' ? '#00ff00' : '#ff4444';
             notification.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}" style="color: ${type === 'success' ? '#00ff00' : '#ff4444'}"></i>
                 <span>${message}</span>
             `;
             document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
+            setTimeout(() => notification.remove(), 3000);
         }
     </script>
 </body>

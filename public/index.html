@@ -1,428 +1,89 @@
-<!-- public/index.html -->
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlackRock - Earn Money Online</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Landing page specific styles */
-        .navbar {
-            background: rgba(0, 0, 0, 0.9);
-            padding: 15px 0;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid var(--green-transparent);
-        }
-        
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-        
-        .nav-links a {
-            color: var(--white);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: var(--green);
-        }
-        
-        .btn-primary {
-            background: var(--green);
-            color: var(--black) !important;
-            padding: 8px 20px;
-            border-radius: 5px;
-            font-weight: 600;
-        }
-        
-        .btn-large {
-            padding: 12px 30px;
-            font-size: 16px;
-        }
-        
-        .hero {
-            padding: 150px 20px 80px;
-            background: radial-gradient(circle at 70% 30%, var(--green-transparent), transparent 50%);
-        }
-        
-        .hero-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 50px;
-            align-items: center;
-        }
-        
-        .hero-content h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        
-        .hero-content p {
-            color: var(--gray);
-            font-size: 18px;
-            margin-bottom: 30px;
-        }
-        
-        .hero-buttons {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 40px;
-        }
-        
-        .hero-stats {
-            display: flex;
-            gap: 30px;
-        }
-        
-        .stat-number {
-            display: block;
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--green);
-        }
-        
-        .stat-label {
-            color: var(--gray);
-            font-size: 14px;
-        }
-        
-        .features,
-        .how-it-works,
-        .investment-preview {
-            padding: 80px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .section-title {
-            text-align: center;
-            font-size: 36px;
-            margin-bottom: 50px;
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-        }
-        
-        .feature-card {
-            background: var(--dark-gray);
-            border: 1px solid var(--green-transparent);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            transition: transform 0.3s;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--green);
-        }
-        
-        .feature-icon {
-            font-size: 40px;
-            color: var(--green);
-            margin-bottom: 20px;
-        }
-        
-        .steps {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 30px;
-            position: relative;
-        }
-        
-        .step {
-            text-align: center;
-            position: relative;
-        }
-        
-        .step-number {
-            width: 50px;
-            height: 50px;
-            background: var(--green);
-            color: var(--black);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-            margin: 0 auto 20px;
-        }
-        
-        .investment-card {
-            background: linear-gradient(135deg, var(--dark-gray), var(--black));
-            border: 1px solid var(--green);
-            border-radius: 20px;
-            padding: 40px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            align-items: center;
-        }
-        
-        .investment-features {
-            list-style: none;
-            margin: 20px 0;
-        }
-        
-        .investment-features li {
-            margin: 10px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .investment-features i {
-            color: var(--green);
-        }
-        
-        .investment-image i {
-            font-size: 150px;
-            color: var(--green);
-        }
-        
-        .footer {
-            background: var(--black);
-            border-top: 1px solid var(--green-transparent);
-            padding: 50px 20px 20px;
-        }
-        
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-        
-        .footer-section a {
-            display: block;
-            color: var(--gray);
-            text-decoration: none;
-            margin: 10px 0;
-        }
-        
-        .footer-section a:hover {
-            color: var(--green);
-        }
-        
-        .footer-bottom {
-            text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid var(--dark-gray);
-            color: var(--gray);
-        }
-        
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-            
-            .hero-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .hero-content h1 {
-                font-size: 36px;
-            }
-            
-            .hero-stats {
-                flex-wrap: wrap;
-            }
-            
-            .investment-card {
-                grid-template-columns: 1fr;
-            }
-        }
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Firebase Hosting</title>
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/12.11.0/firebase-app-compat.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/12.11.0/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/12.11.0/firebase-database-compat.js"></script>
+    <script defer src="/__/firebase/12.11.0/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/12.11.0/firebase-functions-compat.js"></script>
+    <script defer src="/__/firebase/12.11.0/firebase-messaging-compat.js"></script>
+    <script defer src="/__/firebase/12.11.0/firebase-storage-compat.js"></script>
+    <script defer src="/__/firebase/12.11.0/firebase-analytics-compat.js"></script>
+    <script defer src="/__/firebase/12.11.0/firebase-remote-config-compat.js"></script>
+    <script defer src="/__/firebase/12.11.0/firebase-performance-compat.js"></script>
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+    <style media="screen">
+      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
+      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
+      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
+      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
+      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+      @media (max-width: 600px) {
+        body, #message { margin-top: 0; background: white; box-shadow: none; }
+        body { border-top: 16px solid #ffa100; }
+      }
     </style>
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <span class="black">BLACK</span><span class="green">ROCK</span>
-            </div>
-            <div class="nav-links">
-                <a href="index.html" class="active">Home</a>
-                <a href="#features">Features</a>
-                <a href="#how-it-works">How It Works</a>
-                <a href="login.html" class="btn-outline">Login</a>
-                <a href="register.html" class="btn-primary">Join Now</a>
-            </div>
-            <div class="mobile-menu" style="display: none;">
-                <i class="fas fa-bars"></i>
-            </div>
-        </div>
-    </nav>
+  </head>
+  <body>
+    <div id="message">
+      <h2>Welcome</h2>
+      <h1>Firebase Hosting Setup Complete</h1>
+      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
+      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+    </div>
+    <p id="load">Firebase SDK Loading&hellip;</p>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-container">
-            <div class="hero-content">
-                <h1>Earn Money by <span class="green">Watching Videos</span></h1>
-                <p>Join BlackRock and start earning daily by watching TikTok, Facebook, YouTube, and Instagram videos. Get paid instantly to your mobile money.</p>
-                <div class="hero-buttons">
-                    <a href="register.html" class="btn-primary btn-large">Get Started Now</a>
-                    <a href="#how-it-works" class="btn-outline btn-large">Learn More</a>
-                </div>
-                <div class="hero-stats">
-                    <div class="stat">
-                        <span class="stat-number">10K+</span>
-                        <span class="stat-label">Active Users</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">50K+</span>
-                        <span class="stat-label">Tasks Completed</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">100K+</span>
-                        <span class="stat-label">ZMW Paid</span>
-                    </div>
-                </div>
-            </div>
-            <div class="hero-image">
-                <i class="fas fa-chart-line" style="font-size: 200px; color: var(--green);"></i>
-            </div>
-        </div>
-    </section>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const loadEl = document.querySelector('#load');
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        // // The Firebase SDK is initialized and available here!
+        //
+        // firebase.auth().onAuthStateChanged(user => { });
+        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+        // firebase.firestore().doc('/foo/bar').get().then(() => { });
+        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
+        // firebase.messaging().requestPermission().then(() => { });
+        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+        // firebase.analytics(); // call to activate
+        // firebase.analytics().logEvent('tutorial_completed');
+        // firebase.performance(); // call to activate
+        //
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
 
-    <!-- Features Section -->
-    <section id="features" class="features">
-        <h2 class="section-title">Why Choose <span class="green">BlackRock</span></h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <i class="fas fa-video feature-icon"></i>
-                <h3>Daily Tasks</h3>
-                <p>New video tasks every day from top social media platforms</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-wallet feature-icon"></i>
-                <h3>Instant Withdrawals</h3>
-                <p>Withdraw your earnings to Airtel Money or MTN Money</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-users feature-icon"></i>
-                <h3>Referral Bonus</h3>
-                <p>Earn 5 ZMW for every friend you invite</p>
-            </div>
-            <div class="feature-card">
-                <i class="fas fa-chart-line feature-icon"></i>
-                <h3>Wealth Fund</h3>
-                <p>Invest and earn up to 75% returns in 180 days</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- How It Works -->
-    <section id="how-it-works" class="how-it-works">
-        <h2 class="section-title">How It <span class="green">Works</span></h2>
-        <div class="steps">
-            <div class="step">
-                <div class="step-number">1</div>
-                <h3>Register Account</h3>
-                <p>Sign up with your phone number and email</p>
-            </div>
-            <div class="step">
-                <div class="step-number">2</div>
-                <h3>Pay Activation</h3>
-                <p>Pay 50 ZMW activation fee to start earning</p>
-            </div>
-            <div class="step">
-                <div class="step-number">3</div>
-                <h3>Complete Tasks</h3>
-                <p>Watch videos and complete daily tasks</p>
-            </div>
-            <div class="step">
-                <div class="step-number">4</div>
-                <h3>Withdraw Earnings</h3>
-                <p>Withdraw to your mobile money account</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Investment Preview -->
-    <section class="investment-preview">
-        <h2 class="section-title">Wealth Fund <span class="green">Investment</span></h2>
-        <div class="investment-card">
-            <div class="investment-info">
-                <h3>180 Days Wealth Plan</h3>
-                <p>Invest 1500 ZMW and get 75% returns after 180 days</p>
-                <ul class="investment-features">
-                    <li><i class="fas fa-check"></i> Minimum Investment: 1500 ZMW</li>
-                    <li><i class="fas fa-check"></i> Returns: 75% (2625 ZMW total)</li>
-                    <li><i class="fas fa-check"></i> Duration: 180 Days</li>
-                    <li><i class="fas fa-check"></i> Daily Profit: 8.75 ZMW</li>
-                </ul>
-                <a href="register.html" class="btn-primary">Start Investing</a>
-            </div>
-            <div class="investment-image">
-                <i class="fas fa-chart-pie"></i>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <div class="logo">
-                    <span class="black">BLACK</span><span class="green">ROCK</span>
-                </div>
-                <p>Earn money by watching videos and completing simple tasks.</p>
-            </div>
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <a href="#features">Features</a>
-                <a href="#how-it-works">How It Works</a>
-                <a href="login.html">Login</a>
-                <a href="register.html">Register</a>
-            </div>
-            <div class="footer-section">
-                <h4>Contact</h4>
-                <p><i class="fas fa-envelope"></i> support@blackrock.com</p>
-                <p><i class="fas fa-phone"></i> +260 97 123 4567</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 BlackRock. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <script type="module">
-        // Check if user is already logged in
-        import { auth, onAuthStateChanged } from './assets/js/firebase-config.js';
-        
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // Redirect to dashboard if logged in
-                window.location.href = 'dashboard.html';
-            }
-        });
+        try {
+          let app = firebase.app();
+          let features = [
+            'auth', 
+            'database', 
+            'firestore',
+            'functions',
+            'messaging', 
+            'storage', 
+            'analytics', 
+            'remoteConfig',
+            'performance',
+          ].filter(feature => typeof app[feature] === 'function');
+          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
+        } catch (e) {
+          console.error(e);
+          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+        }
+      });
     </script>
-</body>
+  </body>
 </html>
