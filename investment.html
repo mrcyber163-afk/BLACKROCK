@@ -9,8 +9,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #000;
-            color: #fff;
+            background: #000000;
+            color: #ffffff;
         }
         .dashboard-container { display: flex; min-height: 100vh; }
         .sidebar {
@@ -21,19 +21,21 @@
             position: fixed;
             height: 100vh;
         }
-        .logo .black { font-size: 24px; font-weight: 800; color: #fff; }
+        .logo .black { font-size: 24px; font-weight: 800; color: #ffffff; }
         .logo .green { font-size: 24px; font-weight: 800; color: #00ff00; }
         .nav-menu a {
             display: flex;
             align-items: center;
             gap: 15px;
             padding: 12px 15px;
-            color: #888;
+            color: #888888;
             text-decoration: none;
             border-radius: 8px;
+            margin-bottom: 5px;
         }
         .nav-menu a i { width: 20px; color: #00ff00; }
-        .nav-menu a:hover, .nav-menu a.active { background: #00ff00; color: #000; }
+        .nav-menu a:hover { background: rgba(0, 255, 0, 0.1); color: #ffffff; }
+        .nav-menu a.active { background: #00ff00; color: #000000; }
         .main-content { flex: 1; margin-left: 280px; padding: 20px; }
         .dashboard-header {
             display: flex;
@@ -45,21 +47,22 @@
             padding: 20px;
             margin-bottom: 20px;
         }
-        .user-balance { background: #00ff00; color: #000; padding: 8px 15px; border-radius: 20px; }
-        .btn-section { text-align: center; margin: 20px 0; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .user-balance { background: #00ff00; color: #000000; padding: 8px 15px; border-radius: 20px; font-weight: bold; }
+        .btn-section { text-align: center; margin: 40px 0; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
         .invest-btn {
             background: transparent;
             border: 2px solid #00ff00;
             color: #00ff00;
-            padding: 12px 25px;
-            border-radius: 30px;
+            padding: 15px 35px;
+            border-radius: 50px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.3s;
+            font-size: 18px;
+            transition: all 0.3s;
         }
-        .invest-btn:hover { background: #00ff00; color: #000; }
+        .invest-btn:hover { background: #00ff00; color: #000000; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3); }
         .wealth-btn { border-color: #ffd700; color: #ffd700; }
-        .wealth-btn:hover { background: #ffd700; color: #000; }
+        .wealth-btn:hover { background: #ffd700; color: #000000; }
         .modal {
             display: none;
             position: fixed;
@@ -67,7 +70,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0, 0, 0, 0.95);
             z-index: 2000;
             align-items: center;
             justify-content: center;
@@ -88,25 +91,42 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid #333333;
             padding-bottom: 15px;
         }
-        .close-modal { font-size: 28px; cursor: pointer; color: #888; }
+        .modal-header h3 { color: #00ff00; font-size: 24px; }
+        .close-modal { font-size: 28px; cursor: pointer; color: #888888; transition: all 0.3s; }
+        .close-modal:hover { color: #ff4444; }
         .vip-grid, .wealth-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
         }
         .vip-card, .wealth-card {
             background: #1a1a1a;
-            border: 1px solid #333;
+            border: 1px solid #333333;
             border-radius: 15px;
             padding: 20px;
+            transition: all 0.3s;
         }
-        .vip-card h4 { font-size: 24px; color: #00ff00; }
-        .vip-card .capital { font-size: 24px; color: #ffd700; font-weight: bold; }
-        .wealth-card h4 { color: #ffd700; }
-        .btn-closed { background: #333; color: #888; border: none; padding: 8px; border-radius: 5px; cursor: not-allowed; margin-top: 10px; width: 100%; }
+        .vip-card:hover, .wealth-card:hover { border-color: #00ff00; transform: translateY(-3px); }
+        .vip-card h4 { font-size: 24px; color: #00ff00; margin-bottom: 10px; }
+        .vip-card .capital { font-size: 24px; color: #ffd700; font-weight: bold; margin: 10px 0; }
+        .wealth-card h4 { color: #ffd700; font-size: 20px; }
+        .btn-closed { background: #333333; color: #888888; border: none; padding: 10px; border-radius: 5px; cursor: not-allowed; width: 100%; margin-top: 15px; }
+        .invest-small-btn {
+            background: #00ff00;
+            color: #000000;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .invest-small-btn:hover { background: #00cc00; transform: translateY(-2px); }
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .main-content { margin-left: 0; }
@@ -129,7 +149,7 @@
         </div>
         <div class="main-content">
             <div class="dashboard-header">
-                <div><h2>Investment Center</h2><p>Grow your wealth</p></div>
+                <div><h2>Investment Center</h2><p>Grow your wealth with 4% daily returns</p></div>
                 <div class="user-balance"><strong id="balance">0 ZMW</strong></div>
             </div>
             <div class="btn-section">
@@ -139,8 +159,18 @@
         </div>
     </div>
 
-    <div class="modal" id="vipModal"><div class="modal-content"><div class="modal-header"><h3>VIP Levels - 4% Daily Returns</h3><span class="close-modal" onclick="closeVIPModal()">&times;</span></div><div class="vip-grid" id="vipGrid"></div></div></div>
-    <div class="modal" id="wealthModal"><div class="modal-content"><div class="modal-header"><h3>Wealth Fund Plans</h3><span class="close-modal" onclick="closeWealthModal()">&times;</span></div><div class="wealth-grid" id="wealthGrid"></div></div></div>
+    <div class="modal" id="vipModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-crown"></i> VIP Levels - 4% Daily Returns</h3><span class="close-modal" onclick="closeVIPModal()">&times;</span></div>
+            <div class="vip-grid" id="vipGrid"></div>
+        </div>
+    </div>
+    <div class="modal" id="wealthModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-chart-line"></i> Wealth Fund Plans</h3><span class="close-modal" onclick="closeWealthModal()">&times;</span></div>
+            <div class="wealth-grid" id="wealthGrid"></div>
+        </div>
+    </div>
 
     <script>
         const vipLevels = [
@@ -159,12 +189,15 @@
         ];
         function renderVIP() {
             document.getElementById('vipGrid').innerHTML = vipLevels.map(v => `
-                <div class="vip-card ${v.status==='closed'?'closed':''}">
+                <div class="vip-card">
                     <h4>VIP ${v.level}</h4>
                     <div class="capital">${v.min.toLocaleString()} ZMW</div>
-                    <div>Daily: ${v.dailyPercent}% (${(v.min*v.dailyPercent/100).toFixed(2)} ZMW)</div>
-                    <div>Videos: ${v.videos}/day</div>
-                    ${v.status==='closed' ? '<button class="btn-closed" disabled>🔒 Coming Soon</button>' : '<button class="invest-btn" style="width:100%; margin-top:10px;" onclick="alert(\'VIP investment coming soon\')">Invest Now</button>'}
+                    <div>Daily: ${v.dailyPercent}% (${(v.min * v.dailyPercent / 100).toFixed(2)} ZMW)</div>
+                    <div>📹 Videos: ${v.videos} per day</div>
+                    <div>📅 Monthly: ${(v.min * v.dailyPercent / 100 * 30).toFixed(2)} ZMW</div>
+                    ${v.status === 'closed' 
+                        ? '<button class="btn-closed" disabled>🔒 Coming Soon</button>'
+                        : '<button class="invest-small-btn" onclick="alert(\'VIP ' + v.level + ' investment requires ' + v.min + ' ZMW. Coming soon!\')">Invest Now</button>'}
                 </div>
             `).join('');
         }
@@ -172,11 +205,11 @@
             document.getElementById('wealthGrid').innerHTML = wealthPlans.map(p => `
                 <div class="wealth-card">
                     <h4>${p.name}</h4>
-                    <div>${p.duration} Days</div>
-                    <div class="capital">${p.capital.toLocaleString()} ZMW</div>
-                    <div>+${p.returns}% Returns</div>
-                    <div>Total: ${p.total.toLocaleString()} ZMW</div>
-                    <button class="invest-btn" style="width:100%; margin-top:10px;" onclick="alert('${p.name} investment coming soon')">Invest Now</button>
+                    <div>📅 ${p.duration} Days</div>
+                    <div class="capital">💰 ${p.capital.toLocaleString()} ZMW</div>
+                    <div>📈 +${p.returns}% Returns</div>
+                    <div>💵 Total: ${p.total.toLocaleString()} ZMW</div>
+                    <button class="invest-small-btn" onclick="alert('${p.name} investment requires ${p.capital} ZMW. Coming soon!')">Invest Now</button>
                 </div>
             `).join('');
         }

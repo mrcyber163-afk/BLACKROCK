@@ -9,8 +9,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #000 0%, #0a0a0a 100%);
-            color: #fff;
+            background: #000000;
+            color: #ffffff;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -27,10 +27,10 @@
             box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
         }
         .auth-logo { text-align: center; margin-bottom: 30px; }
-        .auth-logo .black { font-size: 32px; font-weight: 800; color: #fff; }
+        .auth-logo .black { font-size: 32px; font-weight: 800; color: #ffffff; }
         .auth-logo .green { font-size: 32px; font-weight: 800; color: #00ff00; }
-        h2 { text-align: center; margin-bottom: 10px; }
-        p { text-align: center; color: #888; margin-bottom: 30px; }
+        h2 { text-align: center; margin-bottom: 10px; color: #ffffff; }
+        p { text-align: center; color: #888888; margin-bottom: 30px; }
         .country-badge {
             background: rgba(0, 255, 0, 0.1);
             border: 1px solid #00ff00;
@@ -42,39 +42,41 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            color: #ffffff;
         }
         .country-badge i { color: #00ff00; }
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; color: #fff; }
+        .form-group label { display: block; margin-bottom: 8px; color: #ffffff; font-weight: 500; }
         .form-group label i { color: #00ff00; margin-right: 8px; }
         .form-group input, .form-group textarea {
             width: 100%;
             padding: 12px 15px;
             background: #1a1a1a;
-            border: 1px solid #333;
+            border: 1px solid #333333;
             border-radius: 8px;
-            color: #fff;
+            color: #ffffff;
             font-size: 15px;
         }
         .form-group input:focus, .form-group textarea:focus {
             outline: none;
             border-color: #00ff00;
+            box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
         }
         .phone-input-wrapper {
             display: flex;
             align-items: center;
             background: #1a1a1a;
-            border: 1px solid #333;
+            border: 1px solid #333333;
             border-radius: 8px;
             overflow: hidden;
         }
         .country-code {
             background: #00ff00;
-            color: #000;
+            color: #000000;
             padding: 12px 15px;
             font-weight: 600;
         }
-        .phone-input-wrapper input { flex: 1; border: none !important; }
+        .phone-input-wrapper input { flex: 1; border: none !important; background: #1a1a1a; }
         .password-wrapper { position: relative; }
         .toggle-password {
             position: absolute;
@@ -82,11 +84,11 @@
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
-            color: #888;
+            color: #888888;
         }
         .strength-bar {
             height: 4px;
-            background: #333;
+            background: #333333;
             margin-top: 8px;
             border-radius: 4px;
             overflow: hidden;
@@ -110,7 +112,7 @@
         .password-requirements .unmet { color: #ff4444; }
         .terms { display: flex; align-items: center; gap: 10px; margin: 20px 0; }
         .terms input[type="checkbox"] { width: 18px; height: 18px; accent-color: #00ff00; }
-        .terms label { color: #888; font-size: 14px; }
+        .terms label { color: #888888; font-size: 14px; }
         .terms a { color: #00ff00; text-decoration: none; }
         .btn-submit {
             width: 100%;
@@ -118,14 +120,14 @@
             background: #00ff00;
             border: none;
             border-radius: 8px;
-            color: #000;
+            color: #000000;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
         }
-        .btn-submit:hover { background: #00cc00; transform: translateY(-2px); }
-        .auth-footer { text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid #333; }
+        .btn-submit:hover { background: #00cc00; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3); }
+        .auth-footer { text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid #333333; }
         .auth-footer a { color: #00ff00; text-decoration: none; }
         .notification-popup {
             position: fixed; top: 20px; right: 20px; background: #1a1a1a;
@@ -238,7 +240,7 @@
         document.getElementById('phone').addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g,'').slice(0,9));
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert('Registration successful! (Demo)');
+            alert('Registration successful! Redirecting to activation...');
             window.location.href = 'activation.html';
         });
     </script>

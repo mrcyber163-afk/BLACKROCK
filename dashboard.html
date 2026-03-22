@@ -9,8 +9,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #000;
-            color: #fff;
+            background: #000000;
+            color: #ffffff;
         }
         .dashboard-container { display: flex; min-height: 100vh; }
         .sidebar {
@@ -20,22 +20,26 @@
             padding: 20px;
             position: fixed;
             height: 100vh;
+            overflow-y: auto;
         }
-        .logo { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #333; }
-        .logo .black { font-size: 24px; font-weight: 800; color: #fff; }
+        .logo { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #333333; }
+        .logo .black { font-size: 24px; font-weight: 800; color: #ffffff; }
         .logo .green { font-size: 24px; font-weight: 800; color: #00ff00; }
         .nav-menu a {
             display: flex;
             align-items: center;
             gap: 15px;
             padding: 12px 15px;
-            color: #888;
+            color: #888888;
             text-decoration: none;
             border-radius: 8px;
             margin-bottom: 5px;
+            transition: all 0.3s;
         }
         .nav-menu a i { width: 20px; color: #00ff00; }
-        .nav-menu a:hover, .nav-menu a.active { background: #00ff00; color: #000; }
+        .nav-menu a:hover { background: rgba(0, 255, 0, 0.1); color: #ffffff; transform: translateX(5px); }
+        .nav-menu a.active { background: #00ff00; color: #000000; }
+        .nav-menu a.active i { color: #000000; }
         .main-content { flex: 1; margin-left: 280px; padding: 20px; }
         .dashboard-header {
             display: flex;
@@ -47,22 +51,30 @@
             padding: 20px;
             margin-bottom: 20px;
         }
-        .greeting h2 { font-size: 28px; }
-        .user-level { background: #00ff00; color: #000; padding: 8px 20px; border-radius: 25px; font-weight: bold; }
+        .greeting h2 { font-size: 28px; margin-bottom: 5px; color: #ffffff; }
+        .greeting p { color: #888888; }
+        .user-level {
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            color: #000000;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
         .balance-overview {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin-bottom: 30px;
         }
-        .balance-card, .welcome-bonus-card {
-            background: #1a1a1a;
+        .welcome-bonus-card, .balance-card {
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
             border: 1px solid #00ff00;
             border-radius: 15px;
             padding: 20px;
             text-align: center;
         }
-        .balance-card .amount { font-size: 32px; font-weight: 800; color: #00ff00; }
+        .welcome-bonus-card .amount, .balance-card .amount { font-size: 32px; font-weight: 800; color: #00ff00; }
+        .welcome-bonus-card h3 { color: #ffd700; margin-bottom: 10px; }
         .quick-actions {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
@@ -71,16 +83,16 @@
         }
         .action-btn {
             background: #1a1a1a;
-            border: 1px solid #333;
+            border: 1px solid #333333;
             border-radius: 10px;
             padding: 15px;
             text-align: center;
             text-decoration: none;
-            color: #fff;
-            transition: 0.3s;
+            color: #ffffff;
+            transition: all 0.3s;
         }
         .action-btn i { display: block; font-size: 24px; color: #00ff00; margin-bottom: 5px; }
-        .action-btn:hover { border-color: #00ff00; transform: translateY(-2px); }
+        .action-btn:hover { border-color: #00ff00; transform: translateY(-2px); background: rgba(0, 255, 0, 0.05); }
         .how-it-works-btn {
             background: transparent;
             border: 2px solid #00ff00;
@@ -90,7 +102,9 @@
             cursor: pointer;
             font-weight: bold;
             margin: 20px 0;
+            transition: all 0.3s;
         }
+        .how-it-works-btn:hover { background: #00ff00; color: #000000; }
         .modal {
             display: none;
             position: fixed;
@@ -98,7 +112,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: rgba(0, 0, 0, 0.95);
             z-index: 2000;
             align-items: center;
             justify-content: center;
@@ -119,13 +133,15 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid #333333;
             padding-bottom: 15px;
         }
-        .close-modal { font-size: 28px; cursor: pointer; color: #888; }
+        .modal-header h3 { color: #00ff00; }
+        .close-modal { font-size: 28px; cursor: pointer; color: #888888; transition: all 0.3s; }
+        .close-modal:hover { color: #ff4444; }
         .step-card {
             background: #1a1a1a;
-            border: 1px solid #333;
+            border: 1px solid #333333;
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 15px;
@@ -134,7 +150,7 @@
             width: 40px;
             height: 40px;
             background: #00ff00;
-            color: #000;
+            color: #000000;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -142,6 +158,8 @@
             font-weight: bold;
             margin-bottom: 10px;
         }
+        .step-card h4 { color: #00ff00; margin-bottom: 8px; }
+        .step-card p { color: #cccccc; }
         .mobile-nav {
             display: none;
             position: fixed;
@@ -152,11 +170,26 @@
             border-top: 1px solid #00ff00;
             padding: 10px;
             justify-content: space-around;
+            z-index: 100;
+        }
+        .mobile-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #888888;
+            font-size: 12px;
+        }
+        .mobile-nav a i { font-size: 20px; margin-bottom: 5px; }
+        .mobile-nav a.active { color: #00ff00; }
+        @media (max-width: 1024px) {
+            .quick-actions { grid-template-columns: repeat(3, 1fr); }
         }
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .main-content { margin-left: 0; padding-bottom: 80px; }
-            .quick-actions { grid-template-columns: repeat(3, 1fr); }
+            .balance-overview { grid-template-columns: 1fr; }
+            .quick-actions { grid-template-columns: repeat(2, 1fr); }
             .mobile-nav { display: flex; }
         }
     </style>
@@ -177,12 +210,12 @@
         </div>
         <div class="main-content">
             <div class="dashboard-header">
-                <div class="greeting"><h2>Good Afternoon, <span id="username">User</span>!</h2></div>
+                <div class="greeting"><h2>Good Afternoon, <span id="username">User</span>!</h2><p>Your earnings summary</p></div>
                 <div class="user-level" id="userLevel">VIP 1</div>
             </div>
             <div class="balance-overview">
-                <div class="welcome-bonus-card"><h3>🎁 Welcome Bonus</h3><div class="amount">100 ZMW</div><small>Invite 10 active referrals</small></div>
-                <div class="balance-card"><span>Available Balance</span><div class="amount" id="balance">0 ZMW</div></div>
+                <div class="welcome-bonus-card"><h3><i class="fas fa-gift"></i> Welcome Bonus</h3><div class="amount">100 ZMW</div><small>Invite 10 active referrals to claim</small></div>
+                <div class="balance-card"><span class="label">Available Balance</span><div class="amount" id="balance">0 ZMW</div><small>Ready to withdraw</small></div>
             </div>
             <div class="quick-actions">
                 <a href="deposit.html" class="action-btn"><i class="fas fa-plus-circle"></i><span>Deposit</span></a>
@@ -194,7 +227,7 @@
             <div style="text-align:center;"><button class="how-it-works-btn" onclick="openModal()"><i class="fas fa-question-circle"></i> How It Works</button></div>
         </div>
         <div class="mobile-nav">
-            <a href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="dashboard.html" class="active"><i class="fas fa-home"></i><span>Home</span></a>
             <a href="tasks.html"><i class="fas fa-tasks"></i><span>Tasks</span></a>
             <a href="deposit.html"><i class="fas fa-plus-circle"></i><span>Deposit</span></a>
             <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
@@ -202,17 +235,21 @@
     </div>
     <div class="modal" id="howItWorksModal">
         <div class="modal-content">
-            <div class="modal-header"><h3>How BlackRock Works</h3><span class="close-modal" onclick="closeModal()">&times;</span></div>
-            <div class="step-card"><div class="step-number">1</div><h4>Register Account</h4><p>Create free account with email & Zambian phone</p></div>
-            <div class="step-card"><div class="step-number">2</div><h4>Activate Account</h4><p>Pay 50 ZMW activation fee via Airtel/MTN</p></div>
-            <div class="step-card"><div class="step-number">3</div><h4>Complete Tasks</h4><p>Watch videos on TikTok, Facebook, YouTube, Instagram</p></div>
-            <div class="step-card"><div class="step-number">4</div><h4>Withdraw Earnings</h4><p>Withdraw directly to mobile money</p></div>
+            <div class="modal-header"><h3><i class="fas fa-question-circle"></i> How BlackRock Works</h3><span class="close-modal" onclick="closeModal()">&times;</span></div>
+            <div class="step-card"><div class="step-number">1</div><h4>Register Account</h4><p>Create free account with email & Zambian phone number</p></div>
+            <div class="step-card"><div class="step-number">2</div><h4>Activate Account</h4><p>Pay 50 ZMW activation fee via Airtel/MTN Money</p></div>
+            <div class="step-card"><div class="step-number">3</div><h4>Complete Tasks</h4><p>Watch videos on TikTok, Facebook, YouTube, Instagram and earn daily</p></div>
+            <div class="step-card"><div class="step-number">4</div><h4>Withdraw Earnings</h4><p>Withdraw directly to your mobile money account anytime</p></div>
+            <div class="step-card"><div class="step-number">💰</div><h4>VIP Levels & Wealth Fund</h4><p>Invest and earn 4% daily returns. Higher investment = Higher earnings!</p></div>
         </div>
     </div>
     <script>
         function openModal() { document.getElementById('howItWorksModal').classList.add('active'); }
         function closeModal() { document.getElementById('howItWorksModal').classList.remove('active'); }
         function logout() { window.location.href = 'login.html'; }
+        document.getElementById('username').textContent = 'User';
+        document.getElementById('balance').textContent = '0 ZMW';
+        document.getElementById('userLevel').textContent = 'VIP 1';
     </script>
 </body>
 </html>

