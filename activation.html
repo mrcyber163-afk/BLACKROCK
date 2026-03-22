@@ -3,15 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Activation - BlackRock</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/auth.css">
+    <title>Activation - BlackRock</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .activation-card { max-width: 500px; margin: 0 auto; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #000 0%, #0a0a0a 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .auth-card {
+            background: #0a0a0a;
+            border: 1px solid #00ff00;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+        }
+        .auth-logo { text-align: center; margin-bottom: 30px; }
+        .auth-logo .black { font-size: 32px; font-weight: 800; color: #fff; }
+        .auth-logo .green { font-size: 32px; font-weight: 800; color: #00ff00; }
+        h2 { text-align: center; margin-bottom: 10px; }
+        p { text-align: center; color: #888; margin-bottom: 30px; }
         .activation-fee {
             text-align: center;
-            margin: 30px 0;
+            margin: 20px 0;
             padding: 20px;
             background: linear-gradient(135deg, #00ff00, #00cc00);
             border-radius: 10px;
@@ -32,10 +54,7 @@
             padding: 10px;
             border-bottom: 1px solid #333;
         }
-        .payment-detail .label { color: #888; }
         .payment-detail .value { color: #00ff00; font-weight: 600; }
-        
-        /* USSD Button - Clickable to Dial */
         .ussd-button {
             display: flex;
             align-items: center;
@@ -47,32 +66,14 @@
             border-radius: 50px;
             margin: 20px 0;
             cursor: pointer;
-            transition: all 0.3s;
             text-decoration: none;
             font-weight: bold;
             font-size: 20px;
             border: none;
             width: 100%;
         }
-        .ussd-button:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
-        }
-        .ussd-button i {
-            font-size: 28px;
-        }
-        .ussd-button code {
-            font-size: 24px;
-            background: transparent;
-            color: #000;
-        }
-        .ussd-note {
-            text-align: center;
-            color: #888;
-            font-size: 13px;
-            margin-top: 10px;
-        }
-        
+        .ussd-button:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(0,255,0,0.5); }
+        .ussd-button code { font-size: 24px; background: transparent; color: #000; }
         .warning-box {
             background: rgba(255, 255, 0, 0.1);
             border: 1px solid #ffd700;
@@ -80,6 +81,16 @@
             padding: 15px;
             margin: 20px 0;
             color: #ffd700;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #fff; }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
         }
         .btn-verify {
             width: 100%;
@@ -93,26 +104,8 @@
             cursor: pointer;
             margin-top: 20px;
         }
-        .btn-verify:disabled { background: #888; cursor: not-allowed; }
-        .notification-popup {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #1a1a1a;
-            border: 2px solid #00ff00;
-            border-radius: 10px;
-            padding: 15px 25px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            z-index: 1000;
-            animation: slideIn 0.3s;
-        }
-        .notification-popup.error { border-color: #ff4444; }
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
+        .auth-footer { text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid #333; }
+        .auth-footer a { color: #00ff00; text-decoration: none; }
         .phone-input-wrapper {
             display: flex;
             align-items: center;
@@ -127,162 +120,49 @@
             padding: 12px 15px;
             font-weight: 600;
         }
-        .phone-input-wrapper input {
-            flex: 1;
-            border: none !important;
-            background: #1a1a1a;
-            color: #fff;
-            padding: 12px 15px;
-        }
     </style>
 </head>
 <body>
     <div class="auth-container">
-        <div class="auth-card activation-card">
-            <div class="auth-logo">
-                <span class="black">BLACK</span><span class="green">ROCK</span>
-            </div>
+        <div class="auth-card">
+            <div class="auth-logo"><span class="black">BLACK</span><span class="green">ROCK</span></div>
             <h2>Activate Your Account</h2>
-            <p>Pay activation fee to start earning</p>
-
-            <div class="activation-fee">
-                <span class="label">Activation Fee</span>
-                <span class="amount">50 ZMW</span>
-            </div>
+            <p>Pay 50 ZMW to start earning</p>
+            <div class="activation-fee"><span class="amount">50 ZMW</span></div>
 
             <div class="payment-instructions">
-                <h3><i class="fas fa-info-circle"></i> Payment Instructions</h3>
-                <div class="payment-detail">
-                    <span class="label">Network:</span>
-                    <span class="value" id="networkDisplay">Airtel Money</span>
-                </div>
-                <div class="payment-detail">
-                    <span class="label">Phone Number:</span>
-                    <span class="value" id="phoneDisplay">0977123456</span>
-                </div>
-                <div class="payment-detail">
-                    <span class="label">Account Name:</span>
-                    <span class="value" id="nameDisplay">BlackRock Official</span>
-                </div>
-                
-                <!-- Clickable USSD Button - Dials *115# -->
-                <a href="tel:*115%23" class="ussd-button" id="ussdButton">
-                    <i class="fas fa-phone-alt"></i>
-                    <code>*115#</code>
-                    <i class="fas fa-arrow-right"></i>
-                </a>
-                <div class="ussd-note">
-                    <i class="fas fa-mobile-alt"></i> Click to dial *115# and send 50 ZMW
-                </div>
-                
-                <p style="color: #888; text-align: center; margin-top: 15px;">
-                    <i class="fas fa-info-circle"></i> 
-                    Follow the menu to send money to the number above
-                </p>
+                <h3><i class="fas fa-info-circle"></i> Payment Details</h3>
+                <div class="payment-detail"><span>Network:</span><span class="value">Airtel Money</span></div>
+                <div class="payment-detail"><span>Phone:</span><span class="value">0977123456</span></div>
+                <div class="payment-detail"><span>Name:</span><span class="value">BlackRock Official</span></div>
+                <a href="tel:*115%23" class="ussd-button"><i class="fas fa-phone-alt"></i><code>*115#</code><i class="fas fa-arrow-right"></i></a>
+                <p style="text-align:center; color:#888;">Click to dial *115# and send 50 ZMW</p>
             </div>
 
-            <div class="warning-box">
-                <i class="fas fa-exclamation-triangle"></i>
-                <strong>Important:</strong> After sending money, copy the confirmation message and paste below
-            </div>
+            <div class="warning-box"><i class="fas fa-exclamation-triangle"></i> After sending money, paste confirmation message below</div>
 
             <form id="activationForm">
                 <div class="form-group">
-                    <label for="senderPhone"><i class="fas fa-phone"></i> Your Phone Number</label>
+                    <label>Your Phone Number</label>
                     <div class="phone-input-wrapper">
                         <span class="country-code">+260</span>
                         <input type="tel" id="senderPhone" placeholder="97xxxxxxx" maxlength="9" required>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="transactionMessage"><i class="fas fa-comment"></i> Transaction Message</label>
-                    <textarea id="transactionMessage" rows="4" placeholder="Paste the confirmation message you received" required></textarea>
+                    <label>Transaction Message</label>
+                    <textarea id="transactionMessage" rows="4" placeholder="Paste confirmation message" required></textarea>
                 </div>
-                <button type="submit" class="btn-verify" id="submitBtn"><i class="fas fa-check-circle"></i> Verify Payment</button>
+                <button type="submit" class="btn-verify">Verify Payment</button>
             </form>
-
-            <div class="auth-footer">
-                <p>Already activated? <a href="login.html">Login Here</a></p>
-            </div>
+            <div class="auth-footer"><p>Already activated? <a href="login.html">Login Here</a></p></div>
         </div>
     </div>
-
-    <script type="module">
-        import { auth, db, doc, getDoc, collection, addDoc, query, where, getDocs } from './assets/js/firebase-config.js';
-
-        const pendingUserId = localStorage.getItem('pendingUserId');
-        if (!pendingUserId) {
-            alert('No pending activation found. Please register first.');
-            window.location.href = 'register.html';
-        }
-
-        document.getElementById('senderPhone').addEventListener('input', function(e) {
-            this.value = this.value.replace(/\D/g, '').slice(0, 9);
-        });
-
-        document.getElementById('activationForm').addEventListener('submit', async (e) => {
+    <script>
+        document.getElementById('activationForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const senderPhone = document.getElementById('senderPhone').value;
-            const transactionMessage = document.getElementById('transactionMessage').value;
-            const submitBtn = document.getElementById('submitBtn');
-            
-            if (!senderPhone.match(/^[97][0-9]{8}$/)) {
-                showNotification('Please enter a valid Zambian phone number (starting with 97)', 'error');
-                return;
-            }
-            if (!transactionMessage) {
-                showNotification('Please paste the transaction message', 'error');
-                return;
-            }
-            
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-            
-            try {
-                const activationsRef = collection(db, 'activations');
-                const q = query(activationsRef, where('userId', '==', pendingUserId), where('status', '==', 'pending'));
-                const snapshot = await getDocs(q);
-                if (!snapshot.empty) {
-                    showNotification('You already have a pending activation request. Please wait for admin approval.', 'error');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify Payment';
-                    return;
-                }
-                
-                await addDoc(collection(db, 'activations'), {
-                    userId: pendingUserId,
-                    senderPhone: '+260' + senderPhone,
-                    transactionMessage: transactionMessage,
-                    amount: 50,
-                    status: 'pending',
-                    createdAt: new Date().toISOString()
-                });
-                
-                localStorage.removeItem('pendingUserId');
-                showNotification('Activation request submitted successfully! Redirecting to login...', 'success');
-                setTimeout(() => { window.location.href = 'login.html'; }, 3000);
-                
-            } catch (error) {
-                showNotification('Failed to submit activation request. Please try again.', 'error');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify Payment';
-            }
-        });
-
-        function showNotification(message, type) {
-            const existing = document.querySelector('.notification-popup');
-            if (existing) existing.remove();
-            const notification = document.createElement('div');
-            notification.className = `notification-popup ${type}`;
-            notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i><span>${message}</span>`;
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 4000);
-        }
-
-        // Also make the button clickable via JavaScript (fallback)
-        document.getElementById('ussdButton').addEventListener('click', function(e) {
-            // The href="tel:*115%23" already handles it, but we add a note
-            console.log('Dialing *115#...');
+            alert('Activation request submitted! Wait for admin approval.');
+            window.location.href = 'login.html';
         });
     </script>
 </body>

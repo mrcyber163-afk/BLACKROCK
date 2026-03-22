@@ -34,15 +34,45 @@
         }
         .payment-detail .label { color: #888; }
         .payment-detail .value { color: #00ff00; font-weight: 600; }
-        .ussd-box {
-            background: #333;
-            padding: 15px;
-            border-radius: 5px;
-            text-align: center;
-            margin: 15px 0;
+        
+        /* USSD Button - Clickable to Dial */
+        .ussd-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            color: #000;
+            padding: 18px 25px;
+            border-radius: 50px;
+            margin: 20px 0;
             cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 20px;
+            border: none;
+            width: 100%;
         }
-        .ussd-box code { font-size: 24px; color: #00ff00; }
+        .ussd-button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+        .ussd-button i {
+            font-size: 28px;
+        }
+        .ussd-button code {
+            font-size: 24px;
+            background: transparent;
+            color: #000;
+        }
+        .ussd-note {
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+        
         .warning-box {
             background: rgba(255, 255, 0, 0.1);
             border: 1px solid #ffd700;
@@ -83,6 +113,27 @@
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
+        .phone-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .country-code {
+            background: #00ff00;
+            color: #000;
+            padding: 12px 15px;
+            font-weight: 600;
+        }
+        .phone-input-wrapper input {
+            flex: 1;
+            border: none !important;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 12px 15px;
+        }
     </style>
 </head>
 <body>
@@ -101,11 +152,33 @@
 
             <div class="payment-instructions">
                 <h3><i class="fas fa-info-circle"></i> Payment Instructions</h3>
-                <div class="payment-detail"><span class="label">Network:</span><span class="value">Airtel Money</span></div>
-                <div class="payment-detail"><span class="label">Phone Number:</span><span class="value">0977123456</span></div>
-                <div class="payment-detail"><span class="label">Account Name:</span><span class="value">BlackRock Official</span></div>
-                <div class="ussd-box" onclick="copyUssd('*126#')"><code>*126#</code><small>Click to copy USSD code</small></div>
-                <p style="color: #888; text-align: center;">Dial *126# and send 50 ZMW to this number</p>
+                <div class="payment-detail">
+                    <span class="label">Network:</span>
+                    <span class="value" id="networkDisplay">Airtel Money</span>
+                </div>
+                <div class="payment-detail">
+                    <span class="label">Phone Number:</span>
+                    <span class="value" id="phoneDisplay">0977123456</span>
+                </div>
+                <div class="payment-detail">
+                    <span class="label">Account Name:</span>
+                    <span class="value" id="nameDisplay">BlackRock Official</span>
+                </div>
+                
+                <!-- Clickable USSD Button - Dials *115# -->
+                <a href="tel:*115%23" class="ussd-button" id="ussdButton">
+                    <i class="fas fa-phone-alt"></i>
+                    <code>*115#</code>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                <div class="ussd-note">
+                    <i class="fas fa-mobile-alt"></i> Click to dial *115# and send 50 ZMW
+                </div>
+                
+                <p style="color: #888; text-align: center; margin-top: 15px;">
+                    <i class="fas fa-info-circle"></i> 
+                    Follow the menu to send money to the number above
+                </p>
             </div>
 
             <div class="warning-box">
@@ -196,11 +269,6 @@
             }
         });
 
-        window.copyUssd = function(ussd) {
-            navigator.clipboard.writeText(ussd);
-            showNotification('USSD code copied!', 'success');
-        };
-
         function showNotification(message, type) {
             const existing = document.querySelector('.notification-popup');
             if (existing) existing.remove();
@@ -210,6 +278,12 @@
             document.body.appendChild(notification);
             setTimeout(() => notification.remove(), 4000);
         }
+
+        // Also make the button clickable via JavaScript (fallback)
+        document.getElementById('ussdButton').addEventListener('click', function(e) {
+            // The href="tel:*115%23" already handles it, but we add a note
+            console.log('Dialing *115#...');
+        });
     </script>
 </body>
 </html>
