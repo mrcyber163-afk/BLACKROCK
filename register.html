@@ -92,17 +92,8 @@
             margin-top: 8px;
             font-size: 11px;
         }
-        .password-requirements span {
-            display: block;
-            margin: 3px 0;
-            color: #888;
-        }
-        .password-requirements .met {
-            color: #00ff00;
-        }
-        .password-requirements .unmet {
-            color: #ff4444;
-        }
+        .password-requirements .met { color: #00ff00; }
+        .password-requirements .unmet { color: #ff4444; }
     </style>
 </head>
 <body>
@@ -200,7 +191,6 @@
             icon.classList.toggle('fa-eye-slash');
         };
 
-        // Password strength checker with requirements
         function checkPasswordStrength(password) {
             const requirements = {
                 length: password.length >= 8,
@@ -212,7 +202,6 @@
             
             const metCount = Object.values(requirements).filter(Boolean).length;
             
-            // Update requirement display
             document.getElementById('reqLength').className = requirements.length ? 'met' : 'unmet';
             document.getElementById('reqLength').innerHTML = (requirements.length ? '✓' : '✗') + ' At least 8 characters';
             document.getElementById('reqLower').className = requirements.lower ? 'met' : 'unmet';
@@ -224,27 +213,11 @@
             document.getElementById('reqSpecial').className = requirements.special ? 'met' : 'unmet';
             document.getElementById('reqSpecial').innerHTML = (requirements.special ? '✓' : '✗') + ' At least one special character (@$!%*?&)';
             
-            let strength = 0;
-            let strengthText = '';
-            let strengthClass = '';
-            
-            if (metCount <= 2) {
-                strength = 25;
-                strengthText = 'Weak';
-                strengthClass = 'weak';
-            } else if (metCount <= 3) {
-                strength = 50;
-                strengthText = 'Fair';
-                strengthClass = 'fair';
-            } else if (metCount <= 4) {
-                strength = 75;
-                strengthText = 'Good';
-                strengthClass = 'good';
-            } else {
-                strength = 100;
-                strengthText = 'Strong';
-                strengthClass = 'strong';
-            }
+            let strength = 0, strengthText = '', strengthClass = '';
+            if (metCount <= 2) { strength = 25; strengthText = 'Weak'; strengthClass = 'weak'; }
+            else if (metCount <= 3) { strength = 50; strengthText = 'Fair'; strengthClass = 'fair'; }
+            else if (metCount <= 4) { strength = 75; strengthText = 'Good'; strengthClass = 'good'; }
+            else { strength = 100; strengthText = 'Strong'; strengthClass = 'strong'; }
             
             document.getElementById('strengthFill').style.width = strength + '%';
             document.getElementById('strengthFill').className = 'strength-fill ' + strengthClass;
@@ -254,37 +227,23 @@
             return { strength: metCount, isStrong: metCount >= 4 };
         }
 
-        document.getElementById('password').addEventListener('input', function(e) {
-            checkPasswordStrength(e.target.value);
-        });
-
-        document.getElementById('phone').addEventListener('input', function(e) {
-            this.value = this.value.replace(/\D/g, '').slice(0, 9);
-        });
+        document.getElementById('password').addEventListener('input', function(e) { checkPasswordStrength(e.target.value); });
+        document.getElementById('phone').addEventListener('input', function(e) { this.value = this.value.replace(/\D/g, '').slice(0, 9); });
 
         let usernameTimeout;
         document.getElementById('username').addEventListener('input', function(e) {
             clearTimeout(usernameTimeout);
             const username = e.target.value;
             const hint = document.getElementById('usernameHint');
-            if (username.length < 3) {
-                hint.innerHTML = 'Username must be at least 3 characters';
-                hint.style.color = '#ff4444';
-                return;
-            }
+            if (username.length < 3) { hint.innerHTML = 'Username must be at least 3 characters'; hint.style.color = '#ff4444'; return; }
             usernameTimeout = setTimeout(async () => {
                 try {
                     const usersRef = collection(db, 'users');
                     const q = query(usersRef, where('username', '==', username));
                     const snapshot = await getDocs(q);
-                    if (snapshot.empty) {
-                        hint.innerHTML = '<i class="fas fa-check" style="color: #00ff00;"></i> Username available';
-                        hint.style.color = '#00ff00';
-                    } else {
-                        hint.innerHTML = '<i class="fas fa-times" style="color: #ff4444;"></i> Username taken';
-                        hint.style.color = '#ff4444';
-                    }
-                } catch (error) { console.error('Error checking username:', error); }
+                    if (snapshot.empty) { hint.innerHTML = '<i class="fas fa-check" style="color: #00ff00;"></i> Username available'; hint.style.color = '#00ff00'; }
+                    else { hint.innerHTML = '<i class="fas fa-times" style="color: #ff4444;"></i> Username taken'; hint.style.color = '#ff4444'; }
+                } catch (error) { console.error(error); }
             }, 500);
         });
 
@@ -299,70 +258,39 @@
             const terms = document.getElementById('terms').checked;
             const registerBtn = document.getElementById('registerBtn');
             
-            if (!phone.match(/^[97][0-9]{8}$/)) { showNotification('Please enter a valid Zambian phone number (starting with 97)', 'error'); return; }
-            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { showNotification('Please enter a valid email address', 'error'); return; }
-            if (username.length < 3) { showNotification('Username must be at least 3 characters', 'error'); return; }
+            if (!phone.match(/^[97][0-9]{8}$/)) { alert('Please enter a valid Zambian phone number'); return; }
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { alert('Invalid email'); return; }
+            if (username.length < 3) { alert('Username must be at least 3 characters'); return; }
+            if (!checkPasswordStrength(password).isStrong) { alert('Please use a stronger password (8+ chars, uppercase, lowercase, number, special)'); return; }
+            if (password !== confirmPassword) { alert('Passwords do not match'); return; }
+            if (!terms) { alert('You must agree to terms'); return; }
             
-            // Check password strength
-            const { isStrong } = checkPasswordStrength(password);
-            if (!isStrong) { showNotification('Please use a stronger password. Password must be at least 8 characters with uppercase, lowercase, number and special character.', 'error'); return; }
-            
-            if (password !== confirmPassword) { showNotification('Passwords do not match', 'error'); return; }
-            if (!terms) { showNotification('You must agree to the terms and conditions', 'error'); return; }
-            
-            registerBtn.disabled = true;
-            registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
-            
+            registerBtn.disabled = true; registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
             try {
                 const usersRef = collection(db, 'users');
                 const emailQuery = query(usersRef, where('email', '==', email));
-                const emailSnapshot = await getDocs(emailQuery);
-                if (!emailSnapshot.empty) throw new Error('Email already registered');
-                
+                if (!(await getDocs(emailQuery)).empty) throw new Error('Email already registered');
                 const phoneQuery = query(usersRef, where('phone', '==', '+260' + phone));
-                const phoneSnapshot = await getDocs(phoneQuery);
-                if (!phoneSnapshot.empty) throw new Error('Phone number already registered');
+                if (!(await getDocs(phoneQuery)).empty) throw new Error('Phone already registered');
                 
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
-                const userReferralCode = username.substring(0, 3).toUpperCase() + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+                const userReferralCode = username.substring(0,3).toUpperCase() + Math.floor(Math.random()*10000).toString().padStart(4,'0');
                 
                 await setDoc(doc(db, 'users', user.uid), {
-                    uid: user.uid, username: username, email: email, phone: '+260' + phone,
-                    country: 'Zambia', referralCode: userReferralCode, referredBy: referralCode || null,
-                    balance: 0, totalEarned: 0, totalTasks: 0, status: 'pending_activation', role: 'user',
-                    level: 'VIP 1', createdAt: new Date().toISOString(), lastLogin: new Date().toISOString()
+                    uid: user.uid, username, email, phone: '+260'+phone, country: 'Zambia',
+                    referralCode: userReferralCode, referredBy: referralCode || null,
+                    balance: 0, totalEarned: 0, totalTasks: 0, status: 'pending_activation',
+                    role: 'user', level: 'VIP 1', createdAt: new Date().toISOString(), lastLogin: new Date().toISOString()
                 });
-                
                 localStorage.setItem('pendingUserId', user.uid);
-                localStorage.setItem('pendingUserEmail', email);
-                
-                showNotification('Registration successful! Redirecting to activation page...', 'success');
-                setTimeout(() => { window.location.href = 'activation.html'; }, 2000);
-                
+                alert('Registration successful! Redirecting to activation...');
+                setTimeout(() => { window.location.href = 'activation.html'; }, 1500);
             } catch (error) {
-                let errorMessage = error.message || 'Registration failed';
-                if (error.code === 'auth/email-already-in-use') errorMessage = 'Email already in use';
-                else if (error.code === 'auth/weak-password') errorMessage = 'Password is too weak';
-                showNotification(errorMessage, 'error');
-                registerBtn.disabled = false;
-                registerBtn.innerHTML = 'Register Now <i class="fas fa-arrow-right"></i>';
+                alert(error.message || 'Registration failed');
+                registerBtn.disabled = false; registerBtn.innerHTML = 'Register Now <i class="fas fa-arrow-right"></i>';
             }
         });
-
-        function showNotification(message, type) {
-            const existing = document.querySelector('.notification-popup');
-            if (existing) existing.remove();
-            const notification = document.createElement('div');
-            notification.className = `notification-popup ${type}`;
-            notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i><span>${message}</span>`;
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 3000);
-        }
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const ref = urlParams.get('ref');
-        if (ref) document.getElementById('referral').value = ref;
     </script>
 </body>
 </html>
