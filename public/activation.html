@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Activation - BlackRock</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .activation-card { max-width: 500px; margin: 0 auto; }
+        .activation-fee {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            border-radius: 10px;
+            color: #000;
+        }
+        .activation-fee .amount { font-size: 48px; font-weight: 800; display: block; }
+        .payment-instructions {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .payment-instructions h3 { color: #00ff00; margin-bottom: 15px; }
+        .payment-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #333;
+        }
+        .payment-detail .label { color: #888; }
+        .payment-detail .value { color: #00ff00; font-weight: 600; }
+        .ussd-box {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            margin: 15px 0;
+            cursor: pointer;
+        }
+        .ussd-box code { font-size: 24px; color: #00ff00; }
+        .warning-box {
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ffd700;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #ffd700;
+        }
+        .btn-verify {
+            width: 100%;
+            padding: 15px;
+            background: #00ff00;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .btn-verify:disabled { background: #888; cursor: not-allowed; }
+        .notification-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+            animation: slideIn 0.3s;
+        }
+        .notification-popup.error { border-color: #ff4444; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card activation-card">
+            <div class="auth-logo">
+                <span class="black">BLACK</span><span class="green">ROCK</span>
+            </div>
+            <h2>Activate Your Account</h2>
+            <p>Pay activation fee to start earning</p>
+
+            <div class="activation-fee">
+                <span class="label">Activation Fee</span>
+                <span class="amount">50 ZMW</span>
+            </div>
+
+            <div class="payment-instructions">
+                <h3><i class="fas fa-info-circle"></i> Payment Instructions</h3>
+                <div class="payment-detail"><span class="label">Network:</span><span class="value">Airtel Money</span></div>
+                <div class="payment-detail"><span class="label">Phone Number:</span><span class="value">0977123456</span></div>
+                <div class="payment-detail"><span class="label">Account Name:</span><span class="value">BlackRock Official</span></div>
+                <div class="ussd-box" onclick="copyUssd('*126#')"><code>*126#</code><small>Click to copy USSD code</small></div>
+                <p style="color: #888; text-align: center;">Dial *126# and send 50 ZMW to this number</p>
+            </div>
+
+            <div class="warning-box">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Important:</strong> After sending money, copy the confirmation message and paste below
+            </div>
+
+            <form id="activationForm">
+                <div class="form-group">
+                    <label for="senderPhone"><i class="fas fa-phone"></i> Your Phone Number</label>
+                    <div class="phone-input-wrapper">
+                        <span class="country-code">+260</span>
+                        <input type="tel" id="senderPhone" placeholder="97xxxxxxx" maxlength="9" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="transactionMessage"><i class="fas fa-comment"></i> Transaction Message</label>
+                    <textarea id="transactionMessage" rows="4" placeholder="Paste the confirmation message you received" required></textarea>
+                </div>
+                <button type="submit" class="btn-verify" id="submitBtn"><i class="fas fa-check-circle"></i> Verify Payment</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Already activated? <a href="login.html">Login Here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, doc, getDoc, collection, addDoc, query, where, getDocs } from './assets/js/firebase-config.js';
+
+        const pendingUserId = localStorage.getItem('pendingUserId');
+        if (!pendingUserId) {
+            alert('No pending activation found. Please register first.');
+            window.location.href = 'register.html';
+        }
+
+        document.getElementById('senderPhone').addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '').slice(0, 9);
+        });
+
+        document.getElementById('activationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const senderPhone = document.getElementById('senderPhone').value;
+            const transactionMessage = document.getElementById('transactionMessage').value;
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (!senderPhone.match(/^[97][0-9]{8}$/)) {
+                showNotification('Please enter a valid Zambian phone number (starting with 97)', 'error');
+                return;
+            }
+            if (!transactionMessage) {
+                showNotification('Please paste the transaction message', 'error');
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            
+            try {
+                const activationsRef = collection(db, 'activations');
+                const q = query(activationsRef, where('userId', '==', pendingUserId), where('status', '==', 'pending'));
+                const snapshot = await getDocs(q);
+                if (!snapshot.empty) {
+                    showNotification('You already have a pending activation request. Please wait for admin approval.', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify Payment';
+                    return;
+                }
+                
+                await addDoc(collection(db, 'activations'), {
+                    userId: pendingUserId,
+                    senderPhone: '+260' + senderPhone,
+                    transactionMessage: transactionMessage,
+                    amount: 50,
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                });
+                
+                localStorage.removeItem('pendingUserId');
+                showNotification('Activation request submitted successfully! Redirecting to login...', 'success');
+                setTimeout(() => { window.location.href = 'login.html'; }, 3000);
+                
+            } catch (error) {
+                showNotification('Failed to submit activation request. Please try again.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify Payment';
+            }
+        });
+
+        window.copyUssd = function(ussd) {
+            navigator.clipboard.writeText(ussd);
+            showNotification('USSD code copied!', 'success');
+        };
+
+        function showNotification(message, type) {
+            const existing = document.querySelector('.notification-popup');
+            if (existing) existing.remove();
+            const notification = document.createElement('div');
+            notification.className = `notification-popup ${type}`;
+            notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 4000);
+        }
+    </script>
+</body>
+</html>
