@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - BlackRock</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .country-badge {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            border-radius: 30px;
+            padding: 10px 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .country-badge i { color: #00ff00; }
+        .password-strength { margin-top: 5px; font-size: 12px; }
+        .strength-bar {
+            height: 4px;
+            background: #333;
+            margin-top: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .strength-fill { height: 100%; width: 0; transition: width 0.3s; }
+        .strength-fill.weak { background: #ff4444; width: 25%; }
+        .strength-fill.fair { background: #ffaa44; width: 50%; }
+        .strength-fill.good { background: #44ff44; width: 75%; }
+        .strength-fill.strong { background: #00ff00; width: 100%; }
+        .strength-text { font-size: 12px; margin-top: 5px; }
+        .strength-text.weak { color: #ff4444; }
+        .strength-text.fair { color: #ffaa44; }
+        .strength-text.good { color: #44ff44; }
+        .strength-text.strong { color: #00ff00; }
+        .terms { display: flex; align-items: center; gap: 10px; margin: 20px 0; }
+        .terms input[type="checkbox"] { width: 18px; height: 18px; accent-color: #00ff00; }
+        .terms label { color: #888; font-size: 14px; }
+        .terms a { color: #00ff00; text-decoration: none; }
+        .referral-info {
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 13px;
+            color: #888;
+        }
+        .referral-info i { color: #00ff00; margin-right: 5px; }
+        .phone-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .country-code {
+            background: #00ff00;
+            color: #000;
+            padding: 12px 15px;
+            font-weight: 600;
+        }
+        .phone-input-wrapper input {
+            flex: 1;
+            border: none !important;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 12px 15px;
+        }
+        .form-hint { display: block; margin-top: 5px; color: #888; font-size: 12px; }
+        .form-hint i { color: #00ff00; margin-right: 5px; }
+        .password-wrapper { position: relative; }
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #888;
+        }
+        .password-requirements {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            padding: 8px;
+            margin-top: 8px;
+            font-size: 11px;
+        }
+        .password-requirements span {
+            display: block;
+            margin: 3px 0;
+            color: #888;
+        }
+        .password-requirements .met {
+            color: #00ff00;
+        }
+        .password-requirements .unmet {
+            color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <span class="black">BLACK</span><span class="green">ROCK</span>
+            </div>
+            <h2>Join BlackRock</h2>
+            <p>Start earning by watching videos</p>
+
+            <div class="country-badge">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Zambia Only</span>
+            </div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="username"><i class="fas fa-user"></i> Username</label>
+                    <input type="text" id="username" placeholder="Choose a username" required>
+                    <div id="usernameHint" class="password-strength"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" id="email" placeholder="your@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone"><i class="fas fa-phone-alt"></i> Phone Number</label>
+                    <div class="phone-input-wrapper">
+                        <span class="country-code">+260</span>
+                        <input type="tel" id="phone" placeholder="97xxxxxxx" maxlength="9" required>
+                    </div>
+                    <small class="form-hint"><i class="fas fa-info-circle"></i> Enter 9 digits (e.g., 977123456)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="referral"><i class="fas fa-gift"></i> Referral Code (Optional)</label>
+                    <input type="text" id="referral" placeholder="Enter referral code if you have">
+                </div>
+
+                <div class="referral-info">
+                    <i class="fas fa-info-circle"></i> Using a referral code gives you 5 ZMW bonus after activation!
+                </div>
+
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" placeholder="Create a strong password" minlength="8" required>
+                        <i class="fas fa-eye toggle-password" onclick="togglePassword('password')"></i>
+                    </div>
+                    <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+                    <div class="strength-text" id="strengthText"></div>
+                    <div class="password-requirements" id="passwordRequirements">
+                        <span id="reqLength" class="unmet">✗ At least 8 characters</span>
+                        <span id="reqLower" class="unmet">✗ At least one lowercase letter</span>
+                        <span id="reqUpper" class="unmet">✗ At least one uppercase letter</span>
+                        <span id="reqNumber" class="unmet">✗ At least one number</span>
+                        <span id="reqSpecial" class="unmet">✗ At least one special character (@$!%*?&)</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword"><i class="fas fa-lock"></i> Confirm Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="confirmPassword" placeholder="Re-enter password" required>
+                        <i class="fas fa-eye toggle-password" onclick="togglePassword('confirmPassword')"></i>
+                    </div>
+                </div>
+
+                <div class="terms">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">I agree to the <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a></label>
+                </div>
+
+                <button type="submit" class="btn-submit" id="registerBtn">Register Now <i class="fas fa-arrow-right"></i></button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Already have an account? <a href="login.html">Login Here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, createUserWithEmailAndPassword, doc, setDoc, collection, query, where, getDocs } from './assets/js/firebase-config.js';
+
+        window.togglePassword = function(inputId) {
+            const input = document.getElementById(inputId);
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+            const icon = input.nextElementSibling;
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        };
+
+        // Password strength checker with requirements
+        function checkPasswordStrength(password) {
+            const requirements = {
+                length: password.length >= 8,
+                lower: /[a-z]/.test(password),
+                upper: /[A-Z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[@$!%*?&]/.test(password)
+            };
+            
+            const metCount = Object.values(requirements).filter(Boolean).length;
+            
+            // Update requirement display
+            document.getElementById('reqLength').className = requirements.length ? 'met' : 'unmet';
+            document.getElementById('reqLength').innerHTML = (requirements.length ? '✓' : '✗') + ' At least 8 characters';
+            document.getElementById('reqLower').className = requirements.lower ? 'met' : 'unmet';
+            document.getElementById('reqLower').innerHTML = (requirements.lower ? '✓' : '✗') + ' At least one lowercase letter';
+            document.getElementById('reqUpper').className = requirements.upper ? 'met' : 'unmet';
+            document.getElementById('reqUpper').innerHTML = (requirements.upper ? '✓' : '✗') + ' At least one uppercase letter';
+            document.getElementById('reqNumber').className = requirements.number ? 'met' : 'unmet';
+            document.getElementById('reqNumber').innerHTML = (requirements.number ? '✓' : '✗') + ' At least one number';
+            document.getElementById('reqSpecial').className = requirements.special ? 'met' : 'unmet';
+            document.getElementById('reqSpecial').innerHTML = (requirements.special ? '✓' : '✗') + ' At least one special character (@$!%*?&)';
+            
+            let strength = 0;
+            let strengthText = '';
+            let strengthClass = '';
+            
+            if (metCount <= 2) {
+                strength = 25;
+                strengthText = 'Weak';
+                strengthClass = 'weak';
+            } else if (metCount <= 3) {
+                strength = 50;
+                strengthText = 'Fair';
+                strengthClass = 'fair';
+            } else if (metCount <= 4) {
+                strength = 75;
+                strengthText = 'Good';
+                strengthClass = 'good';
+            } else {
+                strength = 100;
+                strengthText = 'Strong';
+                strengthClass = 'strong';
+            }
+            
+            document.getElementById('strengthFill').style.width = strength + '%';
+            document.getElementById('strengthFill').className = 'strength-fill ' + strengthClass;
+            document.getElementById('strengthText').textContent = strengthText;
+            document.getElementById('strengthText').className = 'strength-text ' + strengthClass;
+            
+            return { strength: metCount, isStrong: metCount >= 4 };
+        }
+
+        document.getElementById('password').addEventListener('input', function(e) {
+            checkPasswordStrength(e.target.value);
+        });
+
+        document.getElementById('phone').addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '').slice(0, 9);
+        });
+
+        let usernameTimeout;
+        document.getElementById('username').addEventListener('input', function(e) {
+            clearTimeout(usernameTimeout);
+            const username = e.target.value;
+            const hint = document.getElementById('usernameHint');
+            if (username.length < 3) {
+                hint.innerHTML = 'Username must be at least 3 characters';
+                hint.style.color = '#ff4444';
+                return;
+            }
+            usernameTimeout = setTimeout(async () => {
+                try {
+                    const usersRef = collection(db, 'users');
+                    const q = query(usersRef, where('username', '==', username));
+                    const snapshot = await getDocs(q);
+                    if (snapshot.empty) {
+                        hint.innerHTML = '<i class="fas fa-check" style="color: #00ff00;"></i> Username available';
+                        hint.style.color = '#00ff00';
+                    } else {
+                        hint.innerHTML = '<i class="fas fa-times" style="color: #ff4444;"></i> Username taken';
+                        hint.style.color = '#ff4444';
+                    }
+                } catch (error) { console.error('Error checking username:', error); }
+            }, 500);
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const referralCode = document.getElementById('referral').value.trim();
+            const terms = document.getElementById('terms').checked;
+            const registerBtn = document.getElementById('registerBtn');
+            
+            if (!phone.match(/^[97][0-9]{8}$/)) { showNotification('Please enter a valid Zambian phone number (starting with 97)', 'error'); return; }
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { showNotification('Please enter a valid email address', 'error'); return; }
+            if (username.length < 3) { showNotification('Username must be at least 3 characters', 'error'); return; }
+            
+            // Check password strength
+            const { isStrong } = checkPasswordStrength(password);
+            if (!isStrong) { showNotification('Please use a stronger password. Password must be at least 8 characters with uppercase, lowercase, number and special character.', 'error'); return; }
+            
+            if (password !== confirmPassword) { showNotification('Passwords do not match', 'error'); return; }
+            if (!terms) { showNotification('You must agree to the terms and conditions', 'error'); return; }
+            
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+            
+            try {
+                const usersRef = collection(db, 'users');
+                const emailQuery = query(usersRef, where('email', '==', email));
+                const emailSnapshot = await getDocs(emailQuery);
+                if (!emailSnapshot.empty) throw new Error('Email already registered');
+                
+                const phoneQuery = query(usersRef, where('phone', '==', '+260' + phone));
+                const phoneSnapshot = await getDocs(phoneQuery);
+                if (!phoneSnapshot.empty) throw new Error('Phone number already registered');
+                
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                const userReferralCode = username.substring(0, 3).toUpperCase() + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+                
+                await setDoc(doc(db, 'users', user.uid), {
+                    uid: user.uid, username: username, email: email, phone: '+260' + phone,
+                    country: 'Zambia', referralCode: userReferralCode, referredBy: referralCode || null,
+                    balance: 0, totalEarned: 0, totalTasks: 0, status: 'pending_activation', role: 'user',
+                    level: 'VIP 1', createdAt: new Date().toISOString(), lastLogin: new Date().toISOString()
+                });
+                
+                localStorage.setItem('pendingUserId', user.uid);
+                localStorage.setItem('pendingUserEmail', email);
+                
+                showNotification('Registration successful! Redirecting to activation page...', 'success');
+                setTimeout(() => { window.location.href = 'activation.html'; }, 2000);
+                
+            } catch (error) {
+                let errorMessage = error.message || 'Registration failed';
+                if (error.code === 'auth/email-already-in-use') errorMessage = 'Email already in use';
+                else if (error.code === 'auth/weak-password') errorMessage = 'Password is too weak';
+                showNotification(errorMessage, 'error');
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = 'Register Now <i class="fas fa-arrow-right"></i>';
+            }
+        });
+
+        function showNotification(message, type) {
+            const existing = document.querySelector('.notification-popup');
+            if (existing) existing.remove();
+            const notification = document.createElement('div');
+            notification.className = `notification-popup ${type}`;
+            notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const ref = urlParams.get('ref');
+        if (ref) document.getElementById('referral').value = ref;
+    </script>
+</body>
+</html>

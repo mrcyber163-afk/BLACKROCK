@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment - BlackRock</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            color: #fff;
+        }
+        .dashboard-container { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 280px;
+            background: #0a0a0a;
+            border-right: 1px solid #00ff00;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+        .logo .black { font-size: 24px; font-weight: 800; color: #fff; }
+        .logo .green { font-size: 24px; font-weight: 800; color: #00ff00; }
+        .nav-menu { display: flex; flex-direction: column; gap: 5px; }
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            color: #888;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+        .nav-menu a i { width: 20px; color: #00ff00; }
+        .nav-menu a:hover { background: rgba(0,255,0,0.1); color: #fff; }
+        .nav-menu a.active { background: #00ff00; color: #000; }
+        .main-content { flex: 1; margin-left: 280px; padding: 20px; }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .user-balance {
+            background: #00ff00;
+            color: #000;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        .investment-container { max-width: 1200px; margin: 0 auto; }
+        
+        /* VIP Levels Button */
+        .vip-btn {
+            background: transparent;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 20px 0;
+            transition: all 0.3s;
+        }
+        .vip-btn:hover { background: #00ff00; color: #000; }
+        
+        /* Wealth Fund Button */
+        .wealth-btn {
+            background: transparent;
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 20px 0;
+            transition: all 0.3s;
+        }
+        .wealth-btn:hover { background: #ffd700; color: #000; }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: #0a0a0a;
+            border: 2px solid #00ff00;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        .modal-header h3 { color: #00ff00; }
+        .close-modal {
+            font-size: 28px;
+            cursor: pointer;
+            color: #888;
+        }
+        .close-modal:hover { color: #ff4444; }
+        .vip-grid, .wealth-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .vip-card, .wealth-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+        }
+        .vip-card.closed { opacity: 0.6; filter: grayscale(0.3); }
+        .vip-card h4 { font-size: 24px; color: #00ff00; }
+        .vip-card .capital { font-size: 28px; color: #ffd700; font-weight: bold; margin: 10px 0; }
+        .vip-card .daily { color: #00ff00; font-size: 18px; margin: 10px 0; }
+        .btn-invest-closed { background: #333; color: #888; padding: 10px; border: none; border-radius: 5px; cursor: not-allowed; width: 100%; margin-top: 15px; }
+        .wealth-card h4 { font-size: 20px; color: #ffd700; }
+        .wealth-card .duration { color: #888; margin: 5px 0; }
+        .wealth-card .capital { font-size: 24px; color: #fff; font-weight: bold; }
+        .wealth-card .returns { color: #00ff00; font-size: 18px; margin: 10px 0; }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="logo"><span class="black">BLACK</span><span class="green">ROCK</span></div>
+            <nav class="nav-menu">
+                <a href="dashboard.html"><i class="fas fa-home"></i> Home</a>
+                <a href="tasks.html"><i class="fas fa-tasks"></i> Tasks</a>
+                <a href="deposit.html"><i class="fas fa-plus-circle"></i> Deposit</a>
+                <a href="withdraw.html"><i class="fas fa-wallet"></i> Withdraw</a>
+                <a href="referral.html"><i class="fas fa-users"></i> Referrals</a>
+                <a href="investment.html" class="active"><i class="fas fa-chart-line"></i> Wealth Fund</a>
+                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="dashboard-header">
+                <div><h2>Investment Center</h2><p>Grow your wealth</p></div>
+                <div class="user-balance"><strong id="balance">0 ZMW</strong></div>
+            </div>
+
+            <div style="text-align: center;">
+                <button class="vip-btn" onclick="openVIPModal()"><i class="fas fa-crown"></i> VIP Levels (4% Daily Returns)</button>
+                <button class="wealth-btn" onclick="openWealthModal()"><i class="fas fa-chart-line"></i> Wealth Fund Plans</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIP Levels Modal -->
+    <div class="modal" id="vipModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-crown"></i> VIP Levels - 4% Daily Returns</h3>
+                <span class="close-modal" onclick="closeVIPModal()">&times;</span>
+            </div>
+            <div class="vip-grid" id="vipGrid"></div>
+        </div>
+    </div>
+
+    <!-- Wealth Fund Modal -->
+    <div class="modal" id="wealthModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-chart-line"></i> Wealth Fund Plans</h3>
+                <span class="close-modal" onclick="closeWealthModal()">&times;</span>
+            </div>
+            <div class="wealth-grid" id="wealthGrid"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, onAuthStateChanged, doc, getDoc } from './assets/js/firebase-config.js';
+
+        const vipLevels = [
+            { level: 1, min: 100, dailyPercent: 4, videos: 5, status: 'open' },
+            { level: 2, min: 500, dailyPercent: 4, videos: 8, status: 'open' },
+            { level: 3, min: 1000, dailyPercent: 4, videos: 12, status: 'open' },
+            { level: 4, min: 5000, dailyPercent: 4, videos: 20, status: 'open' },
+            { level: 5, min: 8000, dailyPercent: 4, videos: 30, status: 'open' },
+            { level: 6, min: 10000, dailyPercent: 4, videos: 40, status: 'open' },
+            { level: 7, min: 25000, dailyPercent: 4, videos: 60, status: 'open' },
+            { level: 8, min: 45000, dailyPercent: 4, videos: 80, status: 'closed' },
+            { level: 9, min: 65000, dailyPercent: 4, videos: 100, status: 'closed' },
+            { level: 10, min: 100000, dailyPercent: 4, videos: 150, status: 'closed' }
+        ];
+
+        const wealthPlans = [
+            { name: "Silver Plan", capital: 1000, duration: 60, returns: 180, total: 2800 },
+            { name: "Gold Plan", capital: 1500, duration: 90, returns: 240, total: 5100 },
+            { name: "Platinum Plan", capital: 3000, duration: 180, returns: 480, total: 17400 },
+            { name: "Diamond Plan", capital: 7000, duration: 320, returns: 800, total: 63000 },
+            { name: "Royal Plan", capital: 15000, duration: 1800, returns: 1000, total: 165000 }
+        ];
+
+        function renderVIP() {
+            const container = document.getElementById('vipGrid');
+            container.innerHTML = vipLevels.map(vip => `
+                <div class="vip-card ${vip.status === 'closed' ? 'closed' : ''}">
+                    <h4>VIP ${vip.level}</h4>
+                    <div class="capital">${vip.min.toLocaleString()} ZMW</div>
+                    <div class="daily">Daily Return: ${vip.dailyPercent}% (${(vip.min * vip.dailyPercent / 100).toFixed(2)} ZMW/day)</div>
+                    <div>Videos: ${vip.videos} per day</div>
+                    <div>Monthly: ${(vip.min * vip.dailyPercent / 100 * 30).toFixed(2)} ZMW</div>
+                    ${vip.status === 'closed' 
+                        ? '<button class="btn-invest-closed" disabled>🔒 Coming Soon</button>'
+                        : `<button class="btn-invest" onclick="alert('VIP ${vip.level} investment requires ${vip.min} ZMW. Coming soon!')">Invest Now</button>`
+                    }
+                </div>
+            `).join('');
+        }
+
+        function renderWealth() {
+            const container = document.getElementById('wealthGrid');
+            container.innerHTML = wealthPlans.map(plan => `
+                <div class="wealth-card">
+                    <h4>${plan.name}</h4>
+                    <div class="duration">📅 ${plan.duration} Days</div>
+                    <div class="capital">💰 ${plan.capital.toLocaleString()} ZMW</div>
+                    <div class="returns">+${plan.returns}% Returns</div>
+                    <div>Total: ${plan.total.toLocaleString()} ZMW</div>
+                    <button class="btn-invest" onclick="alert('${plan.name} requires ${plan.capital} ZMW. Coming soon!')">Invest Now</button>
+                </div>
+            `).join('');
+        }
+
+        window.openVIPModal = function() { renderVIP(); document.getElementById('vipModal').classList.add('active'); };
+        window.closeVIPModal = function() { document.getElementById('vipModal').classList.remove('active'); };
+        window.openWealthModal = function() { renderWealth(); document.getElementById('wealthModal').classList.add('active'); };
+        window.closeWealthModal = function() { document.getElementById('wealthModal').classList.remove('active'); };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists()) {
+                    document.getElementById('balance').textContent = `${userDoc.data().balance || 0} ZMW`;
+                }
+            } else { window.location.href = 'login.html'; }
+        });
+
+        window.logout = async function() { await auth.signOut(); window.location.href = 'login.html'; };
+    </script>
+</body>
+</html>

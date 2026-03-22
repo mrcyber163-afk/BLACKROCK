@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BlackRock</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .forgot-password {
+            text-align: right;
+            margin: 10px 0;
+        }
+        .forgot-password a {
+            color: #00ff00;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .notification-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1a1a1a;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+            animation: slideIn 0.3s;
+        }
+        .notification-popup.error { border-color: #ff4444; }
+        .notification-popup.warning { border-color: #ffd700; }
+        .notification-popup i { font-size: 24px; }
+        .notification-popup.error i { color: #ff4444; }
+        .notification-popup.warning i { color: #ffd700; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <span class="black">BLACK</span><span class="green">ROCK</span>
+            </div>
+            <h2>Welcome Back!</h2>
+            <p>Login to your account</p>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                        <i class="fas fa-eye toggle-password" onclick="togglePassword()"></i>
+                    </div>
+                </div>
+                <div class="forgot-password">
+                    <a href="#" onclick="forgotPassword()">Forgot Password?</a>
+                </div>
+                <button type="submit" class="btn-submit" id="loginBtn">Login <i class="fas fa-arrow-right"></i></button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="register.html">Register Here</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, signInWithEmailAndPassword, signOut, doc, getDoc, onAuthStateChanged } from './assets/js/firebase-config.js';
+
+        window.togglePassword = function() {
+            const passwordInput = document.getElementById('password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            const icon = document.querySelector('.toggle-password');
+            icon.classList.toggle('fa-eye');
+            icon.classList.toggle('fa-eye-slash');
+        };
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            if (!email || !password) {
+                showNotification('Please fill in all fields', 'error');
+                return;
+            }
+            
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+            
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                
+                if (!userDoc.exists()) throw new Error('User data not found');
+                const userData = userDoc.data();
+                
+                // Check account status - PENDING ACTIVATION = NO LOGIN
+                if (userData.status === 'pending_activation') {
+                    await signOut(auth);
+                    showNotification('⚠️ Your account is pending activation. Please complete the activation payment first.', 'warning');
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = 'Login <i class="fas fa-arrow-right"></i>';
+                    return;
+                }
+                
+                if (userData.status === 'suspended' || userData.status === 'banned') {
+                    await signOut(auth);
+                    showNotification('Your account has been ' + userData.status, 'error');
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = 'Login <i class="fas fa-arrow-right"></i>';
+                    return;
+                }
+                
+                showNotification('Login successful! Redirecting...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+                
+            } catch (error) {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = 'Login <i class="fas fa-arrow-right"></i>';
+                let errorMessage = 'Login failed';
+                if (error.code === 'auth/user-not-found') errorMessage = 'Email not registered';
+                else if (error.code === 'auth/wrong-password') errorMessage = 'Incorrect password';
+                else if (error.message) errorMessage = error.message;
+                showNotification(errorMessage, 'error');
+            }
+        });
+
+        window.forgotPassword = function() {
+            const email = document.getElementById('email').value;
+            if (!email) showNotification('Please enter your email first', 'error');
+            else showNotification('Password reset link sent to your email', 'success');
+        };
+
+        function showNotification(message, type) {
+            const existing = document.querySelector('.notification-popup');
+            if (existing) existing.remove();
+            const notification = document.createElement('div');
+            notification.className = `notification-popup ${type}`;
+            notification.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'}"></i><span>${message}</span>`;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 5000);
+        }
+
+        onAuthStateChanged(auth, (user) => { if (user) window.location.href = 'dashboard.html'; });
+    </script>
+</body>
+</html>
