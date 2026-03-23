@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BlackRock</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+        @media (max-width: 1024px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .quick-actions { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } .quick-actions { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="logo"><span class="black">BLACK</span><span class="green">ROCK</span><div style="font-size:12px;color:#0f0;">ADMIN</div></div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="active"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                <a href="users.html"><i class="fas fa-users"></i><span>Users</span></a>
+                <a href="deposits.html"><i class="fas fa-plus-circle"></i><span>Deposits</span></a>
+                <a href="withdrawals.html"><i class="fas fa-wallet"></i><span>Withdrawals</span></a>
+                <a href="tasks.html"><i class="fas fa-tasks"></i><span>Tasks</span></a>
+                <a href="activations.html"><i class="fas fa-check-circle"></i><span>Activations</span></a>
+                <a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+            </nav>
+        </div>
+        <div class="main-content">
+            <div class="dashboard-header"><div><h2>Admin Dashboard</h2><p>Welcome, Administrator</p></div><div class="user-balance" id="adminEmail">Loading...</div></div>
+            <div class="stats-grid" id="statsGrid"><div class="stat-card">Loading stats...</div></div>
+            <div class="quick-actions">
+                <a href="users.html" class="action-btn"><i class="fas fa-users"></i><span>Manage Users</span></a>
+                <a href="deposits.html" class="action-btn"><i class="fas fa-plus-circle"></i><span>Deposits</span></a>
+                <a href="withdrawals.html" class="action-btn"><i class="fas fa-wallet"></i><span>Withdrawals</span></a>
+                <a href="activations.html" class="action-btn"><i class="fas fa-check-circle"></i><span>Activations</span></a>
+            </div>
+            <div class="recent-section"><div class="section-header"><h3>Recent Users</h3><a href="users.html" class="view-all">View All →</a></div><table class="admin-table"><thead><tr><th>Username</th><th>Email</th><th>Status</th><th>Balance</th><th>Joined</th></tr></thead><tbody id="recentUsers"></tbody></table></div>
+        </div>
+    </div>
+    <script type="module">
+        import { auth, db, collection, getDocs, query, orderBy, limit, doc, getDoc, onAuthStateChanged } from '../assets/js/firebase-config.js';
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (!userDoc.exists() || userDoc.data().role !== 'admin') { window.location.href = 'login.html'; return; }
+            document.getElementById('adminEmail').innerHTML = user.email;
+            await loadStats();
+            await loadRecentUsers();
+        });
+        async function loadStats() {
+            const usersSnap = await getDocs(collection(db, 'users'));
+            const depositsSnap = await getDocs(query(collection(db, 'deposits'), where('status', '==', 'pending')));
+            const withdrawalsSnap = await getDocs(query(collection(db, 'withdrawals'), where('status', '==', 'pending')));
+            const activationsSnap = await getDocs(query(collection(db, 'activations'), where('status', '==', 'pending')));
+            document.getElementById('statsGrid').innerHTML = `
+                <div class="stat-card"><h3>Total Users</h3><div class="stat-value">${usersSnap.size}</div></div>
+                <div class="stat-card"><h3>Pending Deposits</h3><div class="stat-value">${depositsSnap.size}</div></div>
+                <div class="stat-card"><h3>Pending Withdrawals</h3><div class="stat-value">${withdrawalsSnap.size}</div></div>
+                <div class="stat-card"><h3>Pending Activations</h3><div class="stat-value">${activationsSnap.size}</div></div>
+            `;
+        }
+        async function loadRecentUsers() {
+            const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'), limit(5));
+            const snap = await getDocs(q);
+            const tbody = document.getElementById('recentUsers');
+            tbody.innerHTML = '';
+            snap.forEach(docSnap => {
+                const u = docSnap.data();
+                tbody.innerHTML += `<tr><td>${u.username || '-'}</td><td>${u.email}</td><td><span class="badge ${u.status}">${u.status}</span></td><td>${u.balance || 0} ZMW</td><td>${new Date(u.createdAt).toLocaleDateString()}</td></tr>`;
+            });
+        }
+        window.logout = async () => { await auth.signOut(); window.location.href = 'login.html'; };
+    </script>
+</body>
+</html>

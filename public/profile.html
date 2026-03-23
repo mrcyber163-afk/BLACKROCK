@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - BlackRock</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            color: #fff;
+        }
+        .dashboard-container { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 280px;
+            background: #0a0a0a;
+            border-right: 1px solid #0f0;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .logo { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #333; }
+        .logo .black { font-size: 24px; font-weight: 800; color: #fff; }
+        .logo .green { font-size: 24px; font-weight: 800; color: #0f0; }
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            color: #888;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: 0.3s;
+        }
+        .nav-menu a i { width: 20px; color: #0f0; }
+        .nav-menu a:hover { background: rgba(0,255,0,0.1); color: #fff; }
+        .nav-menu a.active { background: #0f0; color: #000; }
+        .main-content { flex: 1; margin-left: 280px; padding: 20px; }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0a0a0a;
+            border: 1px solid #0f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .user-balance { background: #0f0; color: #000; padding: 8px 15px; border-radius: 20px; font-weight: bold; }
+        .profile-card {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #0f0, #0c0);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 48px;
+            color: #000;
+        }
+        .profile-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+            text-align: left;
+        }
+        .info-item { padding: 12px; background: #1a1a1a; border-radius: 8px; }
+        .info-item .label { color: #888; font-size: 12px; margin-bottom: 5px; }
+        .info-item .value { font-size: 18px; font-weight: 600; color: #0f0; }
+        .edit-btn {
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .contact-section {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .contact-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #0a0a0a;
+            border: 1px solid #0f0;
+            padding: 12px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #fff;
+            transition: 0.3s;
+        }
+        .contact-btn:hover { background: #0f0; color: #000; transform: translateY(-2px); }
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #0a0a0a;
+            border-top: 1px solid #0f0;
+            padding: 10px;
+            justify-content: space-around;
+        }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding-bottom: 80px; }
+            .profile-info { grid-template-columns: 1fr; }
+            .mobile-nav { display: flex; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="logo"><span class="black">BLACK</span><span class="green">ROCK</span></div>
+            <nav class="nav-menu">
+                <a href="dashboard.html"><i class="fas fa-home"></i> Home</a>
+                <a href="tasks.html"><i class="fas fa-tasks"></i> Tasks</a>
+                <a href="deposit.html"><i class="fas fa-plus-circle"></i> Deposit</a>
+                <a href="withdraw.html"><i class="fas fa-wallet"></i> Withdraw</a>
+                <a href="transaction-history.html"><i class="fas fa-history"></i> History</a>
+                <a href="referral.html"><i class="fas fa-users"></i> Referrals</a>
+                <a href="investment.html"><i class="fas fa-chart-line"></i> Investment</a>
+                <a href="profile.html" class="active"><i class="fas fa-user"></i> Profile</a>
+                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="dashboard-header">
+                <div><h2>My Profile</h2><p>View and manage your account</p></div>
+                <div class="user-balance"><strong id="balance">0 ZMW</strong></div>
+            </div>
+
+            <div class="profile-card">
+                <div class="profile-avatar"><i class="fas fa-user"></i></div>
+                <h2 id="username">Username</h2>
+                <p id="email">email@example.com</p>
+
+                <div class="profile-info">
+                    <div class="info-item"><div class="label">📞 Phone</div><div class="value" id="phone">-</div></div>
+                    <div class="info-item"><div class="label">⭐ VIP Level</div><div class="value" id="level">VIP 1</div></div>
+                    <div class="info-item"><div class="label">💰 Balance</div><div class="value" id="profileBalance">0 ZMW</div></div>
+                    <div class="info-item"><div class="label">📅 Joined</div><div class="value" id="joined">-</div></div>
+                    <div class="info-item"><div class="label">🎯 Total Earned</div><div class="value" id="totalEarned">0 ZMW</div></div>
+                    <div class="info-item"><div class="label">📋 Total Tasks</div><div class="value" id="totalTasks">0</div></div>
+                </div>
+
+                <button class="edit-btn" onclick="editProfile()"><i class="fas fa-edit"></i> Edit Profile</button>
+            </div>
+
+            <div class="contact-section">
+                <a href="#" class="contact-btn" onclick="openWhatsApp()"><i class="fab fa-whatsapp"></i> WhatsApp Support</a>
+                <a href="#" class="contact-btn" onclick="callSupport()"><i class="fas fa-phone-alt"></i> Call Support</a>
+                <a href="#" class="contact-btn" onclick="emailSupport()"><i class="fas fa-envelope"></i> Email Support</a>
+            </div>
+        </div>
+
+        <div class="mobile-nav">
+            <a href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="welcome-bonus.html"><i class="fas fa-gift"></i><span>Bonus</span></a>
+            <a href="investment.html"><i class="fas fa-chart-line"></i><span>VIP</span></a>
+            <a href="referral.html"><i class="fas fa-users"></i><span>Team</span></a>
+            <a href="profile.html" class="active"><i class="fas fa-user"></i><span>Profile</span></a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, doc, getDoc, updateDoc, onAuthStateChanged } from './assets/js/firebase-config.js';
+
+        let currentUser = null, userData = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUser = user;
+            await loadProfile();
+        });
+
+        async function loadProfile() {
+            const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+            if (userDoc.exists()) {
+                userData = userDoc.data();
+                document.getElementById('username').innerText = userData.username || 'User';
+                document.getElementById('email').innerText = userData.email || '-';
+                document.getElementById('phone').innerText = userData.phone || '-';
+                document.getElementById('level').innerHTML = userData.level || 'VIP 1';
+                document.getElementById('balance').innerHTML = (userData.balance || 0) + ' ZMW';
+                document.getElementById('profileBalance').innerHTML = (userData.balance || 0) + ' ZMW';
+                document.getElementById('joined').innerHTML = userData.createdAt ? new Date(userData.createdAt).toLocaleDateString() : '-';
+                document.getElementById('totalEarned').innerHTML = (userData.totalEarned || 0) + ' ZMW';
+                document.getElementById('totalTasks').innerHTML = userData.totalTasks || 0;
+            }
+        }
+
+        window.editProfile = async () => {
+            const newUsername = prompt('Enter new username:', userData?.username);
+            if (newUsername && newUsername.trim()) {
+                await updateDoc(doc(db, 'users', currentUser.uid), { username: newUsername.trim() });
+                alert('Username updated!');
+                loadProfile();
+            }
+        };
+
+        window.openWhatsApp = () => window.open('https://wa.me/260977123456?text=Hello%20BlackRock%20Support', '_blank');
+        window.callSupport = () => window.location.href = 'tel:+260977123456';
+        window.emailSupport = () => window.location.href = 'mailto:support@blackrock.com';
+        window.logout = async () => { await auth.signOut(); window.location.href = 'login.html'; };
+    </script>
+</body>
+</html>

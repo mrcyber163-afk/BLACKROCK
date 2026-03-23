@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - BlackRock</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -13,27 +11,20 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #000;
             color: #fff;
-            overflow-x: hidden;
         }
         .dashboard-container { display: flex; min-height: 100vh; }
         .sidebar {
             width: 280px;
             background: #0a0a0a;
-            border-right: 1px solid #00ff00;
+            border-right: 1px solid #0f0;
             padding: 20px;
             position: fixed;
             height: 100vh;
             overflow-y: auto;
         }
-        .logo {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #333;
-        }
+        .logo { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #333; }
         .logo .black { font-size: 24px; font-weight: 800; color: #fff; }
-        .logo .green { font-size: 24px; font-weight: 800; color: #00ff00; }
-        .nav-menu { display: flex; flex-direction: column; gap: 5px; }
+        .logo .green { font-size: 24px; font-weight: 800; color: #0f0; }
         .nav-menu a {
             display: flex;
             align-items: center;
@@ -42,27 +33,27 @@
             color: #888;
             text-decoration: none;
             border-radius: 8px;
-            transition: all 0.3s;
+            margin-bottom: 5px;
+            transition: 0.3s;
         }
-        .nav-menu a i { width: 20px; color: #00ff00; }
-        .nav-menu a:hover { background: rgba(0, 255, 0, 0.1); color: #fff; transform: translateX(5px); }
-        .nav-menu a.active { background: #00ff00; color: #000; }
-        .nav-menu a.active i { color: #000; }
+        .nav-menu a i { width: 20px; color: #0f0; }
+        .nav-menu a:hover { background: rgba(0,255,0,0.1); color: #fff; transform: translateX(5px); }
+        .nav-menu a.active { background: #0f0; color: #000; }
         .main-content { flex: 1; margin-left: 280px; padding: 20px; }
         .dashboard-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding: 20px;
             background: #0a0a0a;
-            border: 1px solid #333;
+            border: 1px solid #0f0;
             border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
         .greeting h2 { font-size: 28px; margin-bottom: 5px; }
         .greeting p { color: #888; }
         .user-level {
-            background: linear-gradient(135deg, #00ff00, #00cc00);
+            background: linear-gradient(135deg, #0f0, #0c0);
             color: #000;
             padding: 8px 20px;
             border-radius: 25px;
@@ -70,39 +61,44 @@
         }
         .admin-notification {
             background: #1a1a1a;
-            border: 1px solid #00ff00;
+            border: 1px solid #0f0;
             border-radius: 10px;
             padding: 15px 20px;
             margin-bottom: 25px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 15px;
         }
-        .admin-notification i { font-size: 24px; color: #00ff00; }
-        .notification-content { flex: 1; color: #fff; }
+        .admin-notification i { font-size: 24px; color: #0f0; }
+        .notification-content { flex: 1; margin-left: 15px; }
         .notification-content p { margin-bottom: 5px; }
         .notification-content small { color: #888; font-size: 12px; }
-        .close-notification { cursor: pointer; color: #888; font-size: 18px; }
-        .close-notification:hover { color: #ff4444; }
-        .balance-overview {
+        .close-notif { cursor: pointer; color: #888; font-size: 18px; transition: 0.3s; }
+        .close-notif:hover { color: #f44; }
+        .stats-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin-bottom: 30px;
         }
-        .welcome-bonus-card {
+        .total-income-card {
             background: linear-gradient(135deg, #1a3a1a, #0a2a0a);
             border: 2px solid #ffd700;
             border-radius: 15px;
             padding: 25px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .welcome-bonus-card .bonus-icon { font-size: 50px; color: #ffd700; margin-bottom: 10px; }
-        .welcome-bonus-card .bonus-amount { font-size: 42px; font-weight: 800; color: #ffd700; }
-        .bonus-progress { margin-top: 15px; }
+        .total-income-card .amount { font-size: 42px; font-weight: 800; color: #ffd700; }
+        .welcome-bonus-card {
+            background: linear-gradient(135deg, #1a2a3a, #0a1a2a);
+            border: 2px solid #0f0;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+        .welcome-bonus-card .bonus-amount { font-size: 36px; font-weight: 800; color: #0f0; }
         .progress-bar {
             width: 100%;
             height: 8px;
@@ -112,27 +108,22 @@
             margin: 10px 0;
         }
         .progress-fill { height: 100%; background: #ffd700; transition: width 0.3s; }
-        .bonus-progress span { color: #ffd700; }
-        .claim-bonus-btn {
-            background: #ffd700;
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 15px;
+        .claim-btn { background: #ffd700; color: #000; border: none; padding: 8px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        .claim-btn.disabled { background: #555; cursor: not-allowed; }
+        .balance-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
         }
-        .claim-bonus-btn.disabled { background: #555; cursor: not-allowed; }
         .balance-card {
-            background: linear-gradient(135deg, #1a1a1a, #000);
-            border: 1px solid #333;
+            background: #1a1a1a;
+            border: 1px solid #0f0;
             border-radius: 15px;
             padding: 20px;
+            text-align: center;
         }
-        .balance-card.available-balance { border-color: #00ff00; }
-        .balance-card .label { color: #888; font-size: 14px; display: block; margin-bottom: 5px; }
-        .balance-card .amount { font-size: 32px; font-weight: 800; color: #00ff00; display: block; }
+        .balance-card .amount { font-size: 32px; font-weight: 800; color: #0f0; }
         .quick-actions {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
@@ -143,33 +134,26 @@
             background: #1a1a1a;
             border: 1px solid #333;
             border-radius: 10px;
-            padding: 15px 10px;
+            padding: 15px;
             text-align: center;
             text-decoration: none;
             color: #fff;
-            transition: all 0.3s;
+            transition: 0.3s;
         }
-        .action-btn:hover { border-color: #00ff00; transform: translateY(-2px); }
-        .action-btn i { display: block; font-size: 24px; color: #00ff00; margin-bottom: 5px; }
-        .action-btn span { font-size: 12px; }
-        
-        /* How It Works Button & Modal */
+        .action-btn i { display: block; font-size: 24px; color: #0f0; margin-bottom: 5px; }
+        .action-btn:hover { border-color: #0f0; transform: translateY(-2px); }
         .how-it-works-btn {
             background: transparent;
-            border: 2px solid #00ff00;
-            color: #00ff00;
+            border: 2px solid #0f0;
+            color: #0f0;
             padding: 12px 25px;
             border-radius: 30px;
             cursor: pointer;
             font-weight: bold;
             margin: 20px 0;
-            transition: all 0.3s;
-            display: inline-block;
+            transition: 0.3s;
         }
-        .how-it-works-btn:hover {
-            background: #00ff00;
-            color: #000;
-        }
+        .how-it-works-btn:hover { background: #0f0; color: #000; }
         .modal {
             display: none;
             position: fixed;
@@ -177,7 +161,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0,0,0,0.95);
             z-index: 2000;
             align-items: center;
             justify-content: center;
@@ -185,7 +169,7 @@
         .modal.active { display: flex; }
         .modal-content {
             background: #0a0a0a;
-            border: 2px solid #00ff00;
+            border: 2px solid #0f0;
             border-radius: 20px;
             padding: 30px;
             max-width: 600px;
@@ -198,69 +182,30 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            padding-bottom: 15px;
             border-bottom: 1px solid #333;
+            padding-bottom: 15px;
         }
-        .modal-header h3 { color: #00ff00; font-size: 24px; }
-        .close-modal {
-            font-size: 28px;
-            cursor: pointer;
-            color: #888;
-            transition: all 0.3s;
-        }
-        .close-modal:hover { color: #ff4444; }
-        .steps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
+        .modal-header h3 { color: #0f0; }
+        .close-modal { font-size: 28px; cursor: pointer; color: #888; }
         .step-card {
             background: #1a1a1a;
             border: 1px solid #333;
             border-radius: 15px;
             padding: 20px;
-            text-align: center;
+            margin-bottom: 15px;
         }
         .step-number {
-            width: 50px;
-            height: 50px;
-            background: #00ff00;
+            width: 40px;
+            height: 40px;
+            background: #0f0;
             color: #000;
-            font-size: 24px;
-            font-weight: bold;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 15px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
-        .step-card h4 { color: #00ff00; margin-bottom: 10px; }
-        .step-card p { color: #ccc; font-size: 14px; line-height: 1.5; }
-        .step-card ul { list-style: none; text-align: left; margin-top: 10px; }
-        .step-card li { color: #888; font-size: 13px; margin: 5px 0; padding-left: 18px; position: relative; }
-        .step-card li::before { content: '✓'; color: #00ff00; position: absolute; left: 0; }
-        .info-box {
-            background: rgba(0, 255, 0, 0.05);
-            border: 1px solid #00ff00;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-        .info-box h4 { color: #00ff00; margin-bottom: 15px; }
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-        .info-item {
-            text-align: center;
-            padding: 15px;
-            background: rgba(0, 255, 0, 0.05);
-            border-radius: 10px;
-        }
-        .info-item i { font-size: 30px; color: #ffd700; margin-bottom: 10px; }
-        .info-item p { font-size: 13px; color: #ccc; }
         .notifications-panel {
             position: fixed;
             top: 0;
@@ -268,7 +213,7 @@
             width: 380px;
             height: 100vh;
             background: #0a0a0a;
-            border-left: 2px solid #00ff00;
+            border-left: 2px solid #0f0;
             transition: right 0.3s;
             z-index: 1000;
         }
@@ -280,8 +225,7 @@
             padding: 20px;
             border-bottom: 1px solid #333;
         }
-        .panel-header h3 { color: #00ff00; }
-        .panel-header i { cursor: pointer; color: #888; }
+        .panel-header h3 { color: #0f0; }
         .notifications-list { padding: 20px; max-height: calc(100vh - 80px); overflow-y: auto; }
         .notification-item {
             display: flex;
@@ -290,7 +234,7 @@
             border-bottom: 1px solid #333;
             cursor: pointer;
         }
-        .notification-item.unread { background: rgba(0, 255, 0, 0.1); }
+        .notification-item.unread { background: rgba(0,255,0,0.1); }
         .mobile-nav {
             display: none;
             position: fixed;
@@ -298,8 +242,9 @@
             left: 0;
             right: 0;
             background: #0a0a0a;
-            border-top: 1px solid #00ff00;
+            border-top: 1px solid #0f0;
             padding: 10px;
+            justify-content: space-around;
             z-index: 100;
         }
         .mobile-nav a {
@@ -311,78 +256,65 @@
             font-size: 12px;
         }
         .mobile-nav a i { font-size: 20px; margin-bottom: 5px; }
-        .mobile-nav a.active { color: #00ff00; }
-        @media (max-width: 1024px) {
-            .sidebar { width: 80px; padding: 10px; }
-            .sidebar span { display: none; }
-            .main-content { margin-left: 80px; }
-            .quick-actions { grid-template-columns: repeat(3, 1fr); }
-        }
+        .mobile-nav a.active { color: #0f0; }
         @media (max-width: 768px) {
-            .balance-overview { grid-template-columns: 1fr; }
-            .quick-actions { grid-template-columns: repeat(2, 1fr); }
-            .steps-grid { grid-template-columns: 1fr; }
-            .info-grid { grid-template-columns: 1fr; }
-            .mobile-nav { display: flex; justify-content: space-around; }
             .sidebar { display: none; }
             .main-content { margin-left: 0; padding-bottom: 80px; }
+            .stats-row { grid-template-columns: 1fr; }
+            .balance-cards { grid-template-columns: 1fr; }
+            .quick-actions { grid-template-columns: repeat(3, 1fr); }
+            .mobile-nav { display: flex; }
         }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
         <div class="sidebar">
-            <div class="logo">
-                <span class="black">BLACK</span><span class="green">ROCK</span>
-            </div>
+            <div class="logo"><span class="black">BLACK</span><span class="green">ROCK</span></div>
             <nav class="nav-menu">
-                <a href="dashboard.html" class="active"><i class="fas fa-home"></i><span>Home</span></a>
-                <a href="tasks.html"><i class="fas fa-tasks"></i><span>Tasks</span></a>
-                <a href="deposit.html"><i class="fas fa-plus-circle"></i><span>Deposit</span></a>
-                <a href="withdraw.html"><i class="fas fa-wallet"></i><span>Withdraw</span></a>
-                <a href="transaction-history.html"><i class="fas fa-history"></i><span>History</span></a>
-                <a href="referral.html"><i class="fas fa-users"></i><span>Referrals</span></a>
-                <a href="investment.html"><i class="fas fa-chart-line"></i><span>Wealth Fund</span></a>
-                <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
-                <a href="welcome-bonus.html"><i class="fas fa-gift"></i><span>Welcome Bonus</span></a>
-                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+                <a href="dashboard.html" class="active"><i class="fas fa-home"></i> Home</a>
+                <a href="tasks.html"><i class="fas fa-tasks"></i> Tasks</a>
+                <a href="deposit.html"><i class="fas fa-plus-circle"></i> Deposit</a>
+                <a href="withdraw.html"><i class="fas fa-wallet"></i> Withdraw</a>
+                <a href="transaction-history.html"><i class="fas fa-history"></i> History</a>
+                <a href="referral.html"><i class="fas fa-users"></i> Referrals</a>
+                <a href="investment.html"><i class="fas fa-chart-line"></i> Investment</a>
+                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                <a href="welcome-bonus.html"><i class="fas fa-gift"></i> Bonus</a>
+                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </nav>
         </div>
 
         <div class="main-content">
             <div class="dashboard-header">
-                <div class="greeting">
-                    <h2>Good <span id="greeting">Afternoon</span>, <span id="username">User</span>!</h2>
-                    <p>Your earnings summary</p>
-                </div>
+                <div class="greeting"><h2>Good <span id="greetingTime">Afternoon</span>, <span id="username">User</span>!</h2><p>Your earnings summary</p></div>
                 <div class="user-level" id="userLevel">VIP 1</div>
             </div>
 
-            <div class="admin-notification" id="adminNotification">
+            <div class="admin-notification" id="adminNotif">
                 <i class="fas fa-bullhorn"></i>
-                <div class="notification-content" id="notificationContent">
-                    <p>🔥 Welcome to BlackRock! Complete tasks and earn money daily!</p>
-                    <small>Last updated: Today</small>
-                </div>
-                <i class="fas fa-times close-notification" onclick="closeNotification()"></i>
+                <div class="notification-content"><p id="notifMsg">🔥 Welcome to BlackRock! Complete tasks and earn daily!</p><small id="notifDate">Today</small></div>
+                <i class="fas fa-times close-notif" onclick="closeAdminNotif()"></i>
             </div>
 
-            <div class="balance-overview">
+            <div class="stats-row">
+                <div class="total-income-card">
+                    <div><span>💰 Total Income</span><div class="amount" id="totalEarned">0 ZMW</div></div>
+                    <i class="fas fa-chart-line" style="font-size: 48px; color: #ffd700;"></i>
+                </div>
                 <div class="welcome-bonus-card">
-                    <div class="bonus-icon"><i class="fas fa-gift"></i></div>
+                    <i class="fas fa-gift" style="font-size: 32px; color: #0f0;"></i>
                     <div class="bonus-amount">100 ZMW</div>
-                    <div class="bonus-label">Welcome Bonus</div>
-                    <div class="bonus-progress">
-                        <div class="progress-bar"><div class="progress-fill" id="bonusProgressFill" style="width: 0%"></div></div>
-                        <span id="qualifiedCount">0</span>/<span id="requiredCount">10</span> qualified referrals
-                        <button class="claim-bonus-btn" id="claimBonusBtn" disabled>Claim Bonus</button>
-                    </div>
+                    <div>Welcome Bonus</div>
+                    <div class="progress-bar"><div class="progress-fill" id="bonusProgress" style="width:0%"></div></div>
+                    <span id="bonusCount">0</span>/10 active referrals
+                    <button id="claimBonusBtn" class="claim-btn disabled" disabled>Claim Bonus</button>
                 </div>
-                <div class="balance-card available-balance">
-                    <span class="label">Available Balance</span>
-                    <span class="amount" id="balance">0 ZMW</span>
-                    <small>Ready to withdraw</small>
-                </div>
+            </div>
+
+            <div class="balance-cards">
+                <div class="balance-card"><span>Available Balance</span><div class="amount" id="balance">0 ZMW</div><small>Ready to withdraw</small></div>
+                <div class="balance-card"><span>Total Withdrawn</span><div class="amount" id="totalWithdrawn">0 ZMW</div><small>All time</small></div>
             </div>
 
             <div class="quick-actions">
@@ -394,213 +326,105 @@
                 <a href="tasks.html" class="action-btn"><i class="fas fa-tasks"></i><span>Tasks</span></a>
             </div>
 
-            <!-- How It Works Button -->
-            <div style="text-align: center;">
-                <button class="how-it-works-btn" onclick="openHowItWorks()">
-                    <i class="fas fa-question-circle"></i> How It Works
-                </button>
-            </div>
+            <div style="text-align:center;"><button class="how-it-works-btn" onclick="openHowItWorks()"><i class="fas fa-question-circle"></i> How It Works</button></div>
         </div>
 
         <div class="mobile-nav">
             <a href="dashboard.html" class="active"><i class="fas fa-home"></i><span>Home</span></a>
             <a href="welcome-bonus.html"><i class="fas fa-gift"></i><span>Bonus</span></a>
-            <a href="deposit.html"><i class="fas fa-plus-circle"></i><span>Deposit</span></a>
+            <a href="investment.html"><i class="fas fa-chart-line"></i><span>VIP</span></a>
             <a href="referral.html"><i class="fas fa-users"></i><span>Team</span></a>
             <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
         </div>
     </div>
 
-    <div class="notifications-panel" id="notificationsPanel">
-        <div class="panel-header"><h3><i class="fas fa-bell"></i> NOTIFICATIONS</h3><i class="fas fa-times" onclick="closeNotifications()"></i></div>
-        <div class="notifications-list" id="notificationsList"><p style="text-align: center; color: #888;">No notifications</p></div>
-    </div>
-
-    <!-- How It Works Modal -->
     <div class="modal" id="howItWorksModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-question-circle"></i> How BlackRock Works</h3>
-                <span class="close-modal" onclick="closeHowItWorks()">&times;</span>
-            </div>
-            <div class="steps-grid">
-                <div class="step-card">
-                    <div class="step-number">1</div>
-                    <h4>Register Account</h4>
-                    <p>Create your free account with your email and Zambian phone number.</p>
-                    <ul>
-                        <li>Use a valid email address</li>
-                        <li>Zambian phone number (+260)</li>
-                        <li>Choose a unique username</li>
-                        <li>Set a strong password (8+ chars with uppercase, lowercase, number, special)</li>
-                    </ul>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">2</div>
-                    <h4>Activate Account</h4>
-                    <p>Pay the one-time activation fee of 50 ZMW to unlock all features.</p>
-                    <ul>
-                        <li>Send 50 ZMW via Airtel/MTN Money</li>
-                        <li>Dial *126# to send money</li>
-                        <li>Paste transaction confirmation</li>
-                        <li>Wait for admin verification (24-48 hours)</li>
-                    </ul>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">3</div>
-                    <h4>Complete Daily Tasks</h4>
-                    <p>Earn money by watching and engaging with videos on social media platforms.</p>
-                    <ul>
-                        <li>TikTok Videos - 2 ZMW each</li>
-                        <li>Facebook Videos - 3 ZMW each</li>
-                        <li>YouTube Videos - 4 ZMW each</li>
-                        <li>Instagram Reels - 2 ZMW each</li>
-                    </ul>
-                </div>
-                <div class="step-card">
-                    <div class="step-number">4</div>
-                    <h4>Withdraw Earnings</h4>
-                    <p>Withdraw your earnings directly to your mobile money account anytime.</p>
-                    <ul>
-                        <li>Minimum withdrawal: 50 ZMW</li>
-                        <li>Withdraw to Airtel/MTN Money</li>
-                        <li>Processing within 24-48 hours</li>
-                        <li>No withdrawal fees!</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="info-box">
-                <h4><i class="fas fa-chart-line"></i> How to Earn More?</h4>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <i class="fas fa-users"></i>
-                        <p><strong>Referral Program</strong><br>Invite friends and earn 5 ZMW for each active referral who deposits 100+ ZMW</p>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-chart-pie"></i>
-                        <p><strong>Wealth Fund Investment</strong><br>Invest in our Wealth Fund plans and earn up to 1000% returns</p>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-trophy"></i>
-                        <p><strong>VIP Levels</strong><br>Higher investment = Higher daily income (4% daily returns)</p>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-calendar-day"></i>
-                        <p><strong>Daily Tasks</strong><br>Complete tasks every day consistently. More active days = more earnings!</p>
-                    </div>
-                </div>
-            </div>
-            <div class="info-box" style="margin-top: 15px;">
-                <h4><i class="fas fa-question-circle"></i> Frequently Asked Questions</h4>
-                <p><strong>Q: How much can I earn per day?</strong><br>A: Earnings depend on your VIP level. VIP 1 earns 4% daily on investment, VIP 7 earns higher percentage.</p>
-                <p><strong>Q: When do I receive my earnings?</strong><br>A: Task earnings are added immediately after completion. Withdrawals are processed within 24-48 hours.</p>
-                <p><strong>Q: Can I have multiple accounts?</strong><br>A: No, one account per person. Multiple accounts will be banned.</p>
-                <p><strong>Q: Is there a referral limit?</strong><br>A: No! Refer as many friends as you want. Each active referral gives you 5 ZMW bonus.</p>
-            </div>
+            <div class="modal-header"><h3><i class="fas fa-question-circle"></i> How BlackRock Works</h3><span class="close-modal" onclick="closeHowItWorks()">&times;</span></div>
+            <div class="step-card"><div class="step-number">1</div><h4>Register Account</h4><p>Create free account with email & Zambian phone number</p></div>
+            <div class="step-card"><div class="step-number">2</div><h4>Activate Account</h4><p>Pay 50 ZMW activation fee via Airtel/MTN Money</p></div>
+            <div class="step-card"><div class="step-number">3</div><h4>Complete Tasks</h4><p>Watch videos on TikTok, Facebook, YouTube, Instagram and earn daily (2-4 ZMW per video)</p></div>
+            <div class="step-card"><div class="step-number">4</div><h4>Withdraw Earnings</h4><p>Withdraw directly to your mobile money account (min 50 ZMW)</p></div>
+            <div class="step-card"><div class="step-number">💎</div><h4>VIP Levels & Wealth Fund</h4><p>Invest and earn 4% daily returns. Higher investment = Higher earnings!</p></div>
+            <div class="step-card"><div class="step-number">👥</div><h4>Referral Program</h4><p>Invite friends and earn 5 ZMW for each active referral (100+ ZMW deposit)</p></div>
         </div>
+    </div>
+
+    <div class="notifications-panel" id="notifPanel">
+        <div class="panel-header"><h3><i class="fas fa-bell"></i> NOTIFICATIONS</h3><i class="fas fa-times" onclick="closeNotifPanel()"></i></div>
+        <div class="notifications-list" id="notifList"><p style="text-align:center;color:#888;">No notifications</p></div>
     </div>
 
     <script type="module">
         import { auth, db, onAuthStateChanged, doc, getDoc, collection, query, where, getDocs, onSnapshot, updateDoc, increment } from './assets/js/firebase-config.js';
 
-        let currentUser = null;
-        let userData = null;
+        let currentUser = null, userData = null;
 
         onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                await loadUserData();
-                loadWelcomeBonusProgress();
-                setupRealTimeUpdates();
-                setGreeting();
-            } else {
-                window.location.href = 'login.html';
-            }
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUser = user;
+            await loadUserData();
+            loadWelcomeBonusProgress();
+            setupRealtime();
+            setGreeting();
+            loadNotifications();
         });
 
         async function loadUserData() {
-            try {
-                const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-                if (userDoc.exists()) {
-                    userData = userDoc.data();
-                    updateUI();
-                }
-            } catch (error) { console.error('Error loading user:', error); }
+            const docSnap = await getDoc(doc(db, 'users', currentUser.uid));
+            if (docSnap.exists()) { userData = docSnap.data(); updateUI(); }
         }
-
         function updateUI() {
-            document.getElementById('username').textContent = userData?.username || 'User';
-            document.getElementById('balance').textContent = `${userData?.balance || 0} ZMW`;
-            document.getElementById('userLevel').textContent = userData?.level || 'VIP 1';
+            document.getElementById('username').innerText = userData?.username || 'User';
+            document.getElementById('balance').innerHTML = (userData?.balance || 0) + ' ZMW';
+            document.getElementById('totalEarned').innerHTML = (userData?.totalEarned || 0) + ' ZMW';
+            document.getElementById('totalWithdrawn').innerHTML = (userData?.totalWithdrawn || 0) + ' ZMW';
+            document.getElementById('userLevel').innerHTML = userData?.level || 'VIP 1';
         }
-
         function setGreeting() {
             const hour = new Date().getHours();
-            const greetingEl = document.getElementById('greeting');
-            if (hour < 12) greetingEl.textContent = 'Morning';
-            else if (hour < 17) greetingEl.textContent = 'Afternoon';
-            else if (hour < 20) greetingEl.textContent = 'Evening';
-            else greetingEl.textContent = 'Night';
+            const g = document.getElementById('greetingTime');
+            if (hour < 12) g.innerText = 'Morning';
+            else if (hour < 17) g.innerText = 'Afternoon';
+            else if (hour < 20) g.innerText = 'Evening';
+            else g.innerText = 'Night';
         }
-
         async function loadWelcomeBonusProgress() {
-            try {
-                const referralsRef = collection(db, 'referrals');
-                const q = query(referralsRef, where('referrerId', '==', currentUser.uid), where('status', '==', 'paid'), where('depositAmount', '>=', 100));
-                const snapshot = await getDocs(q);
-                const qualifiedCount = snapshot.size;
-                const requiredCount = 10;
-                document.getElementById('qualifiedCount').textContent = qualifiedCount;
-                document.getElementById('requiredCount').textContent = requiredCount;
-                const progressPercent = (qualifiedCount / requiredCount) * 100;
-                document.getElementById('bonusProgressFill').style.width = `${progressPercent}%`;
-                const claimBtn = document.getElementById('claimBonusBtn');
-                const isClaimed = userData?.welcomeBonusClaimed || false;
-                if (qualifiedCount >= requiredCount && !isClaimed) {
-                    claimBtn.disabled = false;
-                    claimBtn.innerHTML = 'Claim 100 ZMW!';
-                    claimBtn.style.background = '#ffd700';
-                } else if (isClaimed) {
-                    claimBtn.disabled = true;
-                    claimBtn.innerHTML = 'Bonus Claimed';
-                    claimBtn.style.background = '#555';
-                } else {
-                    claimBtn.disabled = true;
-                    claimBtn.innerHTML = `Need ${requiredCount - qualifiedCount} more`;
-                    claimBtn.style.background = '#555';
-                }
-            } catch (error) { console.error('Error loading bonus:', error); }
+            const q = query(collection(db, 'referrals'), where('referrerId', '==', currentUser.uid), where('status', '==', 'paid'), where('depositAmount', '>=', 100));
+            const snap = await getDocs(q);
+            const count = snap.size;
+            document.getElementById('bonusCount').innerText = count;
+            document.getElementById('bonusProgress').style.width = (count/10*100)+'%';
+            const btn = document.getElementById('claimBonusBtn');
+            if (count >= 10 && !userData?.welcomeBonusClaimed) {
+                btn.disabled = false; btn.classList.remove('disabled'); btn.innerText = 'Claim 100 ZMW!';
+                btn.onclick = async () => {
+                    await updateDoc(doc(db, 'users', currentUser.uid), { balance: increment(100), totalEarned: increment(100), welcomeBonusClaimed: true });
+                    alert('🎉 100 ZMW bonus added!'); location.reload();
+                };
+            } else if (userData?.welcomeBonusClaimed) {
+                btn.disabled = true; btn.classList.add('disabled'); btn.innerText = 'Bonus Claimed';
+            } else {
+                btn.disabled = true; btn.classList.add('disabled'); btn.innerText = `Need ${10-count} more`;
+            }
         }
-
-        window.claimWelcomeBonus = async function() {
-            try {
-                const referralsRef = collection(db, 'referrals');
-                const q = query(referralsRef, where('referrerId', '==', currentUser.uid), where('status', '==', 'paid'), where('depositAmount', '>=', 100));
-                const snapshot = await getDocs(q);
-                if (snapshot.size < 10) { alert('You need 10 qualified referrals to claim this bonus!'); return; }
-                if (userData?.welcomeBonusClaimed) { alert('You have already claimed your welcome bonus!'); return; }
-                await updateDoc(doc(db, 'users', currentUser.uid), {
-                    balance: increment(100), totalEarned: increment(100),
-                    welcomeBonusClaimed: true, welcomeBonusClaimedAt: new Date().toISOString()
-                });
-                alert('🎉 Congratulations! 100 ZMW has been added to your balance!');
-                await loadUserData();
-                await loadWelcomeBonusProgress();
-            } catch (error) { console.error('Error claiming bonus:', error); alert('Failed to claim bonus.'); }
-        };
-
-        function setupRealTimeUpdates() {
-            const userRef = doc(db, 'users', currentUser.uid);
-            onSnapshot(userRef, (doc) => { if (doc.exists()) { userData = doc.data(); updateUI(); loadWelcomeBonusProgress(); } });
+        function setupRealtime() {
+            onSnapshot(doc(db, 'users', currentUser.uid), (doc) => { if(doc.exists()) { userData = doc.data(); updateUI(); loadWelcomeBonusProgress(); } });
         }
-
-        function closeNotification() { document.getElementById('adminNotification').style.display = 'none'; }
-        function closeNotifications() { document.getElementById('notificationsPanel').classList.remove('active'); }
-        window.logout = async function() { await auth.signOut(); window.location.href = 'login.html'; };
-        
-        // How It Works Modal
-        window.openHowItWorks = function() { document.getElementById('howItWorksModal').classList.add('active'); };
-        window.closeHowItWorks = function() { document.getElementById('howItWorksModal').classList.remove('active'); };
+        function loadNotifications() {
+            const q = query(collection(db, 'users', currentUser.uid, 'notifications'), orderBy('createdAt', 'desc'), limit(20));
+            onSnapshot(q, (snap) => {
+                const list = document.getElementById('notifList');
+                if (snap.empty) { list.innerHTML = '<p style="text-align:center;color:#888;">No notifications</p>'; return; }
+                list.innerHTML = snap.docs.map(d => `<div class="notification-item ${d.data().read?'':'unread'}" onclick="markRead('${d.id}')"><i class="fas fa-${d.data().icon||'info-circle'}" style="color:#0f0"></i><div><p>${d.data().message}</p><small>${new Date(d.data().createdAt).toLocaleDateString()}</small></div></div>`).join('');
+            });
+        }
+        window.markRead = async (id) => { await updateDoc(doc(db, 'users', currentUser.uid, 'notifications', id), { read: true }); };
+        window.closeAdminNotif = () => document.getElementById('adminNotif').style.display = 'none';
+        window.openHowItWorks = () => document.getElementById('howItWorksModal').classList.add('active');
+        window.closeHowItWorks = () => document.getElementById('howItWorksModal').classList.remove('active');
+        window.closeNotifPanel = () => document.getElementById('notifPanel').classList.remove('active');
+        window.logout = async () => { await auth.signOut(); window.location.href = 'login.html'; };
     </script>
 </body>
 </html>

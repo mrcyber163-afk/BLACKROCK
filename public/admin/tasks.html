@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Tasks - BlackRock</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar"><div class="logo"><span class="black">BLACK</span><span class="green">ROCK</span><div style="font-size:12px;color:#0f0;">ADMIN</div></div>
+            <nav class="nav-menu">
+                <a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                <a href="users.html"><i class="fas fa-users"></i><span>Users</span></a>
+                <a href="deposits.html"><i class="fas fa-plus-circle"></i><span>Deposits</span></a>
+                <a href="withdrawals.html"><i class="fas fa-wallet"></i><span>Withdrawals</span></a>
+                <a href="tasks.html" class="active"><i class="fas fa-tasks"></i><span>Tasks</span></a>
+                <a href="activations.html"><i class="fas fa-check-circle"></i><span>Activations</span></a>
+                <a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+            </nav>
+        </div>
+        <div class="main-content">
+            <div class="dashboard-header"><div><h2>Task Management</h2><p>Create and manage daily tasks</p></div><div class="user-balance" id="adminEmail">Admin</div></div>
+            <button class="btn-submit" style="margin-bottom:20px;" onclick="openCreateModal()"><i class="fas fa-plus"></i> Create New Task</button>
+            <div class="content-card"><div style="overflow-x:auto;"><table class="admin-table"><thead><tr><th>Platform</th><th>Description</th><th>Reward</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead><tbody id="tasksList"></tbody></table></div></div>
+        </div>
+    </div>
+    <div class="modal" id="taskModal"><div class="modal-content"><div class="modal-header"><h3>Create/Edit Task</h3><span class="close-modal" onclick="closeModal()">&times;</span></div><form id="taskForm"><input type="hidden" id="taskId"><div class="form-group"><label>Platform</label><select id="taskPlatform" required><option value="tiktok">TikTok</option><option value="facebook">Facebook</option><option value="youtube">YouTube</option><option value="instagram">Instagram</option></select></div><div class="form-group"><label>Description</label><textarea id="taskDescription" rows="3" required></textarea></div><div class="form-group"><label>Reward (ZMW)</label><input type="number" id="taskReward" min="1" required></div><div class="form-group"><label>Date</label><input type="date" id="taskDate" required></div><div class="form-group"><label>Status</label><select id="taskStatus"><option value="active">Active</option><option value="inactive">Inactive</option></select></div><button type="submit" class="btn-submit">Save Task</button></form></div></div>
+    <script type="module">
+        import { auth, db, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, onAuthStateChanged } from '../assets/js/firebase-config.js';
+        onAuthStateChanged(auth, async (user) => { if (!user) { window.location.href = 'login.html'; return; } await loadTasks(); });
+        async function loadTasks() {
+            const snap = await getDocs(collection(db, 'daily-tasks'));
+            const tbody = document.getElementById('tasksList');
+            if (snap.empty) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No tasks created yet</td></tr>'; return; }
+            tbody.innerHTML = '';
+            snap.forEach(docSnap => {
+                const t = docSnap.data();
+                tbody.innerHTML += `<tr><td>${t.platform}</td><td>${t.description}</td><td>${t.reward} ZMW</td><td>${t.date}</td><td><span class="badge ${t.status === 'active' ? 'active' : 'pending'}">${t.status}</span></td><td><button class="action-btn" onclick="editTask('${docSnap.id}', '${t.platform}', '${t.description.replace(/'/g, "\\'")}', ${t.reward}, '${t.date}', '${t.status}')"><i class="fas fa-edit"></i></button><button class="action-btn" onclick="deleteTask('${docSnap.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
+            });
+        }
+        window.openCreateModal = () => { document.getElementById('taskId').value = ''; document.getElementById('taskForm').reset(); document.getElementById('taskModal').classList.add('active'); };
+        window.editTask = (id, platform, desc, reward, date, status) => { document.getElementById('taskId').value = id; document.getElementById('taskPlatform').value = platform; document.getElementById('taskDescription').value = desc; document.getElementById('taskReward').value = reward; document.getElementById('taskDate').value = date; document.getElementById('taskStatus').value = status; document.getElementById('taskModal').classList.add('active'); };
+        document.getElementById('taskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('taskId').value;
+            const data = { platform: document.getElementById('taskPlatform').value, description: document.getElementById('taskDescription').value, reward: parseFloat(document.getElementById('taskReward').value), date: document.getElementById('taskDate').value, status: document.getElementById('taskStatus').value };
+            if (id) { await updateDoc(doc(db, 'daily-tasks', id), data); alert('Task updated'); }
+            else { await addDoc(collection(db, 'daily-tasks'), { ...data, createdAt: new Date().toISOString() }); alert('Task created'); }
+            closeModal(); await loadTasks();
+        });
+        window.deleteTask = async (id) => { if(confirm('Delete this task?')){ await deleteDoc(doc(db, 'daily-tasks', id)); alert('Task deleted'); await loadTasks(); } };
+        window.closeModal = () => document.getElementById('taskModal').classList.remove('active');
+        window.logout = async () => { await auth.signOut(); window.location.href = 'login.html'; };
+    </script>
+</body>
+</html>

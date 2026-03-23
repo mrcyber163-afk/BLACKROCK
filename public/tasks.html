@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks - BlackRock</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            color: #fff;
+        }
+        .dashboard-container { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 280px;
+            background: #0a0a0a;
+            border-right: 1px solid #0f0;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .logo { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #333; }
+        .logo .black { font-size: 24px; font-weight: 800; color: #fff; }
+        .logo .green { font-size: 24px; font-weight: 800; color: #0f0; }
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            color: #888;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: 0.3s;
+        }
+        .nav-menu a i { width: 20px; color: #0f0; }
+        .nav-menu a:hover { background: rgba(0,255,0,0.1); color: #fff; }
+        .nav-menu a.active { background: #0f0; color: #000; }
+        .main-content { flex: 1; margin-left: 280px; padding: 20px; }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0a0a0a;
+            border: 1px solid #0f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .user-balance { background: #0f0; color: #000; padding: 8px 15px; border-radius: 20px; font-weight: bold; }
+        .task-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 10px 20px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .filter-btn.active, .filter-btn:hover { background: #0f0; color: #000; border-color: #0f0; }
+        .tasks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        .task-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+            transition: 0.3s;
+        }
+        .task-card:hover { border-color: #0f0; transform: translateY(-3px); }
+        .task-icon { font-size: 40px; margin-bottom: 15px; }
+        .task-icon.tiktok { color: #00f2ea; }
+        .task-icon.facebook { color: #1877f2; }
+        .task-icon.youtube { color: #ff0000; }
+        .task-icon.instagram { color: #e4405f; }
+        .task-title { font-size: 20px; font-weight: bold; margin-bottom: 10px; }
+        .task-reward { color: #0f0; font-size: 18px; font-weight: bold; margin: 10px 0; }
+        .task-btn {
+            width: 100%;
+            padding: 10px;
+            background: #0f0;
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .task-btn:disabled { background: #555; cursor: not-allowed; }
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #0a0a0a;
+            border-top: 1px solid #0f0;
+            padding: 10px;
+            justify-content: space-around;
+        }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding-bottom: 80px; }
+            .mobile-nav { display: flex; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="logo"><span class="black">BLACK</span><span class="green">ROCK</span></div>
+            <nav class="nav-menu">
+                <a href="dashboard.html"><i class="fas fa-home"></i> Home</a>
+                <a href="tasks.html" class="active"><i class="fas fa-tasks"></i> Tasks</a>
+                <a href="deposit.html"><i class="fas fa-plus-circle"></i> Deposit</a>
+                <a href="withdraw.html"><i class="fas fa-wallet"></i> Withdraw</a>
+                <a href="transaction-history.html"><i class="fas fa-history"></i> History</a>
+                <a href="referral.html"><i class="fas fa-users"></i> Referrals</a>
+                <a href="investment.html"><i class="fas fa-chart-line"></i> Investment</a>
+                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="dashboard-header">
+                <div><h2>Daily Tasks</h2><p>Complete tasks and earn money</p></div>
+                <div class="user-balance"><strong id="balance">0 ZMW</strong></div>
+            </div>
+
+            <div class="task-filters">
+                <button class="filter-btn active" data-platform="all">All Tasks</button>
+                <button class="filter-btn" data-platform="tiktok"><i class="fab fa-tiktok"></i> TikTok</button>
+                <button class="filter-btn" data-platform="facebook"><i class="fab fa-facebook"></i> Facebook</button>
+                <button class="filter-btn" data-platform="youtube"><i class="fab fa-youtube"></i> YouTube</button>
+                <button class="filter-btn" data-platform="instagram"><i class="fab fa-instagram"></i> Instagram</button>
+            </div>
+
+            <div class="tasks-grid" id="tasksGrid">
+                <div style="text-align:center; grid-column:1/-1; color:#888;">Loading tasks...</div>
+            </div>
+        </div>
+
+        <div class="mobile-nav">
+            <a href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="welcome-bonus.html"><i class="fas fa-gift"></i><span>Bonus</span></a>
+            <a href="investment.html"><i class="fas fa-chart-line"></i><span>VIP</span></a>
+            <a href="referral.html"><i class="fas fa-users"></i><span>Team</span></a>
+            <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, doc, getDoc, collection, query, where, getDocs, updateDoc, increment, onAuthStateChanged } from './assets/js/firebase-config.js';
+
+        let currentUser = null, userData = null, allTasks = [];
+
+        const dailyTasks = [
+            { id: 1, platform: 'tiktok', title: 'Watch TikTok Video', description: 'Watch, like and comment on this video', reward: 2, videoUrl: 'https://www.tiktok.com', action: 'Like, Comment, Subscribe' },
+            { id: 2, platform: 'facebook', title: 'Watch Facebook Video', description: 'Watch full video and react', reward: 3, videoUrl: 'https://www.facebook.com', action: 'Watch, Like, Share' },
+            { id: 3, platform: 'youtube', title: 'Watch YouTube Video', description: 'Watch 2 minutes and subscribe', reward: 4, videoUrl: 'https://www.youtube.com', action: 'Watch, Like, Subscribe' },
+            { id: 4, platform: 'instagram', title: 'Watch Instagram Reel', description: 'Watch and like the reel', reward: 2, videoUrl: 'https://www.instagram.com', action: 'Watch, Like, Follow' }
+        ];
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUser = user;
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) {
+                userData = userDoc.data();
+                document.getElementById('balance').innerHTML = (userData.balance || 0) + ' ZMW';
+            }
+            loadTasks();
+        });
+
+        function loadTasks(filter = 'all') {
+            const grid = document.getElementById('tasksGrid');
+            const filtered = filter === 'all' ? dailyTasks : dailyTasks.filter(t => t.platform === filter);
+            
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div style="text-align:center; grid-column:1/-1; color:#888;">No tasks available for this platform today</div>';
+                return;
+            }
+            
+            grid.innerHTML = filtered.map(task => `
+                <div class="task-card">
+                    <div class="task-icon ${task.platform}"><i class="fab fa-${task.platform}"></i></div>
+                    <div class="task-title">${task.title}</div>
+                    <p>${task.description}</p>
+                    <div class="task-reward">💰 ${task.reward} ZMW</div>
+                    <small style="color:#888;">${task.action}</small>
+                    <button class="task-btn" onclick="completeTask(${task.id}, '${task.platform}', ${task.reward})">Start Task</button>
+                </div>
+            `).join('');
+        }
+
+        window.completeTask = async (taskId, platform, reward) => {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opening...';
+            
+            // Open task URL in new tab
+            const task = dailyTasks.find(t => t.id === taskId);
+            window.open(task.videoUrl, '_blank');
+            
+            setTimeout(async () => {
+                try {
+                    await updateDoc(doc(db, 'users', currentUser.uid), {
+                        balance: increment(reward),
+                        totalEarned: increment(reward),
+                        totalTasks: increment(1)
+                    });
+                    alert(`✅ Task completed! +${reward} ZMW added to your balance.`);
+                    const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+                    document.getElementById('balance').innerHTML = (userDoc.data().balance || 0) + ' ZMW';
+                } catch (err) { console.error(err); alert('Error completing task. Please try again.'); }
+                btn.disabled = false;
+                btn.innerHTML = 'Start Task';
+            }, 5000);
+        };
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                loadTasks(btn.dataset.platform);
+            };
+        });
+
+        window.logout = async () => { await auth.signOut(); window.location.href = 'login.html'; };
+    </script>
+</body>
+</html>

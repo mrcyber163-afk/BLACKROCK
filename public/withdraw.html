@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw - BlackRock</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            color: #fff;
+        }
+        .dashboard-container { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 280px;
+            background: #0a0a0a;
+            border-right: 1px solid #0f0;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .logo { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #333; }
+        .logo .black { font-size: 24px; font-weight: 800; color: #fff; }
+        .logo .green { font-size: 24px; font-weight: 800; color: #0f0; }
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            color: #888;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: 0.3s;
+        }
+        .nav-menu a i { width: 20px; color: #0f0; }
+        .nav-menu a:hover { background: rgba(0,255,0,0.1); color: #fff; }
+        .nav-menu a.active { background: #0f0; color: #000; }
+        .main-content { flex: 1; margin-left: 280px; padding: 20px; }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0a0a0a;
+            border: 1px solid #0f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .user-balance { background: #0f0; color: #000; padding: 8px 15px; border-radius: 20px; font-weight: bold; }
+        .content-card {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .content-card h3 { color: #0f0; margin-bottom: 20px; }
+        .withdraw-amounts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .amount-btn {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .amount-btn:hover, .amount-btn.selected { border-color: #0f0; background: rgba(0,255,0,0.1); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #fff; }
+        .form-group label i { color: #0f0; margin-right: 8px; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: #0f0;
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .info-box {
+            background: rgba(0,255,0,0.1);
+            border: 1px solid #0f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #0a0a0a;
+            border-top: 1px solid #0f0;
+            padding: 10px;
+            justify-content: space-around;
+        }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding-bottom: 80px; }
+            .mobile-nav { display: flex; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="logo"><span class="black">BLACK</span><span class="green">ROCK</span></div>
+            <nav class="nav-menu">
+                <a href="dashboard.html"><i class="fas fa-home"></i> Home</a>
+                <a href="tasks.html"><i class="fas fa-tasks"></i> Tasks</a>
+                <a href="deposit.html"><i class="fas fa-plus-circle"></i> Deposit</a>
+                <a href="withdraw.html" class="active"><i class="fas fa-wallet"></i> Withdraw</a>
+                <a href="transaction-history.html"><i class="fas fa-history"></i> History</a>
+                <a href="referral.html"><i class="fas fa-users"></i> Referrals</a>
+                <a href="investment.html"><i class="fas fa-chart-line"></i> Investment</a>
+                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="dashboard-header">
+                <div><h2>Withdraw Funds</h2><p>Withdraw your earnings to mobile money</p></div>
+                <div class="user-balance"><strong id="balance">0 ZMW</strong></div>
+            </div>
+
+            <div class="content-card">
+                <h3><i class="fas fa-university"></i> Bind Account First</h3>
+                <form id="bindForm">
+                    <div class="form-group"><label><i class="fas fa-network-wired"></i> Network</label><select id="bindNetwork" required><option value="">Select Network</option><option value="airtel">Airtel Money</option><option value="mtn">MTN Money</option></select></div>
+                    <div class="form-group"><label><i class="fas fa-phone"></i> Phone Number</label><div style="display:flex;"><span style="background:#0f0; color:#000; padding:12px;">+260</span><input type="tel" id="bindPhone" placeholder="97xxxxxxx" maxlength="9" style="flex:1; background:#1a1a1a; border:1px solid #333; color:#fff; padding:12px;"></div></div>
+                    <div class="form-group"><label><i class="fas fa-user"></i> Full Name</label><input type="text" id="bindName" placeholder="Enter your full name"></div>
+                    <button type="button" class="btn-submit" id="saveBindBtn" style="background:#0f0; margin-bottom:10px;">Save Account Details</button>
+                </form>
+                <div id="bindStatus" style="color:#0f0; margin-bottom:20px;"></div>
+
+                <div id="withdrawSection" style="display:none;">
+                    <h3><i class="fas fa-money-bill-wave"></i> Select Withdrawal Amount</h3>
+                    <div class="withdraw-amounts" id="amountList">
+                        <div class="amount-btn" data-amount="50">50 ZMW</div>
+                        <div class="amount-btn" data-amount="120">120 ZMW</div>
+                        <div class="amount-btn" data-amount="350">350 ZMW</div>
+                        <div class="amount-btn" data-amount="700">700 ZMW</div>
+                        <div class="amount-btn" data-amount="1000">1000 ZMW</div>
+                        <div class="amount-btn" data-amount="2300">2300 ZMW</div>
+                        <div class="amount-btn" data-amount="3000">3000 ZMW</div>
+                        <div class="amount-btn" data-amount="7000">7000 ZMW</div>
+                        <div class="amount-btn" data-amount="12000">12000 ZMW</div>
+                        <div class="amount-btn" data-amount="15000">15000 ZMW</div>
+                        <div class="amount-btn" data-amount="20000">20000 ZMW</div>
+                    </div>
+                    <div class="form-group"><label><i class="fas fa-coins"></i> Or Enter Amount</label><input type="number" id="customAmount" placeholder="Enter amount (min 50)" min="50"></div>
+                    <button type="button" class="btn-submit" id="withdrawBtn" style="margin-top:20px;">Send Withdrawal Request</button>
+                    <div class="info-box"><i class="fas fa-clock"></i> Withdrawals processed within 24-48 hours. Once per day between 6AM-11PM Zambia time.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mobile-nav">
+            <a href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="welcome-bonus.html"><i class="fas fa-gift"></i><span>Bonus</span></a>
+            <a href="investment.html"><i class="fas fa-chart-line"></i><span>VIP</span></a>
+            <a href="referral.html"><i class="fas fa-users"></i><span>Team</span></a>
+            <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, doc, getDoc, updateDoc, collection, addDoc, query, where, getDocs, onAuthStateChanged } from './assets/js/firebase-config.js';
+
+        let currentUser = null, userData = null, selectedAmount = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUser = user;
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) { userData = userDoc.data(); document.getElementById('balance').innerHTML = (userData.balance || 0) + ' ZMW'; }
+            loadBindInfo();
+        });
+
+        async function loadBindInfo() {
+            const bindDoc = await getDoc(doc(db, 'users', currentUser.uid, 'withdraw', 'details'));
+            if (bindDoc.exists()) {
+                const data = bindDoc.data();
+                document.getElementById('bindNetwork').value = data.network;
+                document.getElementById('bindPhone').value = data.phone;
+                document.getElementById('bindName').value = data.name;
+                document.getElementById('bindStatus').innerHTML = '✅ Account bound: ' + data.network + ' - +260' + data.phone;
+                document.getElementById('withdrawSection').style.display = 'block';
+            } else {
+                document.getElementById('bindStatus').innerHTML = '⚠️ Please bind your account first to withdraw';
+            }
+        }
+
+        document.getElementById('saveBindBtn').onclick = async () => {
+            const network = document.getElementById('bindNetwork').value;
+            const phone = document.getElementById('bindPhone').value;
+            const name = document.getElementById('bindName').value;
+            if (!network || !phone.match(/^[97][0-9]{8}$/) || !name) { alert('Fill all fields correctly'); return; }
+            await setDoc(doc(db, 'users', currentUser.uid, 'withdraw', 'details'), { network, phone, name, updatedAt: new Date().toISOString() });
+            document.getElementById('bindStatus').innerHTML = '✅ Account saved! You can now withdraw.';
+            document.getElementById('withdrawSection').style.display = 'block';
+        };
+
+        document.querySelectorAll('.amount-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedAmount = parseInt(btn.dataset.amount);
+                document.getElementById('customAmount').value = '';
+            };
+        });
+        document.getElementById('customAmount').oninput = (e) => {
+            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+            selectedAmount = parseInt(e.target.value);
+        };
+
+        document.getElementById('withdrawBtn').onclick = async () => {
+            let amount = selectedAmount || parseInt(document.getElementById('customAmount').value);
+            if (!amount || amount < 50) { alert('Enter valid amount (min 50 ZMW)'); return; }
+            if (amount > (userData?.balance || 0)) { alert('Insufficient balance'); return; }
+            
+            const now = new Date();
+            const hour = now.getHours();
+            if (hour < 6 || hour > 23) { alert('Withdrawals allowed between 6 AM and 11 PM Zambia time'); return; }
+            
+            const todayStart = new Date(now.setHours(0,0,0,0)).toISOString();
+            const todayEnd = new Date(now.setHours(23,59,59,999)).toISOString();
+            const existing = await getDocs(query(collection(db, 'withdrawals'), where('userId', '==', currentUser.uid), where('createdAt', '>=', todayStart), where('createdAt', '<=', todayEnd)));
+            if (!existing.empty) { alert('You already made a withdrawal request today. Try again tomorrow.'); return; }
+            
+            const bindDoc = await getDoc(doc(db, 'users', currentUser.uid, 'withdraw', 'details'));
+            if (!bindDoc.exists()) { alert('Bind account first'); return; }
+            const bind = bindDoc.data();
+            
+            await addDoc(collection(db, 'withdrawals'), {
+                userId: currentUser.uid,
+                amount: amount,
+                network: bind.network,
+                phone: '+260'+bind.phone,
+                accountName: bind.name,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            });
+            alert('Withdrawal request submitted! Processing within 24-48 hours.');
+            document.getElementById('customAmount').value = '';
+            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+        };
+        window.logout = async () => { await auth.signOut(); window.location.href = 'login.html'; };
+    </script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History - BlackRock</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            color: #fff;
+        }
+        .dashboard-container { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 280px;
+            background: #0a0a0a;
+            border-right: 1px solid #0f0;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .logo { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #333; }
+        .logo .black { font-size: 24px; font-weight: 800; color: #fff; }
+        .logo .green { font-size: 24px; font-weight: 800; color: #0f0; }
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            color: #888;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: 0.3s;
+        }
+        .nav-menu a i { width: 20px; color: #0f0; }
+        .nav-menu a:hover { background: rgba(0,255,0,0.1); color: #fff; }
+        .nav-menu a.active { background: #0f0; color: #000; }
+        .main-content { flex: 1; margin-left: 280px; padding: 20px; }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0a0a0a;
+            border: 1px solid #0f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .user-balance { background: #0f0; color: #000; padding: 8px 15px; border-radius: 20px; font-weight: bold; }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .tab-btn.active { background: #0f0; color: #000; border-color: #0f0; }
+        .content-card {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+        }
+        .transaction-table { width: 100%; border-collapse: collapse; }
+        .transaction-table th, .transaction-table td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
+        .transaction-table th { color: #0f0; }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        .badge.approved { background: rgba(0,255,0,0.2); color: #0f0; }
+        .badge.pending { background: rgba(255,255,0,0.2); color: #ff0; }
+        .badge.rejected { background: rgba(255,0,0,0.2); color: #f44; }
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #0a0a0a;
+            border-top: 1px solid #0f0;
+            padding: 10px;
+            justify-content: space-around;
+        }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding-bottom: 80px; }
+            .transaction-table { display: block; overflow-x: auto; }
+            .mobile-nav { display: flex; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="logo"><span class="black">BLACK</span><span class="green">ROCK</span></div>
+            <nav class="nav-menu">
+                <a href="dashboard.html"><i class="fas fa-home"></i> Home</a>
+                <a href="tasks.html"><i class="fas fa-tasks"></i> Tasks</a>
+                <a href="deposit.html"><i class="fas fa-plus-circle"></i> Deposit</a>
+                <a href="withdraw.html"><i class="fas fa-wallet"></i> Withdraw</a>
+                <a href="transaction-history.html" class="active"><i class="fas fa-history"></i> History</a>
+                <a href="referral.html"><i class="fas fa-users"></i> Referrals</a>
+                <a href="investment.html"><i class="fas fa-chart-line"></i> Investment</a>
+                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="dashboard-header">
+                <div><h2>Transaction History</h2><p>View your deposits and withdrawals</p></div>
+                <div class="user-balance"><strong id="balance">0 ZMW</strong></div>
+            </div>
+
+            <div class="tabs">
+                <div class="tab-btn active" onclick="showTab('deposits')">📥 Deposits</div>
+                <div class="tab-btn" onclick="showTab('withdrawals')">📤 Withdrawals</div>
+            </div>
+
+            <div class="content-card">
+                <div id="depositsTab">
+                    <table class="transaction-table">
+                        <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th><th>Reference</th></tr></thead>
+                        <tbody id="depositsList"><tr><td colspan="5" style="text-align:center;">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+                <div id="withdrawalsTab" style="display:none;">
+                    <table class="transaction-table">
+                        <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th><th>Phone</th></tr></thead>
+                        <tbody id="withdrawalsList"><tr><td colspan="5" style="text-align:center;">Loading...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="mobile-nav">
+            <a href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="welcome-bonus.html"><i class="fas fa-gift"></i><span>Bonus</span></a>
+            <a href="investment.html"><i class="fas fa-chart-line"></i><span>VIP</span></a>
+            <a href="referral.html"><i class="fas fa-users"></i><span>Team</span></a>
+            <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, doc, getDoc, collection, query, where, orderBy, getDocs, onAuthStateChanged } from './assets/js/firebase-config.js';
+
+        let currentUser = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUser = user;
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) document.getElementById('balance').innerHTML = (userDoc.data().balance || 0) + ' ZMW';
+            await loadDeposits();
+            await loadWithdrawals();
+        });
+
+        async function loadDeposits() {
+            const q = query(collection(db, 'deposits'), where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
+            const snap = await getDocs(q);
+            const tbody = document.getElementById('depositsList');
+            if (snap.empty) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No deposits found</td></tr>'; return; }
+            tbody.innerHTML = '';
+            snap.forEach(docSnap => {
+                const d = docSnap.data();
+                tbody.innerHTML += `<tr><td>${new Date(d.createdAt).toLocaleDateString()}</td><td>${d.amount} ZMW</td><td>${d.paymentMethod || 'Mobile Money'}</td><td><span class="badge ${d.status}">${d.status}</span></td><td>${d.transactionMessage ? d.transactionMessage.slice(0,20)+'...' : '-'}</td></tr>`;
+            });
+        }
+
+        async function loadWithdrawals() {
+            const q = query(collection(db, 'withdrawals'), where('userId', '==', currentUser.uid), orderBy('createdAt', 'desc'));
+            const snap = await getDocs(q);
+            const tbody = document.getElementById('withdrawalsList');
+            if (snap.empty) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No withdrawals found</td></tr>'; return; }
+            tbody.innerHTML = '';
+            snap.forEach(docSnap => {
+                const w = docSnap.data();
+                tbody.innerHTML += `<tr><td>${new Date(w.createdAt).toLocaleDateString()}</td><td>${w.amount} ZMW</td><td>${w.network || 'Mobile Money'}</td><td><span class="badge ${w.status}">${w.status}</span></td><td>${w.phone || '-'}</td></tr>`;
+            });
+        }
+
+        window.showTab = (tab) => {
+            document.getElementById('depositsTab').style.display = tab === 'deposits' ? 'block' : 'none';
+            document.getElementById('withdrawalsTab').style.display = tab === 'withdrawals' ? 'block' : 'none';
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        };
+        window.logout = async () => { await auth.signOut(); window.location.href = 'login.html'; };
+    </script>
+</body>
+</html>

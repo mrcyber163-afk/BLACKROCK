@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Users - BlackRock</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar"><div class="logo"><span class="black">BLACK</span><span class="green">ROCK</span><div style="font-size:12px;color:#0f0;">ADMIN</div></div>
+            <nav class="nav-menu">
+                <a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                <a href="users.html" class="active"><i class="fas fa-users"></i><span>Users</span></a>
+                <a href="deposits.html"><i class="fas fa-plus-circle"></i><span>Deposits</span></a>
+                <a href="withdrawals.html"><i class="fas fa-wallet"></i><span>Withdrawals</span></a>
+                <a href="tasks.html"><i class="fas fa-tasks"></i><span>Tasks</span></a>
+                <a href="activations.html"><i class="fas fa-check-circle"></i><span>Activations</span></a>
+                <a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+            </nav>
+        </div>
+        <div class="main-content">
+            <div class="dashboard-header"><div><h2>User Management</h2><p>View, edit, suspend, or delete users</p></div><div class="user-balance" id="adminEmail">Admin</div></div>
+            <div class="content-card"><div style="overflow-x:auto;"><table class="admin-table"><thead><tr><th>Username</th><th>Email</th><th>Phone</th><th>Balance</th><th>Level</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead><tbody id="usersList"></tbody></table></div></div>
+        </div>
+    </div>
+    <div class="modal" id="editModal"><div class="modal-content"><div class="modal-header"><h3>Edit User</h3><span class="close-modal" onclick="closeModal()">&times;</span></div><form id="editForm"><input type="hidden" id="editUserId"><div class="form-group"><label>Username</label><input type="text" id="editUsername"></div><div class="form-group"><label>Email</label><input type="email" id="editEmail"></div><div class="form-group"><label>Phone</label><input type="text" id="editPhone"></div><div class="form-group"><label>Balance (ZMW)</label><input type="number" id="editBalance"></div><div class="form-group"><label>Status</label><select id="editStatus"><option value="active">Active</option><option value="suspended">Suspended</option><option value="banned">Banned</option></select></div><div class="form-group"><label>New Password (leave blank to keep current)</label><input type="password" id="editPassword"></div><button type="submit" class="btn-submit">Save Changes</button></form></div></div>
+    <script type="module">
+        import { auth, db, collection, getDocs, doc, updateDoc, deleteDoc, setDoc, onAuthStateChanged } from '../assets/js/firebase-config.js';
+        onAuthStateChanged(auth, async (user) => { if (!user) { window.location.href = 'login.html'; return; } await loadUsers(); });
+        async function loadUsers() {
+            const snap = await getDocs(collection(db, 'users'));
+            const tbody = document.getElementById('usersList');
+            tbody.innerHTML = '';
+            snap.forEach(docSnap => {
+                const u = docSnap.data();
+                tbody.innerHTML += `<tr><td>${u.username || '-'}</td><td>${u.email}</td><td>${u.phone || '-'}</td><td>${u.balance || 0} ZMW</td><td>${u.level || 'VIP 1'}</td><td><span class="badge ${u.status}">${u.status}</span></td><td>${new Date(u.createdAt).toLocaleDateString()}</td><td><button class="action-btn" onclick="editUser('${docSnap.id}')"><i class="fas fa-edit"></i></button><button class="action-btn" onclick="deleteUser('${docSnap.id}')"><i class="fas fa-trash"></i></button></td></tr>`;
+            });
+        }
+        window.editUser = async (userId) => {
+            const userDoc = await getDoc(doc(db, 'users', userId));
+            const u = userDoc.data();
+            document.getElementById('editUserId').value = userId;
+            document.getElementById('editUsername').value = u.username || '';
+            document.getElementById('editEmail').value = u.email || '';
+            document.getElementById('editPhone').value = u.phone || '';
+            document.getElementById('editBalance').value = u.balance || 0;
+            document.getElementById('editStatus').value = u.status || 'active';
+            document.getElementById('editModal').classList.add('active');
+        };
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = document.getElementById('editUserId').value;
+            const updates = { username: document.getElementById('editUsername').value, email: document.getElementById('editEmail').value, phone: document.getElementById('editPhone').value, balance: parseFloat(document.getElementById('editBalance').value), status: document.getElementById('editStatus').value };
+            await updateDoc(doc(db, 'users', userId), updates);
+            const newPassword = document.getElementById('editPassword').value;
+            if (newPassword) { /* Password change would require Firebase Auth update - handled via admin SDK */ alert('Password change requires Firebase Admin SDK. Contact developer.'); }
+            alert('User updated!');
+            closeModal();
+            await loadUsers();
+        });
+        window.deleteUser = async (userId) => { if(confirm('Delete this user permanently?')){ await deleteDoc(doc(db, 'users', userId)); alert('User deleted'); await loadUsers(); } };
+        window.closeModal = () => document.getElementById('editModal').classList.remove('active');
+        window.logout = async () => { await auth.signOut(); window.location.href = 'login.html'; };
+    </script>
+</body>
+</html>

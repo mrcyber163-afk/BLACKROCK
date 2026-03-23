@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Activations - BlackRock</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar"><div class="logo"><span class="black">BLACK</span><span class="green">ROCK</span><div style="font-size:12px;color:#0f0;">ADMIN</div></div>
+            <nav class="nav-menu">
+                <a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                <a href="users.html"><i class="fas fa-users"></i><span>Users</span></a>
+                <a href="deposits.html"><i class="fas fa-plus-circle"></i><span>Deposits</span></a>
+                <a href="withdrawals.html"><i class="fas fa-wallet"></i><span>Withdrawals</span></a>
+                <a href="tasks.html"><i class="fas fa-tasks"></i><span>Tasks</span></a>
+                <a href="activations.html" class="active"><i class="fas fa-check-circle"></i><span>Activations</span></a>
+                <a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+            </nav>
+        </div>
+        <div class="main-content">
+            <div class="dashboard-header"><div><h2>Account Activations</h2><p>Verify and activate new user accounts</p></div><div class="user-balance" id="adminEmail">Admin</div></div>
+            <div class="tabs"><div class="tab-btn active" onclick="showTab('pending')">Pending</div><div class="tab-btn" onclick="showTab('approved')">Approved</div></div>
+            <div class="content-card"><div style="overflow-x:auto;"><table class="admin-table"><thead><tr><th>User</th><th>Phone</th><th>Amount</th><th>Transaction Message</th><th>Date</th><th>Actions</th></tr></thead><tbody id="activationsList"></tbody></table></div></div>
+        </div>
+    </div>
+    <div class="modal" id="messageModal"><div class="modal-content"><div class="modal-header"><h3>Transaction Message</h3><span class="close-modal" onclick="closeModal()">&times;</span></div><pre id="fullMessage" style="background:#1a1a1a;padding:15px;border-radius:8px;white-space:pre-wrap;"></pre></div></div>
+    <script type="module">
+        import { auth, db, collection, getDocs, doc, updateDoc, addDoc, query, where, orderBy, onAuthStateChanged } from '../assets/js/firebase-config.js';
+        let currentTab = 'pending';
+        onAuthStateChanged(auth, async (user) => { if (!user) { window.location.href = 'login.html'; return; } await loadActivations(); });
+        async function loadActivations() {
+            const q = query(collection(db, 'activations'), where('status', '==', currentTab), orderBy('createdAt', 'desc'));
+            const snap = await getDocs(q);
+            const tbody = document.getElementById('activationsList');
+            if (snap.empty) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No activations found</td></tr>'; return; }
+            tbody.innerHTML = '';
+            for (const docSnap of snap.docs) {
+                const a = docSnap.data();
+                const userDoc = await getDoc(doc(db, 'users', a.userId));
+                const username = userDoc.exists() ? userDoc.data().username : 'Unknown';
+                const phone = userDoc.exists() ? userDoc.data().phone : '-';
+                tbody.innerHTML += `<tr><td>${username}</td><td>${phone}</td><td>${a.amount} ZMW</td><td><button class="action-btn" onclick="viewMessage('${a.transactionMessage.replace(/'/g, "\\'")}')">View</button></td><td>${new Date(a.createdAt).toLocaleString()}</td><td>${currentTab === 'pending' ? `<button class="action-btn approve" onclick="approveActivation('${docSnap.id}', '${a.userId}')">Activate</button><button class="action-btn reject" onclick="rejectActivation('${docSnap.id}')">Reject</button>` : '-'}</td></tr>`;
+            }
+        }
+        window.viewMessage = (msg) => { document.getElementById('fullMessage').innerText = msg; document.getElementById('messageModal').classList.add('active'); };
+        window.approveActivation = async (activationId, userId) => {
+            if (!confirm('Activate this user account?')) return;
+            await updateDoc(doc(db, 'activations', activationId), { status: 'approved', approvedAt: new Date().toISOString() });
+            await updateDoc(doc(db, 'users', userId), { status: 'active' });
+            await addDoc(collection(db, 'users', userId, 'notifications'), { message: 'Your account has been activated! You can now login and start earning.', read: false, createdAt: new Date().toISOString(), icon: 'check-circle', color: '#00ff00' });
+            alert('Account activated!');
+            await loadActivations();
+        };
+        window.rejectActivation = async (activationId) => { if(confirm('Reject this activation?')){ await updateDoc(doc(db, 'activations', activationId), { status: 'rejected', rejectedAt: new Date().toISOString() }); alert('Activation rejected'); await loadActivations(); } };
+        window.showTab = (tab) => { currentTab = tab; document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); event.target.classList.add('active'); loadActivations(); };
+        window.closeModal = () => document.getElementById('messageModal').classList.remove('active');
+        window.logout = async () => { await auth.signOut(); window.location.href = 'login.html'; };
+    </script>
+</body>
+</html>

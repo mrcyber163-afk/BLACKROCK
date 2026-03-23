@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Withdrawals - BlackRock</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar"><div class="logo"><span class="black">BLACK</span><span class="green">ROCK</span><div style="font-size:12px;color:#0f0;">ADMIN</div></div>
+            <nav class="nav-menu">
+                <a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                <a href="users.html"><i class="fas fa-users"></i><span>Users</span></a>
+                <a href="deposits.html"><i class="fas fa-plus-circle"></i><span>Deposits</span></a>
+                <a href="withdrawals.html" class="active"><i class="fas fa-wallet"></i><span>Withdrawals</span></a>
+                <a href="tasks.html"><i class="fas fa-tasks"></i><span>Tasks</span></a>
+                <a href="activations.html"><i class="fas fa-check-circle"></i><span>Activations</span></a>
+                <a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a>
+                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+            </nav>
+        </div>
+        <div class="main-content">
+            <div class="dashboard-header"><div><h2>Withdrawal Management</h2><p>Approve or reject withdrawal requests</p></div><div class="user-balance" id="adminEmail">Admin</div></div>
+            <div class="tabs"><div class="tab-btn active" onclick="showTab('pending')">Pending</div><div class="tab-btn" onclick="showTab('approved')">Approved</div><div class="tab-btn" onclick="showTab('rejected')">Rejected</div></div>
+            <div class="content-card"><div style="overflow-x:auto;"><table class="admin-table"><thead><tr><th>User</th><th>Amount</th><th>Network</th><th>Phone</th><th>Account Name</th><th>Date</th><th>Actions</th></tr></thead><tbody id="withdrawalsList"></tbody></table></div></div>
+        </div>
+    </div>
+    <script type="module">
+        import { auth, db, collection, getDocs, doc, updateDoc, increment, addDoc, query, where, orderBy, onAuthStateChanged } from '../assets/js/firebase-config.js';
+        let currentTab = 'pending';
+        onAuthStateChanged(auth, async (user) => { if (!user) { window.location.href = 'login.html'; return; } await loadWithdrawals(); });
+        async function loadWithdrawals() {
+            const q = query(collection(db, 'withdrawals'), where('status', '==', currentTab), orderBy('createdAt', 'desc'));
+            const snap = await getDocs(q);
+            const tbody = document.getElementById('withdrawalsList');
+            if (snap.empty) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No withdrawals found</td></tr>'; return; }
+            tbody.innerHTML = '';
+            for (const docSnap of snap.docs) {
+                const w = docSnap.data();
+                const userDoc = await getDoc(doc(db, 'users', w.userId));
+                const username = userDoc.exists() ? userDoc.data().username : 'Unknown';
+                tbody.innerHTML += `<tr><td>${username}</td><td>${w.amount} ZMW</td><td>${w.network || 'Mobile Money'}</td><td>${w.phone || '-'}</td><td>${w.accountName || '-'}</td><td>${new Date(w.createdAt).toLocaleString()}</td><td>${currentTab === 'pending' ? `<button class="action-btn approve" onclick="approveWithdrawal('${docSnap.id}', '${w.userId}', ${w.amount})">Approve</button><button class="action-btn reject" onclick="rejectWithdrawal('${docSnap.id}')">Reject</button>` : '-'}</td></tr>`;
+            }
+        }
+        window.approveWithdrawal = async (withdrawalId, userId, amount) => {
+            if (!confirm(`Approve withdrawal of ${amount} ZMW?`)) return;
+            await updateDoc(doc(db, 'withdrawals', withdrawalId), { status: 'approved', approvedAt: new Date().toISOString() });
+            await updateDoc(doc(db, 'users', userId), { balance: increment(-amount), totalWithdrawn: increment(amount) });
+            await addDoc(collection(db, 'users', userId, 'notifications'), { message: `Your withdrawal of ${amount} ZMW has been approved!`, read: false, createdAt: new Date().toISOString(), icon: 'check-circle', color: '#00ff00' });
+            alert('Withdrawal approved!');
+            await loadWithdrawals();
+        };
+        window.rejectWithdrawal = async (withdrawalId) => { if(confirm('Reject this withdrawal?')){ await updateDoc(doc(db, 'withdrawals', withdrawalId), { status: 'rejected', rejectedAt: new Date().toISOString() }); alert('Withdrawal rejected'); await loadWithdrawals(); } };
+        window.showTab = (tab) => { currentTab = tab; document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); event.target.classList.add('active'); loadWithdrawals(); };
+        window.logout = async () => { await auth.signOut(); window.location.href = 'login.html'; };
+    </script>
+</body>
+</html>

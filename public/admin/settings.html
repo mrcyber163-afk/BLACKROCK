@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Settings - BlackRock</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar"><div class="logo"><span class="black">BLACK</span><span class="green">ROCK</span><div style="font-size:12px;color:#0f0;">ADMIN</div></div>
+            <nav class="nav-menu">
+                <a href="dashboard.html"><i class="fas fa-home"></i><span>Dashboard</span></a>
+                <a href="users.html"><i class="fas fa-users"></i><span>Users</span></a>
+                <a href="deposits.html"><i class="fas fa-plus-circle"></i><span>Deposits</span></a>
+                <a href="withdrawals.html"><i class="fas fa-wallet"></i><span>Withdrawals</span></a>
+                <a href="tasks.html"><i class="fas fa-tasks"></i><span>Tasks</span></a>
+                <a href="activations.html"><i class="fas fa-check-circle"></i><span>Activations</span></a>
+                <a href="settings.html" class="active"><i class="fas fa-cog"></i><span>Settings</span></a>
+                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+            </nav>
+        </div>
+        <div class="main-content">
+            <div class="dashboard-header"><div><h2>System Settings</h2><p>Configure platform settings</p></div><div class="user-balance" id="adminEmail">Admin</div></div>
+            <div class="content-card">
+                <form id="settingsForm">
+                    <div class="form-group"><label><i class="fas fa-bullhorn"></i> Global Notification Message</label><textarea id="globalNotification" rows="3" placeholder="Enter notification message for all users..."></textarea><small>This message will appear on all user dashboards</small></div>
+                    <div class="form-group"><label><i class="fas fa-crown"></i> VIP Level 8 Status</label><select id="vip8Status"><option value="closed">Closed</option><option value="open">Open</option></select></div>
+                    <div class="form-group"><label><i class="fas fa-crown"></i> VIP Level 9 Status</label><select id="vip9Status"><option value="closed">Closed</option><option value="open">Open</option></select></div>
+                    <div class="form-group"><label><i class="fas fa-crown"></i> VIP Level 10 Status</label><select id="vip10Status"><option value="closed">Closed</option><option value="open">Open</option></select></div>
+                    <div class="form-group"><label><i class="fas fa-money-bill"></i> Minimum Withdrawal (ZMW)</label><input type="number" id="minWithdrawal" value="50"></div>
+                    <div class="form-group"><label><i class="fas fa-users"></i> Referral Bonus (ZMW)</label><input type="number" id="referralBonus" value="5"></div>
+                    <button type="submit" class="btn-submit">Save Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import { auth, db, doc, getDoc, setDoc, onAuthStateChanged } from '../assets/js/firebase-config.js';
+        onAuthStateChanged(auth, async (user) => { if (!user) { window.location.href = 'login.html'; return; } await loadSettings(); });
+        async function loadSettings() {
+            const settingsDoc = await getDoc(doc(db, 'settings', 'global'));
+            if (settingsDoc.exists()) {
+                const s = settingsDoc.data();
+                document.getElementById('globalNotification').value = s.globalNotification || '';
+                document.getElementById('vip8Status').value = s.vip8Status || 'closed';
+                document.getElementById('vip9Status').value = s.vip9Status || 'closed';
+                document.getElementById('vip10Status').value = s.vip10Status || 'closed';
+                document.getElementById('minWithdrawal').value = s.minWithdrawal || 50;
+                document.getElementById('referralBonus').value = s.referralBonus || 5;
+            }
+        }
+        document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await setDoc(doc(db, 'settings', 'global'), {
+                globalNotification: document.getElementById('globalNotification').value,
+                vip8Status: document.getElementById('vip8Status').value,
+                vip9Status: document.getElementById('vip9Status').value,
+                vip10Status: document.getElementById('vip10Status').value,
+                minWithdrawal: parseFloat(document.getElementById('minWithdrawal').value),
+                referralBonus: parseFloat(document.getElementById('referralBonus').value),
+                updatedAt: new Date().toISOString()
+            });
+            alert('Settings saved successfully!');
+        });
+        window.logout = async () => { await auth.signOut(); window.location.href = 'login.html'; };
+    </script>
+</body>
+</html>

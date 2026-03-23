@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Bonus - BlackRock</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            color: #fff;
+        }
+        .dashboard-container { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 280px;
+            background: #0a0a0a;
+            border-right: 1px solid #0f0;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .logo { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #333; }
+        .logo .black { font-size: 24px; font-weight: 800; color: #fff; }
+        .logo .green { font-size: 24px; font-weight: 800; color: #0f0; }
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 15px;
+            color: #888;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: 0.3s;
+        }
+        .nav-menu a i { width: 20px; color: #0f0; }
+        .nav-menu a:hover { background: rgba(0,255,0,0.1); color: #fff; }
+        .nav-menu a.active { background: #0f0; color: #000; }
+        .main-content { flex: 1; margin-left: 280px; padding: 20px; }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0a0a0a;
+            border: 1px solid #0f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .user-balance { background: #0f0; color: #000; padding: 8px 15px; border-radius: 20px; font-weight: bold; }
+        .content-card {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .bonus-icon { font-size: 80px; color: #ffd700; margin-bottom: 20px; }
+        .bonus-amount { font-size: 48px; font-weight: 800; color: #ffd700; }
+        .progress-container { margin: 30px 0; }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-fill { height: 100%; background: #ffd700; transition: width 0.5s; }
+        .progress-text { margin-top: 10px; color: #888; }
+        .referral-list {
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .referral-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #333;
+        }
+        .claim-btn {
+            background: #ffd700;
+            color: #000;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+        .claim-btn:hover { transform: translateY(-2px); background: #ffcc00; }
+        .claim-btn.disabled { background: #555; cursor: not-allowed; }
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #0a0a0a;
+            border-top: 1px solid #0f0;
+            padding: 10px;
+            justify-content: space-around;
+        }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding-bottom: 80px; }
+            .mobile-nav { display: flex; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="logo"><span class="black">BLACK</span><span class="green">ROCK</span></div>
+            <nav class="nav-menu">
+                <a href="dashboard.html"><i class="fas fa-home"></i> Home</a>
+                <a href="tasks.html"><i class="fas fa-tasks"></i> Tasks</a>
+                <a href="deposit.html"><i class="fas fa-plus-circle"></i> Deposit</a>
+                <a href="withdraw.html"><i class="fas fa-wallet"></i> Withdraw</a>
+                <a href="transaction-history.html"><i class="fas fa-history"></i> History</a>
+                <a href="referral.html"><i class="fas fa-users"></i> Referrals</a>
+                <a href="investment.html"><i class="fas fa-chart-line"></i> Investment</a>
+                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+                <a href="welcome-bonus.html" class="active"><i class="fas fa-gift"></i> Bonus</a>
+                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="dashboard-header">
+                <div><h2>Welcome Bonus</h2><p>Earn 100 ZMW by inviting friends</p></div>
+                <div class="user-balance"><strong id="balance">0 ZMW</strong></div>
+            </div>
+
+            <div class="content-card">
+                <div class="bonus-icon"><i class="fas fa-gift"></i></div>
+                <div class="bonus-amount">100 ZMW</div>
+                <p style="margin: 10px 0;">Invite 10 friends who deposit 100+ ZMW each</p>
+                
+                <div class="progress-container">
+                    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%"></div></div>
+                    <div class="progress-text"><span id="qualifiedCount">0</span> / 10 qualified referrals</div>
+                </div>
+
+                <div class="referral-list" id="referralList">
+                    <p style="text-align:center; color:#888;">Loading qualified referrals...</p>
+                </div>
+
+                <button id="claimBtn" class="claim-btn disabled" disabled>🎁 Claim 100 ZMW Bonus</button>
+            </div>
+        </div>
+
+        <div class="mobile-nav">
+            <a href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="welcome-bonus.html" class="active"><i class="fas fa-gift"></i><span>Bonus</span></a>
+            <a href="investment.html"><i class="fas fa-chart-line"></i><span>VIP</span></a>
+            <a href="referral.html"><i class="fas fa-users"></i><span>Team</span></a>
+            <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, doc, getDoc, updateDoc, increment, collection, query, where, getDocs, onAuthStateChanged } from './assets/js/firebase-config.js';
+
+        let currentUser = null, userData = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) { window.location.href = 'login.html'; return; }
+            currentUser = user;
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) {
+                userData = userDoc.data();
+                document.getElementById('balance').innerHTML = (userData.balance || 0) + ' ZMW';
+                loadBonusProgress();
+            }
+        });
+
+        async function loadBonusProgress() {
+            const q = query(collection(db, 'referrals'), where('referrerId', '==', currentUser.uid), where('status', '==', 'paid'), where('depositAmount', '>=', 100));
+            const snap = await getDocs(q);
+            const qualified = snap.size;
+            const percentage = (qualified / 10) * 100;
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('qualifiedCount').innerText = qualified;
+            
+            const listContainer = document.getElementById('referralList');
+            if (qualified === 0) {
+                listContainer.innerHTML = '<p style="text-align:center; color:#888;">No qualified referrals yet</p>';
+            } else {
+                let html = '';
+                snap.forEach(docSnap => {
+                    const ref = docSnap.data();
+                    html += `<div class="referral-item"><span>${ref.referredUsername || 'User'}</span><span style="color:#0f0;">+${ref.depositAmount} ZMW</span></div>`;
+                });
+                listContainer.innerHTML = html;
+            }
+            
+            const btn = document.getElementById('claimBtn');
+            const isClaimed = userData?.welcomeBonusClaimed;
+            
+            if (isClaimed) {
+                btn.disabled = true;
+                btn.classList.add('disabled');
+                btn.innerHTML = '✓ Bonus Already Claimed';
+            } else if (qualified >= 10) {
+                btn.disabled = false;
+                btn.classList.remove('disabled');
+                btn.innerHTML = '🎁 Claim 100 ZMW Bonus';
+                btn.onclick = claimBonus;
+            } else {
+                btn.disabled = true;
+                btn.classList.add('disabled');
+                btn.innerHTML = `Need ${10 - qualified} more referrals`;
+            }
+        }
+
+        async function claimBonus() {
+            const q = query(collection(db, 'referrals'), where('referrerId', '==', currentUser.uid), where('status', '==', 'paid'), where('depositAmount', '>=', 100));
+            const snap = await getDocs(q);
+            if (snap.size < 10) { alert('You need 10 qualified referrals to claim this bonus!'); return; }
+            if (userData?.welcomeBonusClaimed) { alert('Bonus already claimed!'); return; }
+            
+            await updateDoc(doc(db, 'users', currentUser.uid), {
+                balance: increment(100),
+                totalEarned: increment(100),
+                welcomeBonusClaimed: true,
+                welcomeBonusClaimedAt: new Date().toISOString()
+            });
+            alert('🎉 Congratulations! 100 ZMW has been added to your balance!');
+            location.reload();
+        }
+
+        window.logout = async () => { await auth.signOut(); window.location.href = 'login.html'; };
+    </script>
+</body>
+</html>
