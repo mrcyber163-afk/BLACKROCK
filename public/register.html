@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Register - BlackRock</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -21,10 +21,11 @@
             background: #0a0a0a;
             border: 1px solid #0f0;
             border-radius: 20px;
-            padding: 40px;
+            padding: 40px 30px;
             width: 100%;
             max-width: 450px;
             box-shadow: 0 0 30px rgba(0,255,0,0.2);
+            margin: auto;
         }
         .auth-logo { text-align: center; margin-bottom: 30px; }
         .auth-logo .black { font-size: 32px; font-weight: 800; color: #fff; }
@@ -94,6 +95,52 @@
         .btn-submit:hover { background: #0c0; transform: translateY(-2px); }
         .auth-footer { text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid #333; }
         .auth-footer a { color: #0f0; text-decoration: none; }
+        
+        /* Modern Popup Notification */
+        .custom-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+        .popup-content {
+            background: #0a0a0a;
+            border: 1px solid #0f0;
+            border-radius: 24px;
+            padding: 30px 25px;
+            max-width: 320px;
+            width: 85%;
+            text-align: center;
+            animation: slideUp 0.3s ease;
+        }
+        .popup-icon { font-size: 48px; margin-bottom: 15px; }
+        .popup-icon.success { color: #0f0; }
+        .popup-icon.error { color: #f44; }
+        .popup-title { font-size: 20px; font-weight: bold; margin-bottom: 10px; }
+        .popup-message { color: #ccc; font-size: 14px; line-height: 1.5; margin-bottom: 25px; }
+        .popup-btn {
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        @media (max-width: 480px) {
+            .auth-card { padding: 30px 20px; }
+        }
     </style>
 </head>
 <body>
@@ -149,6 +196,24 @@
     <script type="module">
         import { auth, db, createUserWithEmailAndPassword, doc, setDoc, collection, query, where, getDocs } from './assets/js/firebase-config.js';
 
+        function showPopup(title, message, type = 'success') {
+            const existing = document.querySelector('.custom-popup');
+            if (existing) existing.remove();
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle' };
+            const colors = { success: '#0f0', error: '#f44', warning: '#ff0' };
+            const popup = document.createElement('div');
+            popup.className = 'custom-popup';
+            popup.innerHTML = `
+                <div class="popup-content">
+                    <div class="popup-icon ${type}"><i class="fas ${icons[type]}" style="color: ${colors[type]}"></i></div>
+                    <div class="popup-title">${title}</div>
+                    <div class="popup-message">${message}</div>
+                    <button class="popup-btn" onclick="this.closest('.custom-popup').remove()">OK</button>
+                </div>
+            `;
+            document.body.appendChild(popup);
+        }
+
         window.togglePassword = function(id) {
             const input = document.getElementById(id);
             input.type = input.type === 'password' ? 'text' : 'password';
@@ -165,12 +230,12 @@
             const confirm = document.getElementById('confirmPassword').value;
             const referralCode = document.getElementById('referral').value.trim();
             
-            if (!phone.match(/^[97][0-9]{8}$/)) { alert('Enter valid Zambian phone (97xxxxxxx)'); return; }
-            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { alert('Enter valid email'); return; }
-            if (username.length < 3) { alert('Username at least 3 characters'); return; }
-            if (password.length < 4) { alert('Password at least 4 characters'); return; }
-            if (password !== confirm) { alert('Passwords do not match'); return; }
-            if (!document.getElementById('terms').checked) { alert('Accept terms'); return; }
+            if (!phone.match(/^[97][0-9]{8}$/)) { showPopup('Invalid Phone', 'Enter valid Zambian phone (97xxxxxxx)', 'error'); return; }
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) { showPopup('Invalid Email', 'Enter a valid email address', 'error'); return; }
+            if (username.length < 3) { showPopup('Username Too Short', 'Username must be at least 3 characters', 'error'); return; }
+            if (password.length < 4) { showPopup('Password Too Short', 'Password must be at least 4 characters', 'error'); return; }
+            if (password !== confirm) { showPopup('Password Mismatch', 'Passwords do not match', 'error'); return; }
+            if (!document.getElementById('terms').checked) { showPopup('Terms Required', 'You must agree to the terms', 'error'); return; }
             
             const btn = document.getElementById('registerBtn');
             btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
@@ -194,9 +259,14 @@
                 });
                 
                 localStorage.setItem('pendingUserId', user.uid);
-                alert('Registration successful! Redirecting to activation...');
-                window.location.href = 'activation.html';
-            } catch (err) { alert(err.message); btn.disabled = false; btn.innerHTML = 'Register Now <i class="fas fa-arrow-right"></i>'; }
+                showPopup('Registration Successful!', 'Your account has been created. Redirecting to activation page...', 'success');
+                setTimeout(() => { window.location.href = 'activation.html'; }, 2000);
+            } catch (err) { 
+                let msg = err.message || 'Registration failed';
+                if (err.code === 'auth/email-already-in-use') msg = 'Email already in use';
+                showPopup('Registration Failed', msg, 'error');
+                btn.disabled = false; btn.innerHTML = 'Register Now <i class="fas fa-arrow-right"></i>';
+            }
         });
     </script>
 </body>

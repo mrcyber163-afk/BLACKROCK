@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Tasks - BlackRock</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -37,7 +37,7 @@
             transition: 0.3s;
         }
         .nav-menu a i { width: 20px; color: #0f0; }
-        .nav-menu a:hover { background: rgba(0,255,0,0.1); color: #fff; }
+        .nav-menu a:hover { background: rgba(0,255,0,0.1); color: #fff; transform: translateX(5px); }
         .nav-menu a.active { background: #0f0; color: #000; }
         .main-content { flex: 1; margin-left: 280px; padding: 20px; }
         .dashboard-header {
@@ -49,8 +49,17 @@
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         .user-balance { background: #0f0; color: #000; padding: 8px 15px; border-radius: 20px; font-weight: bold; }
+        .subordinate-balance {
+            background: rgba(0,255,0,0.1);
+            border: 1px solid #0f0;
+            border-radius: 10px;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
         .task-filters {
             display: flex;
             gap: 10px;
@@ -98,6 +107,11 @@
             margin-top: 15px;
         }
         .task-btn:disabled { background: #555; cursor: not-allowed; }
+        .daily-limit {
+            font-size: 12px;
+            color: #888;
+            margin-top: 10px;
+        }
         .mobile-nav {
             display: none;
             position: fixed;
@@ -108,11 +122,39 @@
             border-top: 1px solid #0f0;
             padding: 10px;
             justify-content: space-around;
+            z-index: 100;
+        }
+        .mobile-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #888;
+            font-size: 12px;
+        }
+        .mobile-nav a i { font-size: 20px; margin-bottom: 5px; }
+        .mobile-nav a.active { color: #0f0; }
+        
+        .custom-popup {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); z-index: 10000; display: flex; align-items: center; justify-content: center;
+        }
+        .popup-content { background: #0a0a0a; border: 1px solid #0f0; border-radius: 24px; padding: 30px 25px; max-width: 320px; width: 85%; text-align: center; }
+        .popup-icon { font-size: 48px; margin-bottom: 15px; }
+        .popup-icon.success { color: #0f0; }
+        .popup-icon.error { color: #f44; }
+        .popup-icon.warning { color: #ff0; }
+        .popup-btn { background: #0f0; color: #000; border: none; padding: 10px 25px; border-radius: 30px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        
+        @media (max-width: 992px) {
+            .sidebar { width: 80px; }
+            .sidebar span { display: none; }
+            .main-content { margin-left: 80px; }
         }
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .main-content { margin-left: 0; padding-bottom: 80px; }
             .mobile-nav { display: flex; }
+            .tasks-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -121,122 +163,239 @@
         <div class="sidebar">
             <div class="logo"><span class="black">BLACK</span><span class="green">ROCK</span></div>
             <nav class="nav-menu">
-                <a href="dashboard.html"><i class="fas fa-home"></i> Home</a>
-                <a href="tasks.html" class="active"><i class="fas fa-tasks"></i> Tasks</a>
-                <a href="deposit.html"><i class="fas fa-plus-circle"></i> Deposit</a>
-                <a href="withdraw.html"><i class="fas fa-wallet"></i> Withdraw</a>
-                <a href="transaction-history.html"><i class="fas fa-history"></i> History</a>
-                <a href="referral.html"><i class="fas fa-users"></i> Referrals</a>
-                <a href="investment.html"><i class="fas fa-chart-line"></i> Investment</a>
-                <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
-                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                <a href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+                <a href="tasks.html" class="active"><i class="fas fa-tasks"></i><span>Tasks</span></a>
+                <a href="deposit.html"><i class="fas fa-plus-circle"></i><span>Deposit</span></a>
+                <a href="withdraw.html"><i class="fas fa-wallet"></i><span>Withdraw</span></a>
+                <a href="transaction-history.html"><i class="fas fa-history"></i><span>History</span></a>
+                <a href="referral.html"><i class="fas fa-users"></i><span>Referrals</span></a>
+                <a href="investment.html"><i class="fas fa-chart-line"></i><span>Investment</span></a>
+                <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
+                <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
             </nav>
         </div>
 
         <div class="main-content">
             <div class="dashboard-header">
                 <div><h2>Daily Tasks</h2><p>Complete tasks and earn money</p></div>
-                <div class="user-balance"><strong id="balance">0 ZMW</strong></div>
+                <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                    <div class="user-balance"><strong id="balance">0 ZMW</strong></div>
+                    <div class="subordinate-balance"><i class="fas fa-users"></i> Team Earnings: <strong id="teamEarnings">0 ZMW</strong></div>
+                </div>
             </div>
 
-            <div class="task-filters">
-                <button class="filter-btn active" data-platform="all">All Tasks</button>
-                <button class="filter-btn" data-platform="tiktok"><i class="fab fa-tiktok"></i> TikTok</button>
-                <button class="filter-btn" data-platform="facebook"><i class="fab fa-facebook"></i> Facebook</button>
-                <button class="filter-btn" data-platform="youtube"><i class="fab fa-youtube"></i> YouTube</button>
-                <button class="filter-btn" data-platform="instagram"><i class="fab fa-instagram"></i> Instagram</button>
-            </div>
-
-            <div class="tasks-grid" id="tasksGrid">
-                <div style="text-align:center; grid-column:1/-1; color:#888;">Loading tasks...</div>
-            </div>
+            <div class="task-filters" id="taskFilters"></div>
+            <div class="tasks-grid" id="tasksGrid"><div style="text-align:center; grid-column:1/-1; color:#888;">Loading tasks...</div></div>
         </div>
 
         <div class="mobile-nav">
             <a href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
-            <a href="welcome-bonus.html"><i class="fas fa-gift"></i><span>Bonus</span></a>
-            <a href="investment.html"><i class="fas fa-chart-line"></i><span>VIP</span></a>
-            <a href="referral.html"><i class="fas fa-users"></i><span>Team</span></a>
+            <a href="tasks.html" class="active"><i class="fas fa-tasks"></i><span>Tasks</span></a>
+            <a href="deposit.html"><i class="fas fa-plus-circle"></i><span>Deposit</span></a>
             <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
         </div>
     </div>
 
     <script type="module">
-        import { auth, db, doc, getDoc, collection, query, where, getDocs, updateDoc, increment, onAuthStateChanged } from './assets/js/firebase-config.js';
+        import { auth, db, doc, getDoc, collection, query, where, getDocs, updateDoc, increment, addDoc, setDoc, onAuthStateChanged, onSnapshot } from './assets/js/firebase-config.js';
 
-        let currentUser = null, userData = null, allTasks = [];
+        let currentUser = null, userData = null, userLevel = 1, dailyLimit = 5;
+        let completedToday = 0, tasksCompleted = [], currentTasks = [];
+        let vipData = {};
+        
+        const platforms = ['tiktok', 'facebook', 'youtube', 'instagram'];
+        const platformIcons = { tiktok: 'fab fa-tiktok', facebook: 'fab fa-facebook', youtube: 'fab fa-youtube', instagram: 'fab fa-instagram' };
+        const platformColors = { tiktok: '#00f2ea', facebook: '#1877f2', youtube: '#ff0000', instagram: '#e4405f' };
 
-        const dailyTasks = [
-            { id: 1, platform: 'tiktok', title: 'Watch TikTok Video', description: 'Watch, like and comment on this video', reward: 2, videoUrl: 'https://www.tiktok.com', action: 'Like, Comment, Subscribe' },
-            { id: 2, platform: 'facebook', title: 'Watch Facebook Video', description: 'Watch full video and react', reward: 3, videoUrl: 'https://www.facebook.com', action: 'Watch, Like, Share' },
-            { id: 3, platform: 'youtube', title: 'Watch YouTube Video', description: 'Watch 2 minutes and subscribe', reward: 4, videoUrl: 'https://www.youtube.com', action: 'Watch, Like, Subscribe' },
-            { id: 4, platform: 'instagram', title: 'Watch Instagram Reel', description: 'Watch and like the reel', reward: 2, videoUrl: 'https://www.instagram.com', action: 'Watch, Like, Follow' }
-        ];
+        function showPopup(title, message, type = 'success') {
+            const existing = document.querySelector('.custom-popup');
+            if (existing) existing.remove();
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle' };
+            const colors = { success: '#0f0', error: '#f44', warning: '#ff0' };
+            const popup = document.createElement('div');
+            popup.className = 'custom-popup';
+            popup.innerHTML = `<div class="popup-content"><div class="popup-icon ${type}"><i class="fas ${icons[type]}" style="color: ${colors[type]}"></i></div><div class="popup-title">${title}</div><div class="popup-message" style="color:#ccc; margin:15px 0;">${message}</div><button class="popup-btn" onclick="this.closest('.custom-popup').remove()">OK</button></div>`;
+            document.body.appendChild(popup);
+        }
 
         onAuthStateChanged(auth, async (user) => {
             if (!user) { window.location.href = 'login.html'; return; }
             currentUser = user;
-            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            await loadUserData();
+            await loadVIPData();
+            await loadTasksData();
+            await loadTodayProgress();
+            await loadTeamEarnings();
+            renderFilters();
+        });
+
+        async function loadUserData() {
+            const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
             if (userDoc.exists()) {
                 userData = userDoc.data();
                 document.getElementById('balance').innerHTML = (userData.balance || 0) + ' ZMW';
+                userLevel = parseInt(userData.level?.replace('VIP ', '')) || 1;
+                dailyLimit = userData.videosPerDay || (userLevel === 1 ? 5 : userLevel === 2 ? 8 : userLevel === 3 ? 12 : userLevel === 4 ? 20 : userLevel === 5 ? 30 : userLevel === 6 ? 40 : 60);
             }
-            loadTasks();
-        });
+        }
 
-        function loadTasks(filter = 'all') {
+        async function loadVIPData() {
+            const settingsDoc = await getDoc(doc(db, 'settings', 'global'));
+            if (settingsDoc.exists() && settingsDoc.data().vipLevels) {
+                vipData = settingsDoc.data().vipLevels.reduce((acc, v) => { acc[v.level] = v; return acc; }, {});
+            } else {
+                const defaultVIP = { 1: { daily: 5 }, 2: { daily: 8 }, 3: { daily: 15 }, 4: { daily: 30 }, 5: { daily: 50 }, 6: { daily: 80 }, 7: { daily: 150 } };
+                vipData = defaultVIP;
+            }
+        }
+
+        async function loadTasksData() {
+            const tasksDoc = await getDoc(doc(db, 'settings', 'tasks'));
+            if (tasksDoc.exists()) {
+                currentTasks = [];
+                for (const platform of platforms) {
+                    const pData = tasksDoc.data()[platform];
+                    if (pData && pData.active && pData.links) {
+                        const activeLinks = pData.links.filter(l => l && l.trim());
+                        if (activeLinks.length > 0) {
+                            const reward = pData.rewards?.[userLevel] || (vipData[userLevel]?.daily * 0.4).toFixed(2);
+                            currentTasks.push({ platform, links: activeLinks, reward: parseFloat(reward), active: true });
+                        }
+                    }
+                }
+            }
+            renderTasks();
+        }
+
+        async function loadTodayProgress() {
+            const today = new Date().toISOString().split('T')[0];
+            const tasksRef = collection(db, 'users', currentUser.uid, 'dailyTasks');
+            const q = query(tasksRef, where('date', '==', today));
+            const snap = await getDocs(q);
+            completedToday = snap.size;
+            tasksCompleted = snap.docs.map(d => d.data().taskId);
+        }
+
+        async function loadTeamEarnings() {
+            const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+            if (userDoc.exists()) {
+                document.getElementById('teamEarnings').innerHTML = (userDoc.data().teamEarnings || 0) + ' ZMW';
+            }
+        }
+
+        function renderFilters() {
+            const container = document.getElementById('taskFilters');
+            container.innerHTML = `
+                <button class="filter-btn active" data-platform="all">All Tasks (${completedToday}/${dailyLimit})</button>
+                ${currentTasks.map(t => `<button class="filter-btn" data-platform="${t.platform}"><i class="${platformIcons[t.platform]}" style="color:${platformColors[t.platform]}"></i> ${t.platform.charAt(0).toUpperCase() + t.platform.slice(1)}</button>`).join('')}
+            `;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderTasks(btn.dataset.platform);
+                };
+            });
+            renderTasks('all');
+        }
+
+        function renderTasks(filter = 'all') {
             const grid = document.getElementById('tasksGrid');
-            const filtered = filter === 'all' ? dailyTasks : dailyTasks.filter(t => t.platform === filter);
+            let tasks = filter === 'all' ? currentTasks : currentTasks.filter(t => t.platform === filter);
             
-            if (filtered.length === 0) {
-                grid.innerHTML = '<div style="text-align:center; grid-column:1/-1; color:#888;">No tasks available for this platform today</div>';
+            if (tasks.length === 0) {
+                grid.innerHTML = '<div style="text-align:center; grid-column:1/-1; color:#888;">No active tasks available for this platform</div>';
                 return;
             }
             
-            grid.innerHTML = filtered.map(task => `
+            grid.innerHTML = tasks.map(task => `
                 <div class="task-card">
-                    <div class="task-icon ${task.platform}"><i class="fab fa-${task.platform}"></i></div>
-                    <div class="task-title">${task.title}</div>
-                    <p>${task.description}</p>
-                    <div class="task-reward">💰 ${task.reward} ZMW</div>
-                    <small style="color:#888;">${task.action}</small>
-                    <button class="task-btn" onclick="completeTask(${task.id}, '${task.platform}', ${task.reward})">Start Task</button>
+                    <div class="task-icon ${task.platform}"><i class="${platformIcons[task.platform]}"></i></div>
+                    <div class="task-title">${task.platform.charAt(0).toUpperCase() + task.platform.slice(1)} Videos</div>
+                    <p>Watch and engage with videos</p>
+                    <div class="task-reward">💰 ${task.reward} ZMW per video</div>
+                    <div class="daily-limit">📊 Today: ${completedToday}/${dailyLimit} tasks completed</div>
+                    <button class="task-btn" onclick="completeTask('${task.platform}', ${task.reward}, ${task.links.length})" ${completedToday >= dailyLimit ? 'disabled' : ''}>Start Task</button>
                 </div>
             `).join('');
         }
 
-        window.completeTask = async (taskId, platform, reward) => {
+        window.completeTask = async (platform, reward, linkCount) => {
+            if (completedToday >= dailyLimit) {
+                showPopup('Daily Limit Reached', `You have completed ${dailyLimit} tasks today. Come back tomorrow!`, 'warning');
+                return;
+            }
+            
             const btn = event.target;
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opening...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading video...';
             
-            // Open task URL in new tab
-            const task = dailyTasks.find(t => t.id === taskId);
-            window.open(task.videoUrl, '_blank');
+            // Get random video link from platform
+            const taskData = currentTasks.find(t => t.platform === platform);
+            if (!taskData || !taskData.links.length) {
+                showPopup('No Videos', 'No videos available for this platform', 'error');
+                btn.disabled = false; btn.innerHTML = 'Start Task';
+                return;
+            }
             
+            const randomLink = taskData.links[Math.floor(Math.random() * taskData.links.length)];
+            window.open(randomLink, '_blank');
+            
+            // Simulate task completion after 10 seconds
             setTimeout(async () => {
                 try {
+                    const today = new Date().toISOString().split('T')[0];
+                    const taskId = `${platform}_${Date.now()}`;
+                    
+                    // Record task completion
+                    await addDoc(collection(db, 'users', currentUser.uid, 'dailyTasks'), {
+                        date: today,
+                        platform: platform,
+                        reward: reward,
+                        taskId: taskId,
+                        completedAt: new Date().toISOString()
+                    });
+                    
+                    // Add reward to user balance
                     await updateDoc(doc(db, 'users', currentUser.uid), {
                         balance: increment(reward),
                         totalEarned: increment(reward),
                         totalTasks: increment(1)
                     });
-                    alert(`✅ Task completed! +${reward} ZMW added to your balance.`);
-                    const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-                    document.getElementById('balance').innerHTML = (userDoc.data().balance || 0) + ' ZMW';
-                } catch (err) { console.error(err); alert('Error completing task. Please try again.'); }
+                    
+                    // Add commission to referrer (1% of reward)
+                    if (userData?.referredBy) {
+                        const referrerQuery = query(collection(db, 'users'), where('referralCode', '==', userData.referredBy));
+                        const referrerSnap = await getDocs(referrerQuery);
+                        if (!referrerSnap.empty) {
+                            const referrer = referrerSnap.docs[0];
+                            const commission = reward * 0.01;
+                            await updateDoc(doc(db, 'users', referrer.id), {
+                                teamEarnings: increment(commission),
+                                balance: increment(commission)
+                            });
+                            await addDoc(collection(db, 'users', referrer.id, 'notifications'), {
+                                message: `🎉 You earned ${commission.toFixed(2)} ZMW commission from ${userData.username}'s task completion!`,
+                                read: false,
+                                createdAt: new Date().toISOString(),
+                                icon: 'users',
+                                color: '#0f0'
+                            });
+                        }
+                    }
+                    
+                    showPopup('Task Completed!', `+${reward} ZMW added to your balance!`, 'success');
+                    await loadTodayProgress();
+                    await loadUserData();
+                    renderTasks();
+                    
+                } catch (err) {
+                    showPopup('Error', 'Failed to complete task. Please try again.', 'error');
+                }
                 btn.disabled = false;
                 btn.innerHTML = 'Start Task';
-            }, 5000);
+            }, 10000);
         };
-
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.onclick = () => {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                loadTasks(btn.dataset.platform);
-            };
-        });
 
         window.logout = async () => { await auth.signOut(); window.location.href = 'login.html'; };
     </script>

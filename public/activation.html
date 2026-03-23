@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Activation - BlackRock</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -21,10 +21,11 @@
             background: #0a0a0a;
             border: 1px solid #0f0;
             border-radius: 20px;
-            padding: 40px;
+            padding: 40px 30px;
             width: 100%;
             max-width: 500px;
             box-shadow: 0 0 30px rgba(0,255,0,0.2);
+            margin: auto;
         }
         .auth-logo { text-align: center; margin-bottom: 30px; }
         .auth-logo .black { font-size: 32px; font-weight: 800; color: #fff; }
@@ -53,6 +54,8 @@
             justify-content: space-between;
             padding: 10px;
             border-bottom: 1px solid #333;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .payment-detail .value { color: #0f0; font-weight: 600; }
         .ussd-button {
@@ -71,7 +74,7 @@
             font-size: 20px;
             width: 100%;
         }
-        .ussd-button:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(0,255,0,0.5); }
+        .ussd-button:hover { transform: scale(1.02); }
         .ussd-button code { font-size: 24px; background: transparent; color: #000; }
         .warning-box {
             background: rgba(255,255,0,0.1);
@@ -93,7 +96,6 @@
             color: #fff;
             font-size: 15px;
         }
-        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #0f0; }
         .phone-input-wrapper {
             display: flex;
             background: #1a1a1a;
@@ -122,6 +124,47 @@
         .btn-verify:hover { background: #0c0; transform: translateY(-2px); }
         .auth-footer { text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid #333; }
         .auth-footer a { color: #0f0; text-decoration: none; }
+        
+        .custom-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .popup-content {
+            background: #0a0a0a;
+            border: 1px solid #0f0;
+            border-radius: 24px;
+            padding: 30px 25px;
+            max-width: 320px;
+            width: 85%;
+            text-align: center;
+        }
+        .popup-icon { font-size: 48px; margin-bottom: 15px; }
+        .popup-icon.success { color: #0f0; }
+        .popup-icon.error { color: #f44; }
+        .popup-btn {
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        
+        @media (max-width: 480px) {
+            .auth-card { padding: 30px 20px; }
+            .payment-detail { flex-direction: column; text-align: center; }
+        }
     </style>
 </head>
 <body>
@@ -163,10 +206,28 @@
     <script type="module">
         import { db, collection, addDoc, query, where, getDocs } from './assets/js/firebase-config.js';
 
+        function showPopup(title, message, type = 'success') {
+            const existing = document.querySelector('.custom-popup');
+            if (existing) existing.remove();
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle' };
+            const colors = { success: '#0f0', error: '#f44', warning: '#ff0' };
+            const popup = document.createElement('div');
+            popup.className = 'custom-popup';
+            popup.innerHTML = `
+                <div class="popup-content">
+                    <div class="popup-icon ${type}"><i class="fas ${icons[type]}" style="color: ${colors[type]}"></i></div>
+                    <div class="popup-title">${title}</div>
+                    <div class="popup-message" style="color:#ccc; margin:15px 0;">${message}</div>
+                    <button class="popup-btn" onclick="this.closest('.custom-popup').remove()">OK</button>
+                </div>
+            `;
+            document.body.appendChild(popup);
+        }
+
         const pendingUserId = localStorage.getItem('pendingUserId');
         if (!pendingUserId) {
-            alert('No pending activation. Please register first.');
-            window.location.href = 'register.html';
+            showPopup('No Pending Activation', 'Please register first', 'error');
+            setTimeout(() => { window.location.href = 'register.html'; }, 2000);
         }
 
         document.getElementById('senderPhone').addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g,'').slice(0,9));
@@ -177,8 +238,8 @@
             const message = document.getElementById('transactionMessage').value;
             const btn = document.getElementById('submitBtn');
             
-            if (!senderPhone.match(/^[97][0-9]{8}$/)) { alert('Enter valid Zambian phone number'); return; }
-            if (!message.trim()) { alert('Paste transaction message'); return; }
+            if (!senderPhone.match(/^[97][0-9]{8}$/)) { showPopup('Invalid Phone', 'Enter valid Zambian phone (97xxxxxxx)', 'error'); return; }
+            if (!message.trim()) { showPopup('Missing Message', 'Please paste transaction message', 'error'); return; }
             
             btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
             
@@ -186,7 +247,7 @@
                 const activationsRef = collection(db, 'activations');
                 const existing = await getDocs(query(activationsRef, where('userId', '==', pendingUserId), where('status', '==', 'pending')));
                 if (!existing.empty) {
-                    alert('You already have a pending activation request. Please wait for admin approval.');
+                    showPopup('Request Already Sent', 'You already have a pending activation request. Please wait for admin approval.', 'warning');
                     btn.disabled = false; btn.innerHTML = 'Verify Payment';
                     return;
                 }
@@ -201,10 +262,10 @@
                 });
                 
                 localStorage.removeItem('pendingUserId');
-                alert('Activation request submitted! Redirecting to login...');
-                setTimeout(() => { window.location.href = 'login.html'; }, 2000);
+                showPopup('Request Submitted!', 'Activation request submitted. Redirecting to login...', 'success');
+                setTimeout(() => { window.location.href = 'login.html'; }, 2500);
             } catch (err) {
-                alert('Failed to submit. Try again.');
+                showPopup('Submission Failed', 'Please try again', 'error');
                 btn.disabled = false; btn.innerHTML = 'Verify Payment';
             }
         });

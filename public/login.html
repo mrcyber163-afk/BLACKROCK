@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Login - BlackRock</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -21,10 +21,11 @@
             background: #0a0a0a;
             border: 1px solid #0f0;
             border-radius: 20px;
-            padding: 40px;
+            padding: 40px 30px;
             width: 100%;
             max-width: 450px;
             box-shadow: 0 0 30px rgba(0,255,0,0.2);
+            margin: auto;
         }
         .auth-logo { text-align: center; margin-bottom: 30px; }
         .auth-logo .black { font-size: 32px; font-weight: 800; color: #fff; }
@@ -70,15 +71,52 @@
         .btn-submit:hover { background: #0c0; transform: translateY(-2px); }
         .auth-footer { text-align: center; margin-top: 25px; padding-top: 20px; border-top: 1px solid #333; }
         .auth-footer a { color: #0f0; text-decoration: none; }
-        .notification-popup {
-            position: fixed; top: 20px; right: 20px; background: #1a1a1a;
-            border: 2px solid #0f0; border-radius: 10px; padding: 15px 25px;
-            display: flex; align-items: center; gap: 15px; z-index: 1000;
-            animation: slideIn 0.3s;
+        
+        .custom-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
         }
-        .notification-popup.error { border-color: #f44; }
-        .notification-popup.warning { border-color: #fa0; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .popup-content {
+            background: #0a0a0a;
+            border: 1px solid #0f0;
+            border-radius: 24px;
+            padding: 30px 25px;
+            max-width: 320px;
+            width: 85%;
+            text-align: center;
+            animation: slideUp 0.3s ease;
+        }
+        .popup-icon { font-size: 48px; margin-bottom: 15px; }
+        .popup-icon.success { color: #0f0; }
+        .popup-icon.error { color: #f44; }
+        .popup-icon.warning { color: #ff0; }
+        .popup-title { font-size: 20px; font-weight: bold; margin-bottom: 10px; }
+        .popup-message { color: #ccc; font-size: 14px; line-height: 1.5; margin-bottom: 25px; }
+        .popup-btn {
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        @media (max-width: 480px) {
+            .auth-card { padding: 30px 20px; }
+        }
     </style>
 </head>
 <body>
@@ -107,20 +145,39 @@
     <script type="module">
         import { auth, db, signInWithEmailAndPassword, signOut, doc, getDoc, onAuthStateChanged } from './assets/js/firebase-config.js';
 
+        function showPopup(title, message, type = 'success') {
+            const existing = document.querySelector('.custom-popup');
+            if (existing) existing.remove();
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle' };
+            const colors = { success: '#0f0', error: '#f44', warning: '#ff0' };
+            const popup = document.createElement('div');
+            popup.className = 'custom-popup';
+            popup.innerHTML = `
+                <div class="popup-content">
+                    <div class="popup-icon ${type}"><i class="fas ${icons[type]}" style="color: ${colors[type]}"></i></div>
+                    <div class="popup-title">${title}</div>
+                    <div class="popup-message">${message}</div>
+                    <button class="popup-btn" onclick="this.closest('.custom-popup').remove()">OK</button>
+                </div>
+            `;
+            document.body.appendChild(popup);
+        }
+
         window.togglePassword = function() {
             const input = document.getElementById('password');
             input.type = input.type === 'password' ? 'text' : 'password';
         };
 
-        window.forgotPassword = () => alert('Password reset link sent to your email');
+        window.forgotPassword = () => showPopup('Reset Password', 'Password reset link has been sent to your email.', 'success');
 
+        // LOGIN FORM SUBMIT
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const btn = document.getElementById('loginBtn');
             
-            if (!email || !password) { alert('Please fill all fields'); return; }
+            if (!email || !password) { showPopup('Error', 'Please fill in all fields', 'error'); return; }
             btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
             
             try {
@@ -129,28 +186,54 @@
                 if (!userDoc.exists()) throw new Error('User not found');
                 const userData = userDoc.data();
                 
-                if (userData.status === 'pending_activation') {
+                // IMPORTANT: Check if account is activated
+                if (userData.status !== 'active') {
                     await signOut(auth);
-                    alert('⚠️ Your account is pending activation. Please complete payment first.');
+                    showPopup('Account Not Activated', 'Your account is pending activation. Please complete the activation payment first.', 'warning');
                     btn.disabled = false; btn.innerHTML = 'Login <i class="fas fa-arrow-right"></i>';
                     return;
                 }
-                if (userData.status === 'suspended' || userData.status === 'banned') {
+                if (userData.status === 'suspended') {
                     await signOut(auth);
-                    alert('Your account has been ' + userData.status);
+                    showPopup('Account Suspended', 'Your account has been suspended. Contact support.', 'error');
                     btn.disabled = false; btn.innerHTML = 'Login <i class="fas fa-arrow-right"></i>';
                     return;
                 }
                 
-                alert('Login successful! Redirecting...');
-                window.location.href = 'dashboard.html';
+                showPopup('Login Successful', 'Welcome back! Redirecting to dashboard...', 'success');
+                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
             } catch (err) {
-                alert(err.code === 'auth/user-not-found' ? 'Email not registered' : err.code === 'auth/wrong-password' ? 'Wrong password' : 'Login failed');
+                let msg = err.code === 'auth/user-not-found' ? 'Email not registered' : err.code === 'auth/wrong-password' ? 'Wrong password' : 'Login failed';
+                showPopup('Login Failed', msg, 'error');
                 btn.disabled = false; btn.innerHTML = 'Login <i class="fas fa-arrow-right"></i>';
             }
         });
         
-        onAuthStateChanged(auth, (user) => { if (user) window.location.href = 'dashboard.html'; });
+        // CHECK IF ALREADY LOGGED IN - IMPORTANT: This runs when page loads
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                    if (userDoc.exists()) {
+                        const userData = userDoc.data();
+                        // Only redirect if account is ACTIVE
+                        if (userData.status === 'active') {
+                            window.location.href = 'dashboard.html';
+                        } else {
+                            // Account exists but not activated - force logout
+                            await signOut(auth);
+                            showPopup('Account Not Activated', 'Your account is pending activation. Please complete the activation payment first.', 'warning');
+                        }
+                    } else {
+                        // User document doesn't exist - logout
+                        await signOut(auth);
+                    }
+                } catch (error) {
+                    console.error('Error checking user status:', error);
+                    await signOut(auth);
+                }
+            }
+        });
     </script>
 </body>
 </html>
